@@ -3,14 +3,17 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     `maven-publish`
-    signing
+//    signing
 }
 
 android {
     namespace = "com.github.husseinhj.logtap"
     compileSdk = 36
     publishing {
-        singleVariant("release") { withJavadocJar(); withSourcesJar() }
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
     }
 
     defaultConfig {
@@ -50,42 +53,41 @@ afterEvaluate {
             create<MavenPublication>("release") {
                 from(components["release"])
                 groupId = "com.github.husseinhj"
-                artifactId = "logtap"
+                artifactId = "logtap" // or logtap-noop
                 version = System.getenv("PUBLISH_VERSION") ?: "0.1.0"
-
                 pom {
                     name.set("LogTap")
-                    description.set("Realtime HTTP/WebSocket + Logger viewer for Android (OkHttp3)")
-                    url.set("https://github.com/husseinhj/LogTap")
-                    licenses {
-                        license {
-                            name.set("Apache-2.0")
-                            url.set("https://www.apache.org/licenses/LICENSE-2.0")
-                        }
-                    }
-                    developers {
-                        developer {
-                            id.set("husseinhj")
-                            name.set("Hussein Habibi Juybari")
-                            email.set("hussein.juybari@gmail.com")
-                        }
-                    }
+                    description.set("Realtime HTTP/WebSocket + Logger inspector for Android")
+                    url.set("https://github.com/Husseinhj/LogTap")
+                    licenses { license { name.set("MIT"); url.set("https://opensource.org/licenses/MIT") } }
                     scm {
-                        url.set("https://github.com/husseinhj/LogTap")
-                        connection.set("scm:git:github.com/husseinhj/LogTap.git")
-                        developerConnection.set("scm:git:ssh://git@github.com/husseinhj/LogTap.git")
+                        url.set("https://github.com/Husseinhj/LogTap")
+                        connection.set("scm:git:https://github.com/Husseinhj/LogTap.git")
+                        developerConnection.set("scm:git:ssh://git@github.com/Husseinhj/LogTap.git")
                     }
+                    developers { developer { id.set("husseinhj"); name.set("Hussein Habibi Juybari") } }
+                }
+            }
+        }
+        repositories {
+            maven {
+                name = "Central"
+                url = uri("https://central.sonatype.com/repository/maven-releases/")
+                credentials {
+                    // Use Central Portal Publishing Token
+                    username = System.getenv("OSSRH_USERNAME") // token id
+                    password = System.getenv("OSSRH_PASSWORD") // token secret
                 }
             }
         }
     }
+
 }
 
-signing {
-    // Use in-memory keys from GitHub Secrets
-    useInMemoryPgpKeys(
-        System.getenv("SIGNING_KEY"),    // Base64-encoded ASCII-armored key
-        System.getenv("SIGNING_PASSWORD")
-    )
-    sign(publishing.publications)
-}
+//signing {
+//    useInMemoryPgpKeys(
+//        System.getenv("SIGNING_KEY"),
+//        System.getenv("SIGNING_PASSWORD")
+//    )
+//    sign(publishing.publications)
+//}

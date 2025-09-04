@@ -1,4 +1,4 @@
-name: Publish to Maven Central
+name: Publish to Maven Central (Central Portal)
 
 on:
   workflow_dispatch:
@@ -40,13 +40,12 @@ jobs:
       - name: Build
         run: ./gradlew :logtap:assembleRelease
 
-      - name: Publish to Sonatype (staging + release)
+      - name: Publish to Central (no staging)
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-          OSSRH_STAGING_PROFILE_ID: ${{ secrets.OSSRH_STAGING_PROFILE_ID }} # optional on new infra
-          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}           # base64(ASCII-armored PGP key)
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           PUBLISH_VERSION: ${{ env.PUBLISH_VERSION }}
         run: |
-          ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --stacktrace
+          ./gradlew publish --stacktrace

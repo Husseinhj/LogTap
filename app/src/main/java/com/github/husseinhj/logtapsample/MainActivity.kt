@@ -102,7 +102,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         Spacer(Modifier.height(6.dp))
         FlowRow {
             Button({ openEchoWebSocket("wss://echo.websocket.org") }) { Text("WS connect") }
-            Button({ openEchoWebSocketAndSend("wss://echo.websocket.events", "{\"hello\":\"world\"}") }) { Text("WS Echo send JSON") }
+            Button({ openEchoWebSocketAndSend("wss://echo.websocket.org", "{\"hello\":\"world\"}") }) { Text("WS Echo send JSON") }
         }
     }
 }

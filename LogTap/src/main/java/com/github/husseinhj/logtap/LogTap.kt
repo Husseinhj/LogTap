@@ -21,6 +21,7 @@ import io.ktor.server.response.respondText
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.plugins.contentnegotiation.*
 import java.net.Inet4Address
+import kotlin.time.toKotlinDuration
 
 private const val TAG = "LogTap"
 
@@ -33,7 +34,7 @@ object LogTap {
         val enableOnRelease: Boolean = false
     )
 
-    @Volatile private var server: ApplicationEngine? = null
+    @Volatile private var server: EmbeddedServer<*, *>? = null
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     internal lateinit var store: LogStore
@@ -62,7 +63,7 @@ object LogTap {
                     port = config.port
                 ) {
                     install(ContentNegotiation) { json(LogTap.json) }
-                    install(WebSockets) { pingPeriod = Duration.ofSeconds(30); masking = false }
+                    install(WebSockets) { pingPeriod = Duration.ofSeconds(30).toKotlinDuration(); masking = false }
 
                     routing {
                         get("/") { call.respondText(Resources.indexHtml, ContentType.Text.Html) }

@@ -134,31 +134,68 @@ class LogTapInterceptor : Interceptor {
         }
     }
 
+    private fun isWebSocketUpgrade(resp: Response): Boolean {
+        return resp.code == 101 &&
+                resp.header("Connection")?.contains("upgrade", true) == true &&
+                resp.header("Upgrade")?.equals("websocket", true) == true
+    }
+
+    private fun hasNoResponseBody(resp: Response): Boolean {
+        // HEAD has no body; 204/205/304 must not include a body per RFC
+        val m = resp.request.method
+        return m.equals("HEAD", true) || resp.code == 204 || resp.code == 205 || resp.code == 304
+    }
+
     private fun safeReadResponseBody(response: Response): Triple<String?, Boolean, Int?> {
         val body = response.body ?: return Triple(null, false, null)
-        return try {
-            var source = body.source()
-            source.request(Long.MAX_VALUE)
-            var buffer = source.buffer
 
-            if ("gzip".equals(response.headers["Content-Encoding"], ignoreCase = true)) {
-                GzipSource(buffer.clone()).use { gz ->
-                    val newBuffer = Buffer()
-                    newBuffer.writeAll(gz)
-                    buffer = newBuffer
+        // --- Early exits for cases that never have a readable body ---
+        if (isWebSocketUpgrade(response)) {
+            return Triple("(websocket handshake; no body)", false, 0)
+        }
+        if (hasNoResponseBody(response)) {
+            return Triple("", false, 0)
+        }
+
+        return try {
+            val max = LogTap.Config().maxBodyBytes
+
+            // Use a PEAK at the source to avoid consuming downstream
+            val source = body.source()
+            val peek = source.peek()
+
+            // Try to fill what's readily available; avoid unbounded blocking reads
+            // If contentLength is known and small, we can safely request that; else cap.
+            val knownLen = body.contentLength()
+            val toRead = when {
+                knownLen >= 0 -> minOf(knownLen, max).coerceAtLeast(0)
+                else -> max.toLong()
+            }
+            peek.request(toRead) // may be 0 if length unknown and nothing buffered yet
+
+            var buffer = peek.buffer.clone()
+
+            if ("gzip".equals(response.header("Content-Encoding"), ignoreCase = true) && buffer.size > 0L) {
+                GzipSource(buffer).use { gz ->
+                    val nb = okio.Buffer()
+                    nb.writeAll(gz)
+                    buffer = nb
                 }
             }
 
             val size = buffer.size
-            val max = LogTap.Config().maxBodyBytes
             val capped = buffer.clone().readByteString(minOf(size, max)).toByteArray()
+
             val contentType = body.contentType()
             val charset: Charset = contentType?.charset(Charsets.UTF_8) ?: Charsets.UTF_8
-            val display = if (isPlainText(Buffer().write(capped))) String(capped, charset) else "(${capped.size} bytes binary)"
+            val display = if (isPlainText(okio.Buffer().write(capped))) {
+                String(capped, charset)
+            } else {
+                "(${capped.size} bytes binary)"
+            }
             Triple(display, size > max, size.toInt())
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Triple("(unable to read response body)", true, null)
+        } catch (_: Exception) {
+            Triple("(unavailable: non-replayable/closed stream)", true, null)
         }
     }
 }

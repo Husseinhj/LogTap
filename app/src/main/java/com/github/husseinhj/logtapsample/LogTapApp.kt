@@ -25,7 +25,7 @@ class LogTapApp : Application() {
         LogTapLogger.setAllowReleaseLogging(false)
         LogTapLogger.setMinLevel(
             if (BuildConfig.DEBUG)
-                LogTapLogger.Level.DEBUG
+                LogTapLogger.Level.VERBOSE
             else
                 LogTapLogger.Level.WARN
         )

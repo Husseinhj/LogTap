@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.github.husseinhj.logtap.LogTapLogger
 import com.github.husseinhj.logtapsample.ui.theme.LogTapSampleTheme
 import okhttp3.Call
 import okhttp3.Callback
@@ -49,11 +50,15 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         )
 
         Button(onClick = {
+            LogTapLogger.d("Button clicked, opening WebSocket")
+
             val client = buildOkHttpWithLogTap()
 
             openWebSocketWithLogTap(client, "wss://echo.websocket.org", object : okhttp3.WebSocketListener() {
                 override fun onOpen(webSocket: okhttp3.WebSocket, response: okhttp3.Response) {
                     super.onOpen(webSocket, response)
+
+                    LogTapLogger.d("WebSocket opened: ${response.request.url}")
                     webSocket.send("{\"menu\": {\n" +
                             "  \"id\": \"file\",\n" +
                             "  \"value\": \"File\",\n" +
@@ -72,14 +77,18 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         }
 
         Button(onClick = {
+            LogTapLogger.d("Button clicked, making API call")
+
             val client = buildOkHttpWithLogTap()
             val request = Request.Builder().url("https://fakestoreapi.com/users").build()
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     e.printStackTrace()
+                    LogTapLogger.e("API call failed: ${e.message}", e)
                 }
                 override fun onResponse(call: Call, response: Response) {
                     println("GET response: ${'$'}{response.body?.string()}")
+                    LogTapLogger.d("API call succeeded: ${response.code}")
                 }
             })
         }) {
@@ -87,6 +96,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         }
 
         Button(onClick = {
+            LogTapLogger.d("Button clicked, making POST API call")
             val client = buildOkHttpWithLogTap()
 
             val json = """
@@ -107,10 +117,12 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     e.printStackTrace()
+                    LogTapLogger.e("POST API call failed: ${e.message}", e)
                 }
 
                 override fun onResponse(call: Call, response: Response) {
                     println("Post response: ${response.body?.string()}")
+                    LogTapLogger.d("POST API call succeeded: ${response.code}")
                 }
             })
         }) {

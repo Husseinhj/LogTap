@@ -1,19 +1,24 @@
 package com.github.husseinhj.logtapsample
 
-
+import okhttp3.Request
+import okhttp3.OkHttpClient
 import android.app.Application
+import okhttp3.WebSocketListener
 import com.github.husseinhj.logtap.LogTap
 import com.github.husseinhj.logtap.LogTapInterceptor
+import com.github.husseinhj.logtap.LogTapLogcatBridge
+import com.github.husseinhj.logtap.LogTapLogger
+import com.github.husseinhj.logtap.LogTapSinkAdapter
 import com.github.husseinhj.logtap.newWebSocketWithLogging
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.WebSocketListener
 
-// Example integration snippets — place similar code in your app
 class LogTapApp : Application() {
+    private val logSink = LogTapSinkAdapter()
+
     override fun onCreate() {
         super.onCreate()
-        // Start the embedded viewer on device (only when debuggable)
+
+        LogTapLogcatBridge.start(logSink)
+        LogTapLogger.d("LogTapLogcatBridge started")
         LogTap.start(this, LogTap.Config(port = 8790, capacity = 5000))
     }
 }

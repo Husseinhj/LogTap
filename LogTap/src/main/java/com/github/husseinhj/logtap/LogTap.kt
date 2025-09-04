@@ -64,6 +64,10 @@ object LogTap {
                         get("/app.css") { call.respondText(Resources.appCss, ContentType.Text.CSS) }
                         get("/app.js") { call.respondText(Resources.appJs, ContentType.Application.JavaScript) }
 
+                        get("/logs") {
+                            val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 200
+                            call.respond(LogTapEvents.snapshot(limit))
+                        }
                         get("/api/logs") {
                             val sinceId = call.request.queryParameters["sinceId"]?.toLongOrNull()
                             val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 500
@@ -80,12 +84,27 @@ object LogTap {
                                     session.send(Frame.Text( json.encodeToString(LogEvent.serializer(), ev)))
                                 }
                             }
+                            val backlog = LogTapEvents.snapshot(200)
+                            for (ev in backlog) {
+                                send(Frame.Text( json.encodeToString(LogEvent.serializer(), ev)))
+                            }
+
+                            // Then live-stream new events
+                            val job = launch(Dispatchers.Default) {
+                                LogTapEvents.updates().collect { ev ->
+                                    try {
+                                        send(Frame.Text( json.encodeToString(LogEvent.serializer(), ev)))
+                                    }
+                                    catch (_: Throwable) { cancel() } // client likely disconnected
+                                }
+                            }
                             try {
+                                // Drain incoming until client closes
                                 for (frame in incoming) {
-                                    // no-op; keeps session alive
+                                    if (frame is Frame.Close) break
                                 }
                             } finally {
-                                collector.cancel()
+                                job.cancel()
                             }
                         }
                         get("/about") { call.respondText(Resources.aboutHtml) }

@@ -23,6 +23,11 @@ internal object Resources {
           <option>GET</option><option>POST</option><option>PUT</option>
           <option>PATCH</option><option>DELETE</option><option>WS</option>
         </select>
+        <select id="kindFilter" class="md-select" title="Event type">
+          <option value="">All Types</option>
+          <option value="network">Network (HTTP + WS)</option>
+          <option value="log">Logger</option>
+        </select>
         <select id="statusFilter" class="md-select" title="Status filter (HTTP)">
           <option value="">Any</option>
           <option value="2xx">2xx</option>
@@ -46,6 +51,7 @@ internal object Resources {
       <div class="chip" id="chipTotal">Total: 0</div>
       <div class="chip" id="chipHttp">HTTP: 0</div>
       <div class="chip" id="chipWs">WS: 0</div>
+      <div class="chip" id="chipLog">LOG: 0</div>
       <div class="chip" id="chipGet">GET: 0</div>
       <div class="chip" id="chipPost">POST: 0</div>
     </section>
@@ -191,6 +197,7 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
 
 /* Badges / pills */
 .kind-HTTP{color:#8ab4ff}.kind-WEBSOCKET{color:#7af59b}
+.kind-LOG{color:#eab308}
 .dir-REQUEST,.dir-OUTBOUND{color:var(--md-warn)}.dir-RESPONSE,.dir-INBOUND{color:var(--md-success)}.dir-ERROR{color:var(--md-error)}.dir-STATE{color:#9bb}
 .status-2xx{color:var(--md-success)}.status-3xx{color:#fbbf24}.status-4xx{color:#fca5a5}.status-5xx{color:#fb7185}
 .col-method,.col-status{background:transparent;border:none;border-radius:0;text-align:left}
@@ -301,6 +308,7 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
         const autoScroll = document.querySelector('#autoScroll');
         const clearBtn = document.querySelector('#clearBtn');
         const methodFilter = document.querySelector('#methodFilter');
+        const kindFilter = document.querySelector('#kindFilter');
         const statusFilter = document.querySelector('#statusFilter');
         const statusCodeFilter = document.querySelector('#statusCodeFilter');
         const wsStatus = document.querySelector('#wsStatus');
@@ -344,6 +352,20 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
           } catch { return escapeHtml(String(raw ?? '')); }
         }
         function toFile(name, mime, text){ const blob=new Blob([text],{type:mime}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); URL.revokeObjectURL(a.href); }
+
+        // ---- Normalization helpers ----
+        function kindOf(ev){
+         const k = ev?.kind;
+         if (typeof k === 'string') return k.toUpperCase();
+         if (k && typeof k === 'object' && 'name' in k) return String(k.name).toUpperCase();
+         return String(k ?? '').toUpperCase();
+       }
+       function dirOf(ev){
+         const d = ev?.direction;
+         if (typeof d === 'string') return d.toUpperCase();
+         if (d && typeof d === 'object' && 'name' in d) return String(d.name).toUpperCase();
+         return String(d ?? '').toUpperCase();
+       }
 
         // ---- Status code filter helpers ----
         function statusMatches(code, query){
@@ -400,17 +422,24 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
         // ---- Filters & Stats ----
         function matchesFilters(ev){
           if(filterText){ const hay = JSON.stringify(ev).toLowerCase(); if(!hay.includes(filterText)) return false; }
+          const kind = kindOf(ev);
+          const kf = kindFilter?.value || '';
+          if (kf === 'network' && !(kind === 'HTTP' || kind === 'WEBSOCKET')) return false;
+          if (kf === 'log' && kind !== 'LOG') return false;
           const m = methodFilter?.value || '';
-          if(m){ if(m==='WS' && ev.kind!=='WEBSOCKET') return false; if(m!=='WS' && (ev.method||'').toUpperCase() !== m) return false; }
+          if(m){
+            if(m==='WS') { if(kind !== 'WEBSOCKET') return false; }
+            else { if(kind !== 'HTTP') return false; if((ev.method||'').toUpperCase() !== m) return false; }
+          }
           const s = statusFilter?.value || '';
           if(s && ev.status){ const x = Math.floor(ev.status/100)+'xx'; if(x!==s) return false; }
           if (statusCodeFilter && statusCodeFilter.value && !statusMatches(ev.status, statusCodeFilter.value)) return false;
           return true;
         }
         function renderStats(){
-          const total = rows.length; const http = rows.filter(r=>r.kind==='HTTP').length; const ws = rows.filter(r=>r.kind==='WEBSOCKET').length; const get = rows.filter(r=>(r.method||'').toUpperCase()==='GET').length; const post = rows.filter(r=>(r.method||'').toUpperCase()==='POST').length;
+          const total = rows.length; const http = rows.filter(r=>kindOf(r)==='HTTP').length; const ws = rows.filter(r=>kindOf(r)==='WEBSOCKET').length; const log = rows.filter(r=>kindOf(r)==='LOG').length; const get = rows.filter(r=>(r.method||'').toUpperCase()==='GET').length; const post = rows.filter(r=>(r.method||'').toUpperCase()=='POST').length;
           const set=(id,txt)=>{ const el=document.getElementById(id); if(el) el.textContent = txt; };
-          set('chipTotal','Total: '+total); set('chipHttp','HTTP: '+http); set('chipWs','WS: '+ws); set('chipGet','GET: '+get); set('chipPost','POST: '+post);
+          set('chipTotal','Total: '+total); set('chipHttp','HTTP: '+http); set('chipWs','WS: '+ws); set('chipLog','LOG: '+log); set('chipGet','GET: '+get); set('chipPost','POST: '+post);
         }
         
         // ---- cURL builder (HTTP only) ----
@@ -457,9 +486,10 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
         }
         function renderRow(ev){
           const tr = document.createElement('tr');
+          const kind = kindOf(ev); const dir = dirOf(ev);
           tr.dataset.id = String(ev.id ?? '');
           const actions = document.createElement('div'); actions.className='action-row';
-          if(ev.kind==='HTTP') actions.appendChild(btn('Copy cURL', async (button)=>{
+          if(kind==='HTTP') actions.appendChild(btn('Copy cURL', async (button)=>{
               const ok = await copyText(curlFor(ev));
               if(ok){ const old = button.textContent; button.textContent = 'Copied!'; setTimeout(()=> button.textContent = old, 1200); }
             }));
@@ -468,9 +498,9 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
           tr.innerHTML =
             `<td class="col-id">${'$'}{ev.id ?? ''}</td>`+
             `<td class="col-time">${'$'}{fmtTime(ev.ts)}</td>`+
-            `<td class="col-kind kind-${'$'}{ev.kind}">${'$'}{ev.kind ?? ''}</td>`+
-            `<td class="col-dir dir-${'$'}{ev.direction}">${'$'}{ev.direction ?? ''}</td>`+
-            `<td class="col-method">${'$'}{escapeHtml(ev.method || (ev.kind==='WEBSOCKET'?'WS':''))}</td>`+
+            `<td class="col-kind kind-${'$'}{kind}">${'$'}{kind}</td>`+
+            `<td class="col-dir dir-${'$'}{dir}">${'$'}{dir}</td>`+
+            `<td class="col-method">${'$'}{escapeHtml(ev.method || (kind==='WEBSOCKET'?'WS':''))}</td>`+
             `<td class="col-status ${'$'}{classForStatus(ev.status)}">${'$'}{ev.status ?? ''}</td>`+
             `<td class="col-url">`+
               `<div class="url">${'$'}{escapeHtml(ev.url || '')}</div>`+
@@ -505,13 +535,14 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
         function openDrawer(ev){
           if(!drawer) return;
           currentEv = ev;
+          const kind = kindOf(ev); const dir = dirOf(ev);
           drawer.classList.remove('hidden');
-          const title = (ev.method? (ev.method+' ') : (ev.kind==='WEBSOCKET'?'WS ':'') ) + (ev.url || ev.summary || '');
+          const title = (ev.method? (ev.method+' ') : (kind==='WEBSOCKET'?'WS ':'') ) + (ev.url || ev.summary || '');
           const tEl = document.getElementById('drawerTitle'); tEl && tEl.replaceChildren(document.createTextNode(title));
           const sub = `<span class="badge">id ${'$'}{ev.id}</span> ` + (ev.status? `<span class="badge">status ${'$'}{ev.status}</span> ` : '') + (ev.tookMs? `<span class="badge">${'$'}{ev.tookMs} ms</span>` : '');
           const sEl = document.getElementById('drawerSub'); if(sEl) sEl.innerHTML = sub;
-          setText('ov-id', ev.id); setText('ov-time', new Date(ev.ts).toLocaleString()); setText('ov-kind', ev.kind); setText('ov-dir', ev.direction);
-          setText('ov-method', ev.method || (ev.kind==='WEBSOCKET'?'WS':'')); setText('ov-status', ev.status ?? ''); setText('ov-url', ev.url ?? '');
+          setText('ov-id', ev.id); setText('ov-time', new Date(ev.ts).toLocaleString()); setText('ov-kind', kind); setText('ov-dir', dir);
+          setText('ov-method', ev.method || (kind==='WEBSOCKET'?'WS':'')); setText('ov-status', ev.status ?? ''); setText('ov-url', ev.url ?? '');
           if (jsonPretty?.checked) {
             const el = document.getElementById('ov-summary');
             if (el) { el.classList.add('json'); el.innerHTML = hlJson(ev.summary ?? ''); }
@@ -545,6 +576,7 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
         // ---- Events ----
         search?.addEventListener('input', ()=>{ filterText = search.value.trim().toLowerCase(); renderAll(); });
         methodFilter?.addEventListener('change', renderAll);
+        kindFilter?.addEventListener('change', renderAll);
         statusFilter?.addEventListener('change', renderAll);
         statusCodeFilter?.addEventListener('input', renderAll);
         jsonPretty?.addEventListener('change', ()=>{
@@ -566,7 +598,7 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
             ws.addEventListener('open', on);
             ws.addEventListener('close', off);
             ws.addEventListener('error', off);
-            ws.onmessage = (e)=>{ try{ const ev=JSON.parse(e.data); rows.push(ev); if(matchesFilters(ev)){ tbody.appendChild(renderRow(ev)); if(autoScroll?.checked) tbody.lastElementChild?.scrollIntoView({block:'end'}); renderStats(); } }catch(parseErr){ console.warn('[LogTap] bad WS payload', parseErr); } };
+            ws.onmessage = (e)=>{ try{ const ev = JSON.parse(e.data); rows.push(ev); if(matchesFilters(ev)){ tbody.appendChild(renderRow(ev)); if(autoScroll?.checked) tbody.lastElementChild?.scrollIntoView({block:'end'}); renderStats(); } }catch(parseErr){ console.warn('[LogTap] bad WS payload', parseErr); } };
           }catch(wsErr){ console.warn('[LogTap] WS setup failed', wsErr); if(wsStatus){ wsStatus.textContent='● Disconnected'; wsStatus.classList.add('status-off'); } }
         }
         bootstrap();

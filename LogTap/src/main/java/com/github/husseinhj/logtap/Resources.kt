@@ -12,6 +12,9 @@ internal object Resources {
   </head>
   <body class="md-body">
     <header class="topbar md-surface md-elev-2">
+          <a class="gh" href="https://github.com/Husseinhj/LogTap" target="_blank" rel="noopener" title="Open repository" aria-label="Open GitHub repository">
+        <svg viewBox="0 0 16 16" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+      </a>
       <div class="brand md-title">LogTap</div>
       <div class="controls">
         <div class="input-wrap md-field">
@@ -82,6 +85,9 @@ internal object Resources {
           </thead>
           <tbody></tbody>
         </table>
+        <div class="repo-link">
+          <a href="https://github.com/Husseinhj/LogTap" target="_blank" rel="noopener">View source on GitHub — Husseinhj/LogTap</a>
+        </div>
       </div>
 
       <aside id="drawer" class="drawer md-surface md-elev-2">
@@ -163,9 +169,13 @@ body.md-body{margin:0;background:linear-gradient(180deg, var(--md-surface) 0%, v
 .md-elev-1{box-shadow:0 2px 8px var(--shadow)}
 .md-elev-2{box-shadow:0 6px 16px var(--shadow)}
 
-/* Top bar */
 .topbar{position:sticky;top:0;z-index:20;display:flex;gap:16px;align-items:center;padding:12px 16px;backdrop-filter:blur(10px)}
 .brand.md-title{font-weight:800;letter-spacing:.3px}
+.topbar .gh{display:inline-flex;align-items:center;justify-content:center;color:var(--md-text);opacity:.85;border:1px solid var(--md-outline);border-radius:10px;width:34px;height:34px;margin-left:8px;text-decoration:none}
+.topbar .gh:hover{opacity:1;background:var(--md-surface-3)}
+.repo-link{padding:10px 12px;text-align:center;color:var(--md-muted);font-size:13px}
+.repo-link a{color:var(--md-text);text-decoration:none;border-bottom:1px dashed var(--md-outline)}
+.repo-link a:hover{color:var(--md-primary);border-bottom-color:var(--md-primary)}
 .controls{display:flex;gap:8px;align-items:center;margin-left:auto}
 .controls{flex-wrap:wrap}
 .split{width:1px;height:28px;background:var(--md-outline);margin:0 8px}

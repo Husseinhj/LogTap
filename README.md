@@ -40,12 +40,61 @@ _(add screenshots here)_
 
 ---
 
-## 📦 Setup
+## ⚡ Usage
 
-Add the dependency (to be published via Maven Central):
-
+### 1. Initialize in your Application
 ```kotlin
-dependencies {
-    debugImplementation("com.github.husseinhj:logtap:<version>")
-    releaseImplementation("com.github.husseinhj:logtap-noop:<version>")
+class MyApp : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        if (BuildConfig.DEBUG) {
+            LogTap.start(this) // Starts embedded server on port 8790
+        }
+    }
 }
+```
+
+### 2. OkHttp with interceptor
+```kotlin
+val client = OkHttpClient.Builder()
+    .addInterceptor(LogTapInterceptor())
+    .build()
+```
+
+### 3. Logger
+```kotlin
+LogTapLogger.d("Something happened")
+LogTapLogger.e("Network error", throwable)
+```
+
+### 4. View in browser
+Open in your desktop browser:
+```
+http://<device-ip>:8790/
+```
+
+---
+
+## 🔐 Security
+
+- LogTap is meant for **debug builds only**.  
+- Don’t enable it in production.  
+- Use the provided `-noop` artifact in release builds.  
+- You can also guard calls with `if (BuildConfig.DEBUG)`.
+
+---
+
+## 🛠 Development
+
+- UI is embedded in `Resources.kt` (HTML, CSS, JS).
+- Served from:
+  - `/` → Main web UI
+  - `/api/logs` → JSON API
+  - `/ws` → WebSocket stream
+- Contributions welcome! Please open an issue or PR.
+
+---
+
+## 📜 License
+
+MIT License – see [LICENSE](LICENSE) for details.

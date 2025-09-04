@@ -1,0 +1,52 @@
+name: Publish to Maven Central
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish (e.g. 0.1.0)"
+        required: true
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Configure version env
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "PUBLISH_VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            # tag like v1.2.3 -> 1.2.3
+            RAW="${GITHUB_REF##*/}"
+            echo "PUBLISH_VERSION=${RAW#v}" >> $GITHUB_ENV
+          fi
+
+      - name: Grant execute permission
+        run: chmod +x gradlew
+
+      - name: Build
+        run: ./gradlew :logtap:assembleRelease
+
+      - name: Publish to Sonatype (staging + release)
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          OSSRH_STAGING_PROFILE_ID: ${{ secrets.OSSRH_STAGING_PROFILE_ID }} # optional on new infra
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}           # base64(ASCII-armored PGP key)
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+          PUBLISH_VERSION: ${{ env.PUBLISH_VERSION }}
+        run: |
+          ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --stacktrace

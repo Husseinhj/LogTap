@@ -58,7 +58,7 @@ publishing {
                 from(components["release"])
             }
 
-            groupId = "com.github.husseinhj"
+            groupId = "io.github.husseinhj"
             artifactId = "logtap-noop"
             version = System.getenv("PUBLISH_VERSION") ?: "0.1.0"
 

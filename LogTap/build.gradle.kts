@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     `maven-publish`
-//    signing
+    signing
 }
 
 android {
@@ -84,10 +84,10 @@ afterEvaluate {
 
 }
 
-//signing {
-//    useInMemoryPgpKeys(
-//        System.getenv("SIGNING_KEY"),
-//        System.getenv("SIGNING_PASSWORD")
-//    )
-//    sign(publishing.publications)
-//}
+signing {
+    useInMemoryPgpKeys(
+        System.getenv("SIGNING_KEY"),
+        System.getenv("SIGNING_PASSWORD")
+    )
+    sign(publishing.publications)
+}

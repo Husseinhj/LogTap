@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     `maven-publish`
+    signing
 }
 
 android {
@@ -101,11 +102,10 @@ publishing {
     }
 }
 
-//
-//signing {
-//    useInMemoryPgpKeys(
-//        System.getenv("SIGNING_KEY"),       // base64(ASCII-armored private key)
-//        System.getenv("SIGNING_PASSWORD")
-//    )
-//    sign(publishing.publications)
-//}
+signing {
+    useInMemoryPgpKeys(
+        System.getenv("SIGNING_KEY"),       // base64(ASCII-armored private key)
+        System.getenv("SIGNING_PASSWORD")
+    )
+    sign(publishing.publications)
+}

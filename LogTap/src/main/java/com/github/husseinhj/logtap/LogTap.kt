@@ -1,21 +1,26 @@
 package com.github.husseinhj.logtap
 
-import android.content.Context
+import android.annotation.SuppressLint
 import android.util.Log
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode.Companion.RequestTimeout
-import io.ktor.server.engine.*
-import io.ktor.server.application.*
-import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.websocket.*
-import io.ktor.server.routing.*
-import io.ktor.serialization.kotlinx.json.*
+import java.time.Duration
+import kotlinx.coroutines.*
+import java.net.InetAddress
 import io.ktor.server.cio.CIO
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import io.ktor.server.engine.*
+import io.ktor.websocket.Frame
+import io.ktor.http.ContentType
+import io.ktor.server.routing.*
+import io.ktor.server.websocket.*
+import android.net.wifi.WifiManager
+import io.ktor.server.application.*
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
-import io.ktor.websocket.Frame
-import kotlinx.coroutines.*
-import java.time.Duration
+import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.plugins.contentnegotiation.*
+import java.net.Inet4Address
 
 private const val TAG = "LogTap"
 
@@ -114,7 +119,9 @@ object LogTap {
 
                 engine.start(wait = false)
                 server = engine
-                Log.i(TAG, "LogTap started on port ${config.port}.")
+
+                val ip = getDeviceIp(context)
+                LogTapLogger.i("LogTap server ready at http://$ip:${config.port}/")
             } catch (ce: CancellationException) {
                 // engine/coroutine cancelled ⇒ do not crash app
                 Log.w(TAG, "LogTap start cancelled", ce)
@@ -134,5 +141,19 @@ object LogTap {
         } finally {
             server = null
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun getDeviceIp(context: Context): String {
+        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = cm.activeNetwork ?: return "127.0.0.1"
+        val props = cm.getLinkProperties(network) ?: return "127.0.0.1"
+        for (addr in props.linkAddresses) {
+            val host = addr.address
+            if (host is Inet4Address && !host.isLoopbackAddress) {
+                return host.hostAddress ?: "127.0.0.1"
+            }
+        }
+        return "127.0.0.1"
     }
 }

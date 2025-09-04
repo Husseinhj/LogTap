@@ -67,11 +67,22 @@ LogTapLogger.d("Something happened")
 LogTapLogger.e("Network error", throwable)
 ```
 
+
 ### 4. View in browser
 Open in your desktop browser:
 ```
 http://<device-ip>:8790/
 ```
+
+> **Tip – Watch Logcat for the server URL**
+>
+> When the embedded server is ready, LogTap writes the exact address to **Logcat** so you can copy/paste it easily. Look for a line like:
+>
+> ```
+> LogTap server ready at http://192.168.178.66:8790/
+> ```
+>
+> (If you don't see the IP, ensure your app has `ACCESS_NETWORK_STATE` or LogTap will fall back to best-effort interface detection.)
 
 ### 5. Advanced: Automatic Logcat collection
 

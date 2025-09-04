@@ -30,14 +30,6 @@ internal object Resources {
           <option value="4xx">4xx</option>
           <option value="5xx">5xx</option>
         </select>
-        <select id="errorFilter" class="md-select" title="Result filter">
-          <option value="">All Results</option>
-          <option value="errors">Errors (4xx + 5xx)</option>
-          <option value="client">Client Errors (4xx)</option>
-          <option value="server">Server Errors (5xx)</option>
-          <option value="success">Success (2xx)</option>
-          <option value="redirect">Redirects (3xx)</option>
-        </select>
         <input id="statusCodeFilter" class="md-input narrow" type="text" inputmode="numeric" pattern="[0-9xX,-,\s]*" placeholder="Status e.g. 200, 2xx, 400-404" title="Filter by exact codes, ranges, or classes" />
 
         <label class="chk md-switch"><input type="checkbox" id="autoScroll" checked/><span>Auto‑scroll</span></label>
@@ -164,7 +156,7 @@ body.md-body{margin:0;background:linear-gradient(180deg, var(--md-surface) 0%, v
 /* Inputs */
 .md-field{position:relative}
 .md-input, .md-select{background:var(--md-surface-3);color:var(--md-text);border:1px solid var(--md-outline);border-radius:12px;padding:10px 12px}
-.md-input.narrow{min-width:240px}
+.md-input.narrow{min-width:140px}
 .input-wrap .key{position:absolute;right:8px;top:50%;transform:translateY(-50%);opacity:.6;background:#0002;border:1px solid var(--md-outline);border-radius:6px;padding:0 6px;font:11px ui-monospace,Menlo,monospace}
 .chk{display:flex;gap:6px;align-items:center;opacity:.9}
 
@@ -311,7 +303,6 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
         const methodFilter = document.querySelector('#methodFilter');
         const statusFilter = document.querySelector('#statusFilter');
         const statusCodeFilter = document.querySelector('#statusCodeFilter');
-        const errorFilter = document.querySelector('#errorFilter');
         const wsStatus = document.querySelector('#wsStatus');
         const exportJsonBtn = document.querySelector('#exportJson');
         const exportHtmlBtn = document.querySelector('#exportHtml');
@@ -414,16 +405,6 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
           const s = statusFilter?.value || '';
           if(s && ev.status){ const x = Math.floor(ev.status/100)+'xx'; if(x!==s) return false; }
           if (statusCodeFilter && statusCodeFilter.value && !statusMatches(ev.status, statusCodeFilter.value)) return false;
-          // error/success class filter
-          if (errorFilter && errorFilter.value) {
-            const s = Number(ev.status || 0);
-            const v = errorFilter.value;
-            if (v === 'errors' && !(s >= 400 && s <= 599)) return false;
-            if (v === 'client' && !(s >= 400 && s <= 499)) return false;
-            if (v === 'server' && !(s >= 500 && s <= 599)) return false;
-            if (v === 'success' && !(s >= 200 && s <= 299)) return false;
-            if (v === 'redirect' && !(s >= 300 && s <= 399)) return false;
-          }
           return true;
         }
         function renderStats(){
@@ -565,7 +546,6 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
         search?.addEventListener('input', ()=>{ filterText = search.value.trim().toLowerCase(); renderAll(); });
         methodFilter?.addEventListener('change', renderAll);
         statusFilter?.addEventListener('change', renderAll);
-        errorFilter?.addEventListener('change', renderAll);
         statusCodeFilter?.addEventListener('input', renderAll);
         jsonPretty?.addEventListener('change', ()=>{
           renderAll();

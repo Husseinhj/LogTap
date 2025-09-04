@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 rootProject.name = "LogTap sample"
 include(":app")
 include(":LogTap")
+include(":LogTap-Noop")

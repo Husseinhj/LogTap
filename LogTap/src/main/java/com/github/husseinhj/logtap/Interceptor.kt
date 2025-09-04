@@ -1,18 +1,15 @@
 package com.github.husseinhj.logtap
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import okhttp3.*
 import okio.Buffer
 import okio.GzipSource
-import okio.buffer
 import java.nio.charset.Charset
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineScope
 
-class LogTapInterceptor(
-    private val cfg: LogTap.Config = LogTap.Config()
-) : Interceptor {
+class LogTapInterceptor : Interceptor {
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -20,8 +17,8 @@ class LogTapInterceptor(
         val request = chain.request()
         val startNs = System.nanoTime()
 
-        // Request log
-        scope.launch { emitRequest(request) }
+        // Log request synchronously to avoid reading after body is consumed/closed
+        emitRequest(request)
 
         val response: Response = try {
             chain.proceed(request)
@@ -41,34 +38,56 @@ class LogTapInterceptor(
         }
 
         val tookMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNs)
-        scope.launch { emitResponse(request, response, tookMs) }
+        // Log response synchronously as well
+        emitResponse(request, response, tookMs)
 
         return response
     }
 
-    private suspend fun emitRequest(req: Request) {
+    private fun emitRequest(req: Request) {
         val headers = redact(req.headers)
         val (bodyStr, truncated) = safeReadRequestBody(req)
-        LogTap.store.add(
-            LogEvent(
-                id = 0, ts = System.currentTimeMillis(), kind = EventKind.HTTP, direction = Direction.REQUEST,
-                summary = "→ ${req.method} ${req.url}", url = req.url.toString(), method = req.method,
-                headers = headers.toMultimap(), bodyPreview = bodyStr, bodyIsTruncated = truncated
+        scope.launch {
+            LogTap.store.add(
+                LogEvent(
+                    id = 0,
+                    ts = System.currentTimeMillis(),
+                    kind = EventKind.HTTP,
+                    direction = Direction.REQUEST,
+                    summary = "→ ${req.method} ${req.url}",
+                    url = req.url.toString(),
+                    method = req.method,
+                    headers = headers.toMultimap(),
+                    bodyPreview = bodyStr,
+                    bodyIsTruncated = truncated
+                )
             )
-        )
+        }
     }
 
-    private suspend fun emitResponse(req: Request, resp: Response, tookMs: Long) {
+    private fun emitResponse(req: Request, resp: Response, tookMs: Long) {
         val headers = redact(resp.headers)
         val (bodyStr, truncated, byteCount) = safeReadResponseBody(resp)
-        LogTap.store.add(
-            LogEvent(
-                id = 0, ts = System.currentTimeMillis(), kind = EventKind.HTTP, direction = Direction.RESPONSE,
-                summary = "← ${resp.code} ${resp.message} (${tookMs}ms) ${req.method} ${req.url}",
-                url = req.url.toString(), method = req.method, status = resp.code, tookMs = tookMs,
-                headers = headers.toMultimap(), bodyPreview = bodyStr, bodyIsTruncated = truncated, bodyBytes = byteCount
+
+        scope.launch {
+            LogTap.store.add(
+                LogEvent(
+                    id = 0,
+                    ts = System.currentTimeMillis(),
+                    kind = EventKind.HTTP,
+                    direction = Direction.RESPONSE,
+                    summary = "← ${resp.code} ${resp.message} (${tookMs}ms) ${req.method} ${req.url}",
+                    url = req.url.toString(),
+                    method = req.method,
+                    status = resp.code,
+                    tookMs = tookMs,
+                    headers = headers.toMultimap(),
+                    bodyPreview = bodyStr,
+                    bodyIsTruncated = truncated,
+                    bodyBytes = byteCount
+                )
             )
-        )
+        }
     }
 
     private fun redact(headers: Headers): Headers {
@@ -99,7 +118,7 @@ class LogTapInterceptor(
 
     private fun safeReadRequestBody(request: Request): Pair<String?, Boolean> {
         val body = request.body ?: return null to false
-        if (body.isDuplex() || body.isOneShot()) return "(duplex/one-shot body)" to true
+        if (body.isDuplex() || body.isOneShot()) return "(streaming body: duplex/one-shot)" to true
         val buffer = Buffer()
         return try {
             body.writeTo(buffer)
@@ -137,7 +156,8 @@ class LogTapInterceptor(
             val charset: Charset = contentType?.charset(Charsets.UTF_8) ?: Charsets.UTF_8
             val display = if (isPlainText(Buffer().write(capped))) String(capped, charset) else "(${capped.size} bytes binary)"
             Triple(display, size > max, size.toInt())
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            e.printStackTrace()
             Triple("(unable to read response body)", true, null)
         }
     }

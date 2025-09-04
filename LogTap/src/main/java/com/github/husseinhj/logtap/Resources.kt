@@ -158,6 +158,7 @@ body.md-body{margin:0;background:linear-gradient(180deg, var(--md-surface) 0%, v
 .topbar{position:sticky;top:0;z-index:20;display:flex;gap:16px;align-items:center;padding:12px 16px;backdrop-filter:blur(10px)}
 .brand.md-title{font-weight:800;letter-spacing:.3px}
 .controls{display:flex;gap:8px;align-items:center;margin-left:auto}
+.controls{flex-wrap:wrap}
 .split{width:1px;height:28px;background:var(--md-outline);margin:0 8px}
 
 /* Inputs */
@@ -223,7 +224,7 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
 .columns{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
 /* Code blocks */
-.code{background:var(--code);border:1px solid var(--md-outline);border-radius:12px;padding:12px;overflow:auto;max-height:48vh;white-space:pre-wrap;word-break:break-word}
+.code{background:var(--code);border:1px solid var(--md-outline);border-radius:12px;padding:12px;overflow:auto;max-height:20vh;white-space:pre-wrap;word-break:break-word}
 .code.json .k{color:#7aa2f7}.code.json .s{color:#a6e3a1}.code.json .n{color:#f2cdcd}.code.json .b{color:#f9e2af}.code.json .l{color:#f28fad}.code.json .null{color:#cdd6f4;opacity:.8}
 #ov-summary{white-space:pre-wrap; word-break:break-word; width:100%; max-height:50vh; overflow:auto}
 .curl-row{display:flex; gap:8px; align-items:flex-start; width:100%}
@@ -235,7 +236,64 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
 .badge{border:1px solid var(--md-outline);border-radius:6px;padding:2px 6px;background:#0002;font:12px ui-monospace,Menlo,monospace}
 .action-row{display:flex;gap:6px;flex-wrap:wrap}
 
-@media (max-width: 1200px){ .layout{grid-template-columns:1fr;} .drawer{height:auto;} }
+/* ===== Responsive ===== */
+@media (max-width: 1200px){
+  .layout{grid-template-columns:1fr;gap:10px;padding:10px}
+  .drawer{height:auto}
+  .md-input.narrow{min-width:180px}
+}
+
+@media (max-width: 1024px){
+  .md-table thead th,.md-table tbody td{padding:10px}
+  .col-actions{width:140px}
+}
+
+@media (max-width: 900px){
+  /* hide low-signal columns to reduce clutter */
+  #logtbl thead .col-id, #logtbl tbody .col-id{display:none}
+  #logtbl thead .col-kind, #logtbl tbody .col-kind{display:none}
+  #logtbl thead .col-dir, #logtbl tbody .col-dir{display:none}
+  .col-time{width:96px}
+  .col-method{width:80px}
+  .col-status{width:80px}
+  .col-actions{width:120px}
+  .table-wrap{max-height:calc(100vh - 200px)}
+  .kv{grid-template-columns:120px 1fr}
+}
+
+@media (max-width: 768px){
+  .topbar{padding:10px}
+  .controls > *{flex:1 1 100%}
+  .input-wrap{width:100%}
+  .md-input, .md-select{width:100%}
+  .md-input.narrow{min-width:unset}
+  .stats{padding:8px 10px}
+  .layout{padding:8px}
+  .table-wrap{border-radius:10px}
+  .kv{grid-template-columns:1fr}
+  .kv .full{grid-column:1 / -1}
+  .columns{grid-template-columns:1fr}
+  #ov-curl{max-height:50vh}
+  #ov-summary{max-height:40vh}
+}
+
+@media (max-width: 600px){
+  /* make drawer behave like a full-screen sheet */
+  .drawer{position:fixed;inset:56px 0 0 0;z-index:30;border-radius:0;max-height:none;height:auto}
+  .drawer-head{position:sticky;top:0;background:var(--md-surface-2);z-index:5}
+  .md-segmented{position:sticky;top:48px;background:var(--md-surface-2);z-index:4}
+  .table-wrap{max-height:calc(100vh - 240px)}
+  .md-table thead th,.md-table tbody td{padding:9px}
+  .col-actions{display:none}
+}
+
+@media (max-width: 420px){
+  .brand{display:none}
+  .status.chip{font-size:11px;padding:3px 8px}
+  .chip{font-size:12px}
+  .md-btn{padding:7px 10px}
+  .md-icon{width:26px;height:26px}
+}
 """.trimIndent()
 
     val appJs = """

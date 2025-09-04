@@ -23,10 +23,10 @@ internal object Resources {
           <option>GET</option><option>POST</option><option>PUT</option>
           <option>PATCH</option><option>DELETE</option><option>WS</option>
         </select>
-        <select id="kindFilter" class="md-select" title="Event type">
-          <option value="">All Types</option>
-          <option value="network">Network (HTTP + WS)</option>
-          <option value="log">Logger</option>
+        <select id="viewMode" class="md-select" title="View mode">
+          <option value="mix">Mix (All)</option>
+          <option value="network">Network only</option>
+          <option value="log">Logger only</option>
         </select>
         <select id="statusFilter" class="md-select" title="Status filter (HTTP)">
           <option value="">Any</option>
@@ -73,6 +73,7 @@ internal object Resources {
               <th class="col-id">ID</th>
               <th class="col-time">Time</th>
               <th class="col-kind">Kind</th>
+              <th class="col-tag">Tag</th>
               <th class="col-dir">Dir</th>
               <th class="col-method">Method</th>
               <th class="col-status">Status</th>
@@ -202,7 +203,15 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
 .md-table tbody tr{background:var(--row);cursor:pointer}
 .md-table tbody tr:hover{background:var(--row-hover)}
 .md-table tbody tr.selected{outline:1px solid var(--md-primary); outline-offset:-1px}
-.col-id{width:72px}.col-time{width:120px}.col-kind{width:92px}.col-dir{width:96px}.col-method{width:92px}.col-status{width:92px}.col-url{width:auto}.col-actions{width:170px}
+.col-id{width:72px}.col-time{width:120px}.col-kind{width:100px}.col-tag{width:120px}.col-dir{width:96px}.col-method{width:92px}.col-status{width:92px}.col-url{width:auto}.col-actions{width:170px}
+
+/* Modes: mix/network/log */
+body.mode-network .col-tag{display:none}
+body.mode-log .col-method, body.mode-log .col-status, body.mode-log .col-actions{display:none}
+/* In log mode, we still use URL/Summary col but hide empty URL line */
+body.mode-log .col-url .url{display:none}
+/* Optional: in network-only, keep kind visible to distinguish HTTP/WS */
+/* No change needed for mix */
 
 /* Badges / pills */
 .kind-HTTP{color:#8ab4ff}.kind-WEBSOCKET{color:#7af59b}
@@ -317,7 +326,8 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
         const autoScroll = document.querySelector('#autoScroll');
         const clearBtn = document.querySelector('#clearBtn');
         const methodFilter = document.querySelector('#methodFilter');
-        const kindFilter = document.querySelector('#kindFilter');
+        const viewMode = document.querySelector('#viewMode');
+        const bodyEl = document.body;
         const statusFilter = document.querySelector('#statusFilter');
         const statusCodeFilter = document.querySelector('#statusCodeFilter');
         const wsStatus = document.querySelector('#wsStatus');
@@ -376,6 +386,20 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
          if (d && typeof d === 'object' && 'name' in d) return String(d.name).toUpperCase();
          return String(d ?? '').toUpperCase();
        }
+       function levelOf(ev){
+          let l = (ev?.level || ev?.logLevel || ev?.priority || '').toString().toUpperCase();
+          if(!l && typeof ev?.summary === 'string'){
+            const m = ev.summary.match(/^\s*\[(VERBOSE|DEBUG|INFO|WARN|ERROR|ASSERT|LOG)\]/i);
+            if(m) l = m[1].toUpperCase();
+          }
+          return l;
+       }
+
+       function applyMode(){
+          const m = viewMode?.value || 'mix';
+          bodyEl.classList.remove('mode-mix','mode-network','mode-log');
+          bodyEl.classList.add('mode-'+m);
+       }
 
         // ---- Status code filter helpers ----
         function statusMatches(code, query){
@@ -433,9 +457,9 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
         function matchesFilters(ev){
           if(filterText){ const hay = JSON.stringify(ev).toLowerCase(); if(!hay.includes(filterText)) return false; }
           const kind = kindOf(ev);
-          const kf = kindFilter?.value || '';
-          if (kf === 'network' && !(kind === 'HTTP' || kind === 'WEBSOCKET')) return false;
-          if (kf === 'log' && kind !== 'LOG') return false;
+          const mode = viewMode?.value || 'mix';
+          if (mode === 'network' && !(kind === 'HTTP' || kind === 'WEBSOCKET')) return false;
+          if (mode === 'log' && kind !== 'LOG') return false;
           const m = methodFilter?.value || '';
           if(m){
             if(m==='WS') { if(kind !== 'WEBSOCKET') return false; }
@@ -444,10 +468,10 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
           const s = statusFilter?.value || '';
           if(s && ev.status){ const x = Math.floor(ev.status/100)+'xx'; if(x!==s) return false; }
           if (statusCodeFilter && statusCodeFilter.value && !statusMatches(ev.status, statusCodeFilter.value)) return false;
-          const lf = levelFilter?.value || '';
+          const lf = (levelFilter?.value || '').toUpperCase();
           if(lf && kind==='LOG'){
-            const evLevel = (ev.level || '').toUpperCase();
-            if(evLevel !== lf.toUpperCase()) return false;
+            const evLevel = levelOf(ev);
+            if(!evLevel || evLevel !== lf) return false;
           }
           return true;
         }
@@ -502,6 +526,7 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
         function renderRow(ev){
           const tr = document.createElement('tr');
           const kind = kindOf(ev); const dir = dirOf(ev);
+          const tagTxt = ev.tag ? String(ev.tag) : '';
           tr.dataset.id = String(ev.id ?? '');
           const actions = document.createElement('div'); actions.className='action-row';
           if(kind==='HTTP') actions.appendChild(btn('Copy cURL', async (button)=>{
@@ -513,7 +538,8 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
           tr.innerHTML =
             `<td class="col-id">${'$'}{ev.id ?? ''}</td>`+
             `<td class="col-time">${'$'}{fmtTime(ev.ts)}</td>`+
-            `<td class="col-kind kind-${'$'}kind}">${'$'}{kind}${'$'}{kind==='LOG' && ev.level? ' ('+escapeHtml(ev.level)+')' : ''}</td>`+
+            `<td class="col-kind kind-${'$'}{kind}">${'$'}{kind}${'$'}{kind==='LOG' && (ev.level || levelOf(ev))? ' ('+escapeHtml(ev.level || levelOf(ev)) +')' : ''}</td>`+
+            `<td class="col-tag">${'$'}{escapeHtml(tagTxt)}</td>`+
             `<td class="col-dir dir-${'$'}{dir}">${'$'}{dir}</td>`+
             `<td class="col-method">${'$'}{escapeHtml(ev.method || (kind==='WEBSOCKET'?'WS':''))}</td>`+
             `<td class="col-status ${'$'}{classForStatus(ev.status)}">${'$'}{ev.status ?? ''}</td>`+
@@ -558,8 +584,8 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
           const sEl = document.getElementById('drawerSub'); if(sEl) sEl.innerHTML = sub;
           setText('ov-id', ev.id); setText('ov-time', new Date(ev.ts).toLocaleString());
           setText('ov-kind', kind);
-          if(kind==='LOG' && ev.level){
-            setText('ov-kind', kind + ' ('+ev.level+')');
+          if(kind==='LOG' && (ev.level || levelOf(ev))){
+            setText('ov-kind', kind + ' ('+(ev.level || levelOf(ev))+')');
           }
           setText('ov-dir', dir);
           setText('ov-method', ev.method || (kind==='WEBSOCKET'?'WS':'')); setText('ov-status', ev.status ?? ''); setText('ov-url', ev.url ?? '');
@@ -569,7 +595,10 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
           } else {
             setText('ov-summary', ev.summary ?? '');
           }
-          setText('ov-took', ev.tookMs? ev.tookMs+' ms' : ''); setText('ov-thread', ev.thread ?? '');
+          setText('ov-took', ev.tookMs? ev.tookMs+' ms' : '');
+          // Show tag in thread field if present
+          if(ev.tag) setText('ov-thread', (ev.thread ?? '') + (ev.thread? ' • ' : '') + ev.tag);
+          else setText('ov-thread', ev.thread ?? '');
           setJson('req-body', bodyFor(ev,'request'));
           setJson('resp-body', bodyFor(ev,'response'));
           const rh = document.getElementById('req-headers'); if(rh) rh.textContent = ev.headers ? Object.entries(ev.headers).map(([k,v])=> k+': '+(Array.isArray(v)?v.join(', '):v)).join('\n') : '';
@@ -596,7 +625,7 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
         // ---- Events ----
         search?.addEventListener('input', ()=>{ filterText = search.value.trim().toLowerCase(); renderAll(); });
         methodFilter?.addEventListener('change', renderAll);
-        kindFilter?.addEventListener('change', renderAll);
+        viewMode?.addEventListener('change', ()=>{ applyMode(); renderAll(); });
         statusFilter?.addEventListener('change', renderAll);
         statusCodeFilter?.addEventListener('input', renderAll);
         levelFilter?.addEventListener('change', renderAll);
@@ -611,6 +640,7 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
         async function bootstrap(){
           try{ const res = await fetch('/api/logs?limit=1000'); if(!res.ok) throw new Error('HTTP '+res.status); rows = await res.json(); }
           catch(err){ console.error('[LogTap] failed to fetch /api/logs', err); rows=[]; }
+          applyMode();
           renderAll();
           try{
             const ws = new WebSocket((location.protocol==='https:'?'wss':'ws')+'://'+location.host+'/ws');

@@ -463,12 +463,25 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
             renderStats();
           }catch(err){ console.error('[LogTap] renderAll error', err); }
         }
-        function btn(label, on){ const b=document.createElement('button'); b.className='xs ghost'; b.textContent=label; b.addEventListener('click', (e)=>{ e.stopPropagation(); on();}); return b; }
+        function btn(label, on){
+          const b=document.createElement('button');
+          b.className='xs ghost';
+          b.textContent=label;
+          b.addEventListener('click', async (e)=>{
+            e.preventDefault();
+            e.stopPropagation();
+            try { await on(b); } catch(err){ console.warn('button action failed', err); }
+          });
+          return b;
+        }
         function renderRow(ev){
           const tr = document.createElement('tr');
           tr.dataset.id = String(ev.id ?? '');
           const actions = document.createElement('div'); actions.className='action-row';
-          if(ev.kind==='HTTP') actions.appendChild(btn('Copy cURL', ()=>{ try{ navigator.clipboard?.writeText(curlFor(ev)); }catch(e){ console.warn('clipboard failed', e); } }));
+          if(ev.kind==='HTTP') actions.appendChild(btn('Copy cURL', async (button)=>{
+              const ok = await copyText(curlFor(ev));
+              if(ok){ const old = button.textContent; button.textContent = 'Copied!'; setTimeout(()=> button.textContent = old, 1200); }
+            }));
           const tdActions = document.createElement('td'); tdActions.className='col-actions'; tdActions.appendChild(actions);
 
           tr.innerHTML =

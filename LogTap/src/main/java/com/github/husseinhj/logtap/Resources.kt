@@ -85,7 +85,7 @@ internal object Resources {
         </table>
       </div>
 
-      <aside id="drawer" class="drawer md-surface md-elev-2 hidden">
+      <aside id="drawer" class="drawer md-surface md-elev-2">
         <header class="drawer-head">
           <div>
             <div id="drawerTitle" class="drawer-title">Details</div>
@@ -94,10 +94,10 @@ internal object Resources {
           <button id="drawerClose" class="icon-btn md-icon" title="Close (Esc)">×</button>
         </header>
         <nav class="tabs md-segmented">
-          <button class="tab active" data-tab="overview">Overview</button>
-          <button class="tab" data-tab="request">Request</button>
-          <button class="tab" data-tab="response">Response</button>
-          <button class="tab" data-tab="headers">Headers</button>
+          <button class="tab active" data-tab="overview" id="tabBtn-overview">Overview</button>
+          <button class="tab" data-tab="request" id="tabBtn-request">Request</button>
+          <button class="tab" data-tab="response" id="tabBtn-response">Response</button>
+          <button class="tab" data-tab="headers" id="tabBtn-headers">Headers</button>
         </nav>
         <section class="tabpanes">
           <div class="tabpane active" id="tab-overview">
@@ -106,13 +106,15 @@ internal object Resources {
               <div><dt>Time</dt><dd id="ov-time"></dd></div>
               <div><dt>Kind</dt><dd id="ov-kind"></dd></div>
               <div><dt>Direction</dt><dd id="ov-dir"></dd></div>
-              <div><dt>Method</dt><dd id="ov-method"></dd></div>
-              <div><dt>Status</dt><dd id="ov-status"></dd></div>
-              <div><dt>URL</dt><dd id="ov-url"></dd></div>
+              <div id="row-method"><dt>Method</dt><dd id="ov-method"></dd></div>
+              <div id="row-status"><dt>Status</dt><dd id="ov-status"></dd></div>
+              <div id="row-url"><dt>URL</dt><dd id="ov-url"></dd></div>
+              <div id="row-level" class="hidden"><dt>Level</dt><dd id="ov-level"></dd></div>
+              <div id="row-tag" class="hidden"><dt>Tag</dt><dd id="ov-tag"></dd></div>
               <div class="full"><dt>Summary</dt><dd><div class="summary-row"><button id="ov-summary-copy" class="xs md-btn md-tonal" title="Copy Summary">Copy</button><pre class="code" id="ov-summary"></pre></div></dd></div>
-              <div><dt>Took</dt><dd id="ov-took"></dd></div>
+              <div id="row-took"><dt>Took</dt><dd id="ov-took"></dd></div>
               <div><dt>Thread</dt><dd id="ov-thread"></dd></div>
-              <div class="full"><dt>cURL</dt><dd><div class="curl-row"><button id="ov-curl-copy" class="xs md-btn md-tonal" title="Copy cURL">Copy</button><pre class="code" id="ov-curl"></pre></div></dd></div>
+              <div class="full" id="row-curl"><dt>cURL</dt><dd><div class="curl-row"><button id="ov-curl-copy" class="xs md-btn md-tonal" title="Copy cURL">Copy</button><pre class="code" id="ov-curl"></pre></div></dd></div>
             </dl>
           </div>
           <div class="tabpane" id="tab-request">
@@ -252,6 +254,7 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
 .muted{color:var(--md-muted)}
 .badge{border:1px solid var(--md-outline);border-radius:6px;padding:2px 6px;background:#0002;font:12px ui-monospace,Menlo,monospace}
 .action-row{display:flex;gap:6px;flex-wrap:wrap}
+.hidden{display:none !important}
 
 /* ===== Responsive ===== */
 @media (max-width: 1200px){
@@ -573,6 +576,32 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
         function setText(id,v){ const el=document.getElementById(id); if(el) el.textContent = v==null?'':String(v); }
         function setJson(id,raw){ const el=document.getElementById(id); if(!el) return; if(!raw){ el.textContent=''; return;} el.innerHTML = hlJson(raw); }
         function activateTab(name){ tabs.forEach(b=>b.classList.toggle('active', b.dataset.tab===name)); document.querySelectorAll('.tabpane').forEach(p=>p.classList.toggle('active', p.id==='tab-'+name)); }
+        function show(id, on){ const el=document.getElementById(id); if(!el) return; el.classList.toggle('hidden', !on); }
+        function setActiveTabIfHidden(){
+          // ensure the active tab button/pane are visible; if not, switch to overview
+          const active = document.querySelector('.tab.active');
+          if(active && active.classList.contains('hidden')) activateTab('overview');
+        }
+        function configureDrawerForKind(kind, ev){
+          const isLog = (kind === 'LOG');
+          // Toggle overview rows
+          show('row-method', !isLog);
+          show('row-status', !isLog);
+          show('row-url', !isLog);
+          show('row-took', !isLog);
+          show('row-curl', !isLog && ev && kind==='HTTP');
+          show('row-level', isLog);
+          show('row-tag', isLog);
+          // Tabs: hide request/response/headers for LOG
+          const showNetTabs = !isLog;
+          document.getElementById('tabBtn-request')?.classList.toggle('hidden', !showNetTabs);
+          document.getElementById('tabBtn-response')?.classList.toggle('hidden', !showNetTabs);
+          document.getElementById('tabBtn-headers')?.classList.toggle('hidden', !showNetTabs);
+          document.getElementById('tab-request')?.classList.toggle('hidden', !showNetTabs);
+          document.getElementById('tab-response')?.classList.toggle('hidden', !showNetTabs);
+          document.getElementById('tab-headers')?.classList.toggle('hidden', !showNetTabs);
+          if(!showNetTabs) activateTab('overview');
+        }
         function openDrawer(ev){
           if(!drawer) return;
           currentEv = ev;
@@ -589,6 +618,8 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
           }
           setText('ov-dir', dir);
           setText('ov-method', ev.method || (kind==='WEBSOCKET'?'WS':'')); setText('ov-status', ev.status ?? ''); setText('ov-url', ev.url ?? '');
+          setText('ov-level', (ev.level || levelOf(ev) || ''));
+          setText('ov-tag', (ev.tag || ''));
           if (jsonPretty?.checked) {
             const el = document.getElementById('ov-summary');
             if (el) { el.classList.add('json'); el.innerHTML = hlJson(ev.summary ?? ''); }
@@ -607,6 +638,7 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
           if(curlCopyBtn){ curlCopyBtn.onclick = async (e)=>{ e.preventDefault(); e.stopPropagation(); const ocEl = document.getElementById('ov-curl'); const ok = await copyText(ocEl?.textContent || ''); if(ok){ const old = curlCopyBtn.textContent; curlCopyBtn.textContent = 'Copied!'; setTimeout(()=> curlCopyBtn.textContent = old, 1200); } }; }
           const os = document.getElementById('ov-summary');
           if(summaryCopyBtn){ summaryCopyBtn.onclick = async (e)=>{ e.preventDefault(); e.stopPropagation(); const osEl = document.getElementById('ov-summary'); const ok = await copyText(osEl?.textContent || ''); if(ok){ const old = summaryCopyBtn.textContent; summaryCopyBtn.textContent = 'Copied!'; setTimeout(()=> summaryCopyBtn.textContent = old, 1200); } }; }
+          configureDrawerForKind(kind, ev);
           activateTab('overview');
         }
         

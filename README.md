@@ -32,8 +32,6 @@
 
 ## 📸 Screenshots
 
-_(add screenshots here)_
-
 | Network View | Logger View | Detail Drawer | Sample app                                |
 |--------------|-------------|---------------|-------------------------------------------|
 | ![Network screenshot](docs/screenshot-network.png) | ![Logger screenshot](docs/screenshot-logger.png) | ![Drawer screenshot](docs/screenshot-drawer.png) | ![sample screenshot](docs/sample_app.png) |

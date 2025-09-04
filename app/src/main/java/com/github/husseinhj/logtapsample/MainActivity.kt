@@ -14,6 +14,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.github.husseinhj.logtapsample.ui.theme.LogTapSampleTheme
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import java.io.IOException
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,7 +68,53 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
                 }
             })
         }) {
-            Text("Create a socket connection with a sample message")
+            Text("Socket")
+        }
+
+        Button(onClick = {
+            val client = buildOkHttpWithLogTap()
+            val request = Request.Builder().url("https://fakestoreapi.com/users").build()
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    e.printStackTrace()
+                }
+                override fun onResponse(call: Call, response: Response) {
+                    println("GET response: ${'$'}{response.body?.string()}")
+                }
+            })
+        }) {
+            Text("API Call")
+        }
+
+        Button(onClick = {
+            val client = buildOkHttpWithLogTap()
+
+            val json = """
+                {
+                  "title": "test product",
+                  "price": 13.5,
+                  "description": "lorem ipsum set",
+                  "image": "https://i.pravatar.cc",
+                  "category": "electronic"
+                }
+                """.trimIndent()
+
+            val request = Request.Builder()
+                .url("https://fakestoreapi.com/products")
+                .post(json.toRequestBody("application/json; charset=utf-8".toMediaType()))
+                .build()
+
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    e.printStackTrace()
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    println("Post response: ${response.body?.string()}")
+                }
+            })
+        }) {
+            Text("Post API Call")
         }
     }
 }

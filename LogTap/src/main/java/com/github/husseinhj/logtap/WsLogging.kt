@@ -28,7 +28,7 @@ class LoggingWebSocketListener(
         scope.launch {
             LogTap.store.add(
                 LogEvent(0, System.currentTimeMillis(), EventKind.WEBSOCKET, Direction.INBOUND,
-                    summary = "WS ← text ${text.take(80)}${if (text.length > 80) "…" else ""}", url = null,
+                    summary = "WS ← text: $text", url = null,
                     bodyPreview = text, bodyIsTruncated = text.length > 10_000)
             )
         }
@@ -85,7 +85,7 @@ class LoggingWebSocket(private val real: WebSocket) : WebSocket by real {
         scope.launch {
             LogTap.store.add(
                 LogEvent(0, System.currentTimeMillis(), EventKind.WEBSOCKET, Direction.OUTBOUND,
-                    summary = "WS → text ${text.take(80)}${if (text.length > 80) "…" else ""}", bodyPreview = text,
+                    summary = "WS → text: $text", bodyPreview = text,
                 )
             )
         }

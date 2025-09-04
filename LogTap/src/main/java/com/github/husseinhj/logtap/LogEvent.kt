@@ -33,7 +33,9 @@ data class LogEvent(
     val bodyIsTruncated: Boolean = false,
     val bodyBytes: Int? = null,
     val tookMs: Long? = null,
-    @EncodeDefault val thread: String = Thread.currentThread().name
+    @EncodeDefault val thread: String = Thread.currentThread().name,
+    val level: String? = null,   // "DEBUG", "INFO", "WARN", ...
+    val tag: String? = null,     // Android log tag (caller class)
 )
 
 object LogTapEvents {
@@ -72,6 +74,15 @@ class LogTapSinkAdapter : LogTapLogcatBridge.Sink {
     override fun onLog(priority: Char, tag: String, message: String, threadId: Int?, time: String?) {
         val id = LogTapEvents.nextId()
         val now = System.currentTimeMillis()
+        val level = when (priority) {
+            'V' -> "VERBOSE"
+            'D' -> "DEBUG"
+            'I' -> "INFO"
+            'W' -> "WARN"
+            'E' -> "ERROR"
+            'A', 'F' -> "ASSERT"
+            else -> "LOG"
+        }
         val label = priLabel(priority)
         val summary = buildString {
             append('[').append(label).append("] ")
@@ -85,7 +96,9 @@ class LogTapSinkAdapter : LogTapLogcatBridge.Sink {
                 kind = EventKind.LOG,
                 direction = Direction.STATE,
                 summary = summary,
-                thread = (threadId?.toString() ?: Thread.currentThread().name)
+                thread = (threadId?.toString() ?: Thread.currentThread().name),
+                level = level,
+                tag = tag
             )
         )
     }

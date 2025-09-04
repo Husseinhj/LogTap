@@ -35,6 +35,15 @@ internal object Resources {
           <option value="4xx">4xx</option>
           <option value="5xx">5xx</option>
         </select>
+        <select id="levelFilter" class="md-select" title="Log level (Logger)">
+          <option value="">Any Level</option>
+          <option value="VERBOSE">Verbose</option>
+          <option value="DEBUG">Debug</option>
+          <option value="INFO">Info</option>
+          <option value="WARN">Warn</option>
+          <option value="ERROR">Error</option>
+          <option value="ASSERT">Assert</option>
+        </select>
         <input id="statusCodeFilter" class="md-input narrow" type="text" inputmode="numeric" pattern="[0-9xX,-,\s]*" placeholder="Status e.g. 200, 2xx, 400-404" title="Filter by exact codes, ranges, or classes" />
 
         <label class="chk md-switch"><input type="checkbox" id="autoScroll" checked/><span>Auto‑scroll</span></label>
@@ -312,6 +321,7 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
         const statusFilter = document.querySelector('#statusFilter');
         const statusCodeFilter = document.querySelector('#statusCodeFilter');
         const wsStatus = document.querySelector('#wsStatus');
+        const levelFilter = document.querySelector('#levelFilter');
         const exportJsonBtn = document.querySelector('#exportJson');
         const exportHtmlBtn = document.querySelector('#exportHtml');
         const jsonPretty = document.querySelector('#jsonPretty');
@@ -434,6 +444,11 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
           const s = statusFilter?.value || '';
           if(s && ev.status){ const x = Math.floor(ev.status/100)+'xx'; if(x!==s) return false; }
           if (statusCodeFilter && statusCodeFilter.value && !statusMatches(ev.status, statusCodeFilter.value)) return false;
+          const lf = levelFilter?.value || '';
+          if(lf && kind==='LOG'){
+            const evLevel = (ev.level || '').toUpperCase();
+            if(evLevel !== lf.toUpperCase()) return false;
+          }
           return true;
         }
         function renderStats(){
@@ -498,7 +513,7 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
           tr.innerHTML =
             `<td class="col-id">${'$'}{ev.id ?? ''}</td>`+
             `<td class="col-time">${'$'}{fmtTime(ev.ts)}</td>`+
-            `<td class="col-kind kind-${'$'}{kind}">${'$'}{kind}</td>`+
+            `<td class="col-kind kind-${'$'}kind}">${'$'}{kind}${'$'}{kind==='LOG' && ev.level? ' ('+escapeHtml(ev.level)+')' : ''}</td>`+
             `<td class="col-dir dir-${'$'}{dir}">${'$'}{dir}</td>`+
             `<td class="col-method">${'$'}{escapeHtml(ev.method || (kind==='WEBSOCKET'?'WS':''))}</td>`+
             `<td class="col-status ${'$'}{classForStatus(ev.status)}">${'$'}{ev.status ?? ''}</td>`+
@@ -541,7 +556,12 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
           const tEl = document.getElementById('drawerTitle'); tEl && tEl.replaceChildren(document.createTextNode(title));
           const sub = `<span class="badge">id ${'$'}{ev.id}</span> ` + (ev.status? `<span class="badge">status ${'$'}{ev.status}</span> ` : '') + (ev.tookMs? `<span class="badge">${'$'}{ev.tookMs} ms</span>` : '');
           const sEl = document.getElementById('drawerSub'); if(sEl) sEl.innerHTML = sub;
-          setText('ov-id', ev.id); setText('ov-time', new Date(ev.ts).toLocaleString()); setText('ov-kind', kind); setText('ov-dir', dir);
+          setText('ov-id', ev.id); setText('ov-time', new Date(ev.ts).toLocaleString());
+          setText('ov-kind', kind);
+          if(kind==='LOG' && ev.level){
+            setText('ov-kind', kind + ' ('+ev.level+')');
+          }
+          setText('ov-dir', dir);
           setText('ov-method', ev.method || (kind==='WEBSOCKET'?'WS':'')); setText('ov-status', ev.status ?? ''); setText('ov-url', ev.url ?? '');
           if (jsonPretty?.checked) {
             const el = document.getElementById('ov-summary');
@@ -579,6 +599,7 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
         kindFilter?.addEventListener('change', renderAll);
         statusFilter?.addEventListener('change', renderAll);
         statusCodeFilter?.addEventListener('input', renderAll);
+        levelFilter?.addEventListener('change', renderAll);
         jsonPretty?.addEventListener('change', ()=>{
           renderAll();
           if (currentEv) openDrawer(currentEv);

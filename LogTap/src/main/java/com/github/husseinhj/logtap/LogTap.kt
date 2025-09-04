@@ -105,6 +105,7 @@ object LogTap {
                                 }
                             } finally {
                                 job.cancel()
+                                collector.cancel()
                             }
                         }
                         get("/about") { call.respondText(Resources.aboutHtml) }

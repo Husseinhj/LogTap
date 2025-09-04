@@ -191,10 +191,11 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
 .chip{background:var(--chip);border:1px solid var(--md-outline);padding:6px 10px;border-radius:999px;color:var(--md-muted)}
 
 /* Layout */
-.layout{display:grid;grid-template-columns:minmax(420px,1fr) 520px;gap:12px;padding:12px}
-.table-wrap{overflow:auto;max-height:calc(100vh - 160px);border-radius:14px}
+.layout{display:flex;gap:12px;padding:12px;align-items:stretch}
+.table-wrap{flex:1 1 auto;overflow:auto;max-height:calc(100vh - 160px);border-radius:14px;transition:width 260ms ease}
 .table-wrap::-webkit-scrollbar{height:10px;width:10px}
 .table-wrap::-webkit-scrollbar-thumb{background:var(--md-outline);border-radius:10px}
+:root{--drawer-w:520px}
 
 /* Table */
 .md-table{width:100%;border-collapse:separate;border-spacing:0}
@@ -220,9 +221,8 @@ body.mode-log .col-url .url{display:none}
 .status-2xx{color:var(--md-success)}.status-3xx{color:#fbbf24}.status-4xx{color:#fca5a5}.status-5xx{color:#fb7185}
 .col-method,.col-status{background:transparent;border:none;border-radius:0;text-align:left}
 
-/* Drawer */
-.drawer{border:1px solid var(--md-outline);border-radius:14px;height:calc(100vh - 160px);overflow:auto}
-.drawer.hidden{display:none}
+.drawer{border:1px solid transparent;border-radius:14px;height:calc(100vh - 160px);overflow:auto;flex:0 0 0;width:0;opacity:0;pointer-events:none;transition:width 260ms ease, flex-basis 260ms ease, opacity 200ms ease, border-color 200ms ease}
+body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacity:1;pointer-events:auto;border-color:var(--md-outline)}
 .drawer-head{display:flex;justify-content:space-between;align-items:center;padding:14px;border-bottom:1px solid var(--md-outline)}
 .drawer-title{font-weight:700}.drawer-sub{color:var(--md-muted);font-size:12px;margin-top:4px}
 
@@ -577,7 +577,7 @@ body.mode-log .col-url .url{display:none}
           if(!drawer) return;
           currentEv = ev;
           const kind = kindOf(ev); const dir = dirOf(ev);
-          drawer.classList.remove('hidden');
+          bodyEl.classList.add('drawer-open');
           const title = (ev.method? (ev.method+' ') : (kind==='WEBSOCKET'?'WS ':'') ) + (ev.url || ev.summary || '');
           const tEl = document.getElementById('drawerTitle'); tEl && tEl.replaceChildren(document.createTextNode(title));
           const sub = `<span class="badge">id ${'$'}{ev.id}</span> ` + (ev.status? `<span class="badge">status ${'$'}{ev.status}</span> ` : '') + (ev.tookMs? `<span class="badge">${'$'}{ev.tookMs} ms</span>` : '');
@@ -634,7 +634,7 @@ body.mode-log .col-url .url{display:none}
           if (currentEv) openDrawer(currentEv);
         });
         clearBtn?.addEventListener('click', async ()=>{ try{ await fetch('/api/clear', {method:'POST'}); }catch{} rows=[]; renderAll(); });
-        drawerClose?.addEventListener('click', ()=> drawer.classList.add('hidden'));
+        drawerClose?.addEventListener('click', ()=> bodyEl.classList.remove('drawer-open'));
         
         // ---- Bootstrap + WS status ----
         async function bootstrap(){

@@ -74,7 +74,6 @@ internal object Resources {
               <th class="col-time">Time</th>
               <th class="col-kind">Kind</th>
               <th class="col-tag">Tag</th>
-              <th class="col-dir">Dir</th>
               <th class="col-method">Method</th>
               <th class="col-status">Status</th>
               <th class="col-url">URL / Summary</th>
@@ -206,7 +205,7 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
 .md-table tbody tr{background:var(--row);cursor:pointer}
 .md-table tbody tr:hover{background:var(--row-hover)}
 .md-table tbody tr.selected{outline:1px solid var(--md-primary); outline-offset:-1px}
-.col-id{width:72px}.col-time{width:120px}.col-kind{width:100px}.col-tag{width:120px}.col-dir{width:96px}.col-method{width:92px}.col-status{width:92px}.col-url{width:auto}.col-actions{width:170px}
+.col-id{width:72px}.col-time{width:120px}.col-kind{width:100px}.col-tag{width:120px}.col-method{width:92px}.col-status{width:92px}.col-url{width:auto}.col-actions{width:170px}
 
 /* Modes: mix/network/log */
 body.mode-network .col-tag{display:none}
@@ -222,6 +221,22 @@ body.mode-log .col-url .url{display:none}
 .dir-REQUEST,.dir-OUTBOUND{color:var(--md-warn)}.dir-RESPONSE,.dir-INBOUND{color:var(--md-success)}.dir-ERROR{color:var(--md-error)}.dir-STATE{color:#9bb}
 .status-2xx{color:var(--md-success)}.status-3xx{color:#fbbf24}.status-4xx{color:#fca5a5}.status-5xx{color:#fb7185}
 .col-method,.col-status{background:transparent;border:none;border-radius:0;text-align:left}
+
+/* Logger level colors */
+.md-table tbody tr.level-VERBOSE .col-kind{color:#9bb}
+.md-table tbody tr.level-DEBUG   .col-kind{color:#8ab4ff}
+.md-table tbody tr.level-INFO    .col-kind{color:#7af59b}
+.md-table tbody tr.level-WARN    .col-kind{color:#fbbf24}
+.md-table tbody tr.level-ERROR   .col-kind{color:#fb7185}
+.md-table tbody tr.level-ASSERT  .col-kind{color:#ff7dd1}
+
+/* Subtle left accent bar by level */
+.md-table tbody tr.level-VERBOSE{box-shadow: inset 3px 0 0 #6b7280}
+.md-table tbody tr.level-DEBUG  {box-shadow: inset 3px 0 0 #60a5fa}
+.md-table tbody tr.level-INFO   {box-shadow: inset 3px 0 0 #22c55e}
+.md-table tbody tr.level-WARN   {box-shadow: inset 3px 0 0 #f59e0b}
+.md-table tbody tr.level-ERROR  {box-shadow: inset 3px 0 0 #ef4444}
+.md-table tbody tr.level-ASSERT {box-shadow: inset 3px 0 0 #d946ef}
 
 .drawer{border:1px solid transparent;border-radius:14px;height:calc(100vh - 160px);overflow:auto;flex:0 0 0;width:0;opacity:0;pointer-events:none;transition:width 260ms ease, flex-basis 260ms ease, opacity 200ms ease, border-color 200ms ease}
 body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacity:1;pointer-events:auto;border-color:var(--md-outline)}
@@ -272,7 +287,6 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
   /* hide low-signal columns to reduce clutter */
   #logtbl thead .col-id, #logtbl tbody .col-id{display:none}
   #logtbl thead .col-kind, #logtbl tbody .col-kind{display:none}
-  #logtbl thead .col-dir, #logtbl tbody .col-dir{display:none}
   .col-time{width:96px}
   .col-method{width:80px}
   .col-status{width:80px}
@@ -529,6 +543,8 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
         function renderRow(ev){
           const tr = document.createElement('tr');
           const kind = kindOf(ev); const dir = dirOf(ev);
+          const lvl = (kind==='LOG') ? levelOf(ev) : '';
+          if(lvl) tr.classList.add('level-'+lvl);
           const tagTxt = ev.tag ? String(ev.tag) : '';
           tr.dataset.id = String(ev.id ?? '');
           const actions = document.createElement('div'); actions.className='action-row';
@@ -541,9 +557,12 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
           tr.innerHTML =
             `<td class="col-id">${'$'}{ev.id ?? ''}</td>`+
             `<td class="col-time">${'$'}{fmtTime(ev.ts)}</td>`+
-            `<td class="col-kind kind-${'$'}{kind}">${'$'}{kind}${'$'}{kind==='LOG' && (ev.level || levelOf(ev))? ' ('+escapeHtml(ev.level || levelOf(ev)) +')' : ''}</td>`+
+            `<td class="col-kind kind-${'$'}{kind}">${'$'}{
+              kind==='LOG'
+                ? escapeHtml(ev.level || levelOf(ev) || 'LOG')
+                : kind
+            }</td>`+
             `<td class="col-tag">${'$'}{escapeHtml(tagTxt)}</td>`+
-            `<td class="col-dir dir-${'$'}{dir}">${'$'}{dir}</td>`+
             `<td class="col-method">${'$'}{escapeHtml(ev.method || (kind==='WEBSOCKET'?'WS':''))}</td>`+
             `<td class="col-status ${'$'}{classForStatus(ev.status)}">${'$'}{ev.status ?? ''}</td>`+
             `<td class="col-url">`+
@@ -612,9 +631,11 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
           const sub = `<span class="badge">id ${'$'}{ev.id}</span> ` + (ev.status? `<span class="badge">status ${'$'}{ev.status}</span> ` : '') + (ev.tookMs? `<span class="badge">${'$'}{ev.tookMs} ms</span>` : '');
           const sEl = document.getElementById('drawerSub'); if(sEl) sEl.innerHTML = sub;
           setText('ov-id', ev.id); setText('ov-time', new Date(ev.ts).toLocaleString());
-          setText('ov-kind', kind);
-          if(kind==='LOG' && (ev.level || levelOf(ev))){
-            setText('ov-kind', kind + ' ('+(ev.level || levelOf(ev))+')');
+          // Set ov-kind: for LOG, use level or fallback; else kind.
+          if(kind==='LOG'){
+            setText('ov-kind', ev.level || levelOf(ev) || 'LOG');
+          } else {
+            setText('ov-kind', kind);
           }
           setText('ov-dir', dir);
           setText('ov-method', ev.method || (kind==='WEBSOCKET'?'WS':'')); setText('ov-status', ev.status ?? ''); setText('ov-url', ev.url ?? '');

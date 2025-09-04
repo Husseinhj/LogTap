@@ -1,11 +1,11 @@
 package com.github.husseinhj.logtap
 
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.EncodeDefault
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.serialization.ExperimentalSerializationApi
 
 @Serializable
@@ -64,11 +64,6 @@ object LogTapEvents {
     }
 }
 
-/** Map Logcat priority to readable prefix */
-private fun priLabel(p: Char) = when (p) {
-    'V' -> "VERBOSE"; 'D' -> "DEBUG"; 'I' -> "INFO"; 'W' -> "WARN"; 'E' -> "ERROR"; 'A','F' -> "ASSERT"; else -> "LOG"
-}
-
 /** Bridge sink that converts logcat lines -> LogTap LogEvent */
 class LogTapSinkAdapter : LogTapLogcatBridge.Sink {
     override fun onLog(priority: Char, tag: String, message: String, threadId: Int?, time: String?) {
@@ -83,19 +78,13 @@ class LogTapSinkAdapter : LogTapLogcatBridge.Sink {
             'A', 'F' -> "ASSERT"
             else -> "LOG"
         }
-        val label = priLabel(priority)
-        val summary = buildString {
-            append('[').append(label).append("] ")
-            if (tag.isNotBlank()) append(tag).append(": ")
-            append(message)
-        }
         LogTapEvents.push(
             LogEvent(
                 id = id,
                 ts = now,
                 kind = EventKind.LOG,
                 direction = Direction.STATE,
-                summary = summary,
+                summary = message,
                 thread = (threadId?.toString() ?: Thread.currentThread().name),
                 level = level,
                 tag = tag

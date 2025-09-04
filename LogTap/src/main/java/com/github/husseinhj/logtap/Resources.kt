@@ -2,211 +2,240 @@ package com.github.husseinhj.logtap
 
 internal object Resources {
     val indexHtml = """
-        <!doctype html>
-        <html>
-          <head>
-            <meta charset="utf-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1" />
-            <title>LogTap</title>
-            <link rel="stylesheet" href="/app.css" />
-          </head>
-          <body>
-            <header class="topbar">
-              <div class="brand">LogTap</div>
-              <div class="controls">
-                <div class="input-wrap">
-                  <input id="search" type="search" placeholder="Search (url, method, headers, body)…  ⌘/Ctrl + K" />
-                  <kbd class="key">K</kbd>
-                </div>
-                <select id="methodFilter" title="Method filter">
-                  <option value="">All</option>
-                  <option>GET</option><option>POST</option><option>PUT</option>
-                  <option>PATCH</option><option>DELETE</option><option>WS</option>
-                </select>
-                <select id="statusFilter" title="Status filter (HTTP)">
-                  <option value="">Any</option>
-                  <option value="2xx">2xx</option>
-                  <option value="3xx">3xx</option>
-                  <option value="4xx">4xx</option>
-                  <option value="5xx">5xx</option>
-                </select>
-                <label class="chk"><input type="checkbox" id="autoScroll" checked/> Auto-scroll</label>
-                <button id="clearBtn" class="ghost">Clear</button>
-                <div id="wsStatus" class="status status-off" title="WebSocket status">● Disconnected</div>
-                <div class="split"></div>
-                <button id="exportJson" class="ghost" title="Download filtered logs as JSON">Export JSON</button>
-                <button id="exportHtml" class="ghost" title="Download a self-contained HTML report">Export Report</button>
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LogTap</title>
+    <link rel="stylesheet" href="/app.css" />
+  </head>
+  <body class="md-body">
+    <header class="topbar md-surface md-elev-2">
+      <div class="brand md-title">LogTap</div>
+      <div class="controls">
+        <div class="input-wrap md-field">
+          <input id="search" type="search" class="md-input" placeholder="Search (url, method, headers, body)…  ⌘/Ctrl + K" />
+          <kbd class="key">K</kbd>
+        </div>
+        <select id="methodFilter" class="md-select" title="Method filter">
+          <option value="">All</option>
+          <option>GET</option><option>POST</option><option>PUT</option>
+          <option>PATCH</option><option>DELETE</option><option>WS</option>
+        </select>
+        <select id="statusFilter" class="md-select" title="Status filter (HTTP)">
+          <option value="">Any</option>
+          <option value="2xx">2xx</option>
+          <option value="3xx">3xx</option>
+          <option value="4xx">4xx</option>
+          <option value="5xx">5xx</option>
+        </select>
+        <select id="errorFilter" class="md-select" title="Result filter">
+          <option value="">All Results</option>
+          <option value="errors">Errors (4xx + 5xx)</option>
+          <option value="client">Client Errors (4xx)</option>
+          <option value="server">Server Errors (5xx)</option>
+          <option value="success">Success (2xx)</option>
+          <option value="redirect">Redirects (3xx)</option>
+        </select>
+        <input id="statusCodeFilter" class="md-input narrow" type="text" inputmode="numeric" pattern="[0-9xX,-,\s]*" placeholder="Status e.g. 200, 2xx, 400-404" title="Filter by exact codes, ranges, or classes" />
+
+        <label class="chk md-switch"><input type="checkbox" id="autoScroll" checked/><span>Auto‑scroll</span></label>
+        <button id="clearBtn" class="md-btn md-tonal" title="Clear logs">Clear</button>
+        <div id="wsStatus" class="status chip" title="WebSocket status">● Disconnected</div>
+        <div class="split"></div>
+        <button id="exportJson" class="md-btn" title="Download filtered logs as JSON">Export JSON</button>
+        <button id="exportHtml" class="md-btn" title="Download a self-contained HTML report">Export Report</button>
+      </div>
+    </header>
+
+    <section class="stats md-surface md-elev-1">
+      <div class="chip" id="chipTotal">Total: 0</div>
+      <div class="chip" id="chipHttp">HTTP: 0</div>
+      <div class="chip" id="chipWs">WS: 0</div>
+      <div class="chip" id="chipGet">GET: 0</div>
+      <div class="chip" id="chipPost">POST: 0</div>
+    </section>
+
+    <main class="layout">
+      <div class="table-wrap md-surface md-elev-1">
+        <table id="logtbl" class="md-table">
+          <thead>
+            <tr>
+              <th class="col-id">ID</th>
+              <th class="col-time">Time</th>
+              <th class="col-kind">Kind</th>
+              <th class="col-dir">Dir</th>
+              <th class="col-method">Method</th>
+              <th class="col-status">Status</th>
+              <th class="col-url">URL / Summary</th>
+              <th class="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <aside id="drawer" class="drawer md-surface md-elev-2 hidden">
+        <header class="drawer-head">
+          <div>
+            <div id="drawerTitle" class="drawer-title">Details</div>
+            <div id="drawerSub" class="drawer-sub"></div>
+          </div>
+          <button id="drawerClose" class="icon-btn md-icon" title="Close (Esc)">×</button>
+        </header>
+        <nav class="tabs md-segmented">
+          <button class="tab active" data-tab="overview">Overview</button>
+          <button class="tab" data-tab="request">Request</button>
+          <button class="tab" data-tab="response">Response</button>
+          <button class="tab" data-tab="headers">Headers</button>
+        </nav>
+        <section class="tabpanes">
+          <div class="tabpane active" id="tab-overview">
+            <dl class="kv">
+              <div><dt>ID</dt><dd id="ov-id"></dd></div>
+              <div><dt>Time</dt><dd id="ov-time"></dd></div>
+              <div><dt>Kind</dt><dd id="ov-kind"></dd></div>
+              <div><dt>Direction</dt><dd id="ov-dir"></dd></div>
+              <div><dt>Method</dt><dd id="ov-method"></dd></div>
+              <div><dt>Status</dt><dd id="ov-status"></dd></div>
+              <div><dt>URL</dt><dd id="ov-url"></dd></div>
+              <div class="full"><dt>Summary</dt><dd><div class="summary-row"><button id="ov-summary-copy" class="xs md-btn md-tonal" title="Copy Summary">Copy</button><pre class="code" id="ov-summary"></pre></div></dd></div>
+              <div><dt>Took</dt><dd id="ov-took"></dd></div>
+              <div><dt>Thread</dt><dd id="ov-thread"></dd></div>
+              <div class="full"><dt>cURL</dt><dd><div class="curl-row"><button id="ov-curl-copy" class="xs md-btn md-tonal" title="Copy cURL">Copy</button><pre class="code" id="ov-curl"></pre></div></dd></div>
+            </dl>
+          </div>
+          <div class="tabpane" id="tab-request">
+            <h4>Request Body</h4>
+            <pre class="code json" id="req-body"></pre>
+          </div>
+          <div class="tabpane" id="tab-response">
+            <h4>Response Body</h4>
+            <pre class="code json" id="resp-body"></pre>
+          </div>
+          <div class="tabpane" id="tab-headers">
+            <h4>Headers</h4>
+            <div class="columns">
+              <div>
+                <h5>Request</h5>
+                <pre class="code" id="req-headers"></pre>
               </div>
-            </header>
-        
-            <section class="stats">
-              <div class="chip" id="chipTotal">Total: 0</div>
-              <div class="chip" id="chipHttp">HTTP: 0</div>
-              <div class="chip" id="chipWs">WS: 0</div>
-              <div class="chip" id="chipGet">GET: 0</div>
-              <div class="chip" id="chipPost">POST: 0</div>
-            </section>
-        
-            <main class="layout">
-              <div class="table-wrap">
-                <table id="logtbl">
-                  <thead>
-                    <tr>
-                      <th class="col-id">ID</th>
-                      <th class="col-time">Time</th>
-                      <th class="col-kind">Kind</th>
-                      <th class="col-dir">Dir</th>
-                      <th class="col-method">Method</th>
-                      <th class="col-status">Status</th>
-                      <th class="col-url">URL / Summary</th>
-                      <th class="col-actions">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody></tbody>
-                </table>
+              <div>
+                <h5>Response</h5>
+                <pre class="code" id="resp-headers"></pre>
               </div>
-        
-              <aside id="drawer" class="drawer hidden">
-                <header class="drawer-head">
-                  <div>
-                    <div id="drawerTitle" class="drawer-title">Details</div>
-                    <div id="drawerSub" class="drawer-sub"></div>
-                  </div>
-                  <button id="drawerClose" class="icon-btn" title="Close (Esc)">×</button>
-                </header>
-                <nav class="tabs">
-                  <button class="tab active" data-tab="overview">Overview</button>
-                  <button class="tab" data-tab="request">Request</button>
-                  <button class="tab" data-tab="response">Response</button>
-                  <button class="tab" data-tab="headers">Headers</button>
-                </nav>
-                <section class="tabpanes">
-                  <div class="tabpane active" id="tab-overview">
-                    <dl class="kv">
-                      <div><dt>ID</dt><dd id="ov-id"></dd></div>
-                      <div><dt>Time</dt><dd id="ov-time"></dd></div>
-                      <div><dt>Kind</dt><dd id="ov-kind"></dd></div>
-                      <div><dt>Direction</dt><dd id="ov-dir"></dd></div>
-                      <div><dt>Method</dt><dd id="ov-method"></dd></div>
-                      <div><dt>Status</dt><dd id="ov-status"></dd></div>
-                      <div><dt>URL</dt><dd id="ov-url"></dd></div>
-                      <div class="full"><dt>Summary</dt><dd><div class="summary-row"><button id="ov-summary-copy" class="xs ghost" title="Copy Summary">Copy</button><pre class="code" id="ov-summary"></pre></div></dd></div>
-                      <div><dt>Took</dt><dd id="ov-took"></dd></div>
-                      <div><dt>Thread</dt><dd id="ov-thread"></dd></div>
-                      <div class="full"><dt>cURL</dt><dd><div class="curl-row"><button id="ov-curl-copy" class="xs ghost" title="Copy cURL">Copy</button><pre class="code" id="ov-curl"></pre></div></dd></div>
-                    </dl>
-                  </div>
-                  <div class="tabpane" id="tab-request">
-                    <h4>Request Body</h4>
-                    <pre class="code json" id="req-body"></pre>
-                  </div>
-                  <div class="tabpane" id="tab-response">
-                    <h4>Response Body</h4>
-                    <pre class="code json" id="resp-body"></pre>
-                  </div>
-                  <div class="tabpane" id="tab-headers">
-                    <h4>Headers</h4>
-                    <div class="columns">
-                      <div>
-                        <h5>Request</h5>
-                        <pre class="code" id="req-headers"></pre>
-                      </div>
-                      <div>
-                        <h5>Response</h5>
-                        <pre class="code" id="resp-headers"></pre>
-                      </div>
-                    </div>
-                  </div>
-                </section>
-              </aside>
-            </main>
-        
-            <script src="/app.js"></script>
-          </body>
-        </html>
-    """.trimIndent()
+            </div>
+          </div>
+        </section>
+      </aside>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
+""".trimIndent()
 
     val appCss = """
-        :root{
-          --bg:#0b0d10; --panel:#0f1318; --muted:#9aa4b2; --text:#e6edf3;
-          --accent:#7aa2f7; --ok:#a6e3a1; --warn:#ffd479; --err:#ff6b6b; --chip:#1c232b;
-          --border:#1e2630; --row:#121820; --row-hover:#141c25; --code:#0d1117;
-        }
-        *{box-sizing:border-box}
-        html,body{height:100%}
-        body{margin:0;background:var(--bg);color:var(--text);font:14px system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-        
-        .topbar{position:sticky;top:0;z-index:10;display:flex;gap:16px;align-items:center;
-          padding:12px 16px;background:var(--panel);border-bottom:1px solid var(--border)}
-        .brand{font-weight:700;letter-spacing:.3px}
-        .controls{display:flex;gap:8px;align-items:center;margin-left:auto}
-        .split{width:1px;height:24px;background:var(--border);margin:0 4px}
-        .input-wrap{position:relative}
-        .input-wrap .key{position:absolute;right:8px;top:50%;transform:translateY(-50%);opacity:.6;background:#0002;border:1px solid var(--border);border-radius:6px;padding:0 6px;font:11px ui-monospace,Menlo,monospace}
-        input[type="search"], select{background:var(--row);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:8px 10px}
-        .chk{opacity:.9}
-        button{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:8px 12px;cursor:pointer}
-        button.ghost{background:transparent;border:1px solid var(--border);color:var(--text)}
-        button.icon-btn{width:28px;height:28px;border-radius:8px;background:transparent;border:1px solid var(--border);color:var(--text);font-size:18px;line-height:1}
-        .status{border:1px solid var(--border);border-radius:999px;padding:4px 8px;font:12px ui-monospace,Menlo,monospace}
-        .status-on{color:var(--ok);}
-        .status-off{color:var(--err);}
-        
-        .stats{display:flex;gap:8px;flex-wrap:wrap;padding:8px 16px;border-bottom:1px solid var(--border);background:var(--panel)}
-        .chip{background:var(--chip);border:1px solid var(--border);padding:6px 10px;border-radius:999px;color:var(--muted)}
-        
-        .layout{display:grid;grid-template-columns:1fr 460px;gap:0}
-        .table-wrap{overflow:auto;max-height:calc(100vh - 122px)}
-        .table-wrap::-webkit-scrollbar{height:10px;width:10px}
-        .table-wrap::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
-        .table-wrap::-webkit-scrollbar-track{background:transparent}
-        
-        table{width:100%;border-collapse:collapse}
-        th,td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
-        thead th{position:sticky;top:0;background:var(--panel);z-index:5}
-        tbody tr{background:var(--row);cursor:pointer}
-        tbody tr:hover{background:var(--row-hover)}
-        .col-id{width:72px}.col-time{width:120px}.col-kind{width:92px}.col-dir{width:96px}.col-method{width:84px}.col-status{width:84px}.col-url{width:auto}.col-actions{width:160px}
-        
-        .kind-HTTP{color:#8ab4ff}.kind-WEBSOCKET{color:#7af59b}
-        .dir-REQUEST,.dir-OUTBOUND{color:var(--warn)}.dir-RESPONSE,.dir-INBOUND{color:var(--ok)}.dir-ERROR{color:var(--err)}.dir-STATE{color:#9bb}
-        .status-2xx{color:var(--ok)}.status-3xx{color:#ffd479}.status-4xx{color:#ffb4a2}.status-5xx{color:#ff8787}
-        
-        .drawer{border-left:1px solid var(--border);background:var(--panel);height:calc(100vh - 122px);overflow:auto}
-        .drawer.hidden{display:none}
-        .drawer-head{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--border)}
-        .drawer-title{font-weight:600}.drawer-sub{color:var(--muted);font-size:12px;margin-top:4px}
-        
-        .tabs{display:flex;gap:6px;padding:10px 12px;border-bottom:1px solid var(--border)}
-        .tab{background:transparent;color:var(--text);border:1px solid var(--border);border-radius:10px;padding:6px 10px}
-        .tab.active{background:var(--row)}
-        
-        .tabpanes{padding:12px}
-        .tabpane{display:none}
-        .tabpane.active{display:block}
-        .kv{display:grid;grid-template-columns:120px 1fr;gap:10px 14px}
-        .kv dt{color:var(--muted)} .kv dd{margin:0}
-        .kv .full{grid-column:1 / -1}
-        .summary-row{display:flex; gap:8px; align-items:flex-start; width:100%}
-        .summary-row .code{flex:1; min-height:120px}
-        #ov-summary{white-space:pre-wrap; word-break:break-word; width:100%; max-height:50vh; overflow:auto}
-        .curl-row{width:100%}
-        #ov-curl{width:100%; max-height:70vh}
-        .curl-row .code{flex:1; min-height:160px}
-        .columns{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-        
-        .code{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:10px;overflow:auto;max-height:48vh;white-space:pre-wrap;word-break:break-word}
-        .code.json .k{color:#7aa2f7}.code.json .s{color:#a6e3a1}.code.json .n{color:#f2cdcd}.code.json .b{color:#f9e2af}.code.json .l{color:#f28fad}.code.json .null{color:#cdd6f4;opacity:.8}
-        #ov-curl{white-space:pre-wrap; word-break:break-all; overflow:auto; max-height:60vh; width:100%;}
-        .curl-row{display:flex; gap:8px; align-items:flex-start}
-        .curl-row .code{flex:1;}
-        
-        .muted{color:var(--muted)}
-        .badge{border:1px solid var(--border);border-radius:6px;padding:2px 6px;background:#0002;font:12px ui-monospace,Menlo,monospace}
-        .action-row{display:flex;gap:6px;flex-wrap:wrap}
-        button.xs{padding:4px 8px;border-radius:8px;font-size:12px}
-        @media (max-width: 1100px){ .layout{grid-template-columns:1fr;} .drawer{height:auto;} }
-    """.trimIndent()
+:root{
+  /* Material-ish palette */
+  --md-primary:#6750A4; --md-on-primary:#fff; --md-primary-container:#eaddff; --md-on-primary-container:#21005d;
+  --md-secondary:#625b71; --md-on-secondary:#fff; --md-surface:#0b0f14; --md-surface-2:#0e131a; --md-surface-3:#101720;
+  --md-outline:#2c3440; --md-muted:#9aa4b2; --md-text:#e6edf3; --md-success:#22c55e; --md-warn:#fbbf24; --md-error:#ef4444;
+  --code:#0d1117; --chip:#141b24; --row:#0f1620; --row-hover:#142030; --shadow:#0008;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body.md-body{margin:0;background:linear-gradient(180deg, var(--md-surface) 0%, var(--md-surface) 60%, #0a0d12 100%);color:var(--md-text);font:14px system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+
+/* Elevation & Surfaces */
+.md-surface{background:var(--md-surface-2);border:1px solid var(--md-outline)}
+.md-elev-1{box-shadow:0 2px 8px var(--shadow)}
+.md-elev-2{box-shadow:0 6px 16px var(--shadow)}
+
+/* Top bar */
+.topbar{position:sticky;top:0;z-index:20;display:flex;gap:16px;align-items:center;padding:12px 16px;backdrop-filter:blur(10px)}
+.brand.md-title{font-weight:800;letter-spacing:.3px}
+.controls{display:flex;gap:8px;align-items:center;margin-left:auto}
+.split{width:1px;height:28px;background:var(--md-outline);margin:0 8px}
+
+/* Inputs */
+.md-field{position:relative}
+.md-input, .md-select{background:var(--md-surface-3);color:var(--md-text);border:1px solid var(--md-outline);border-radius:12px;padding:10px 12px}
+.md-input.narrow{min-width:240px}
+.input-wrap .key{position:absolute;right:8px;top:50%;transform:translateY(-50%);opacity:.6;background:#0002;border:1px solid var(--md-outline);border-radius:6px;padding:0 6px;font:11px ui-monospace,Menlo,monospace}
+.chk{display:flex;gap:6px;align-items:center;opacity:.9}
+
+/* Buttons */
+.md-btn{background:var(--md-primary);color:var(--md-on-primary);border:0;border-radius:12px;padding:8px 12px;cursor:pointer}
+.md-btn.md-tonal{background:transparent;border:1px solid var(--md-outline);color:var(--md-text)}
+button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
+.md-icon{width:28px;height:28px;border-radius:8px;background:transparent;border:1px solid var(--md-outline);color:var(--md-text);font-size:18px;line-height:1}
+
+/* Status chips */
+.status.chip{border:1px solid var(--md-outline);border-radius:999px;padding:4px 10px;font:12px ui-monospace,Menlo,monospace}
+.status-on{color:var(--md-success);} .status-off{color:var(--md-error);}
+
+/* Stats */
+.stats{display:flex;gap:8px;flex-wrap:wrap;padding:10px 16px}
+.chip{background:var(--chip);border:1px solid var(--md-outline);padding:6px 10px;border-radius:999px;color:var(--md-muted)}
+
+/* Layout */
+.layout{display:grid;grid-template-columns:minmax(420px,1fr) 520px;gap:12px;padding:12px}
+.table-wrap{overflow:auto;max-height:calc(100vh - 160px);border-radius:14px}
+.table-wrap::-webkit-scrollbar{height:10px;width:10px}
+.table-wrap::-webkit-scrollbar-thumb{background:var(--md-outline);border-radius:10px}
+
+/* Table */
+.md-table{width:100%;border-collapse:separate;border-spacing:0}
+.md-table thead th{position:sticky;top:0;background:var(--md-surface-3);z-index:5;padding:12px;border-bottom:1px solid var(--md-outline);text-align:left}
+.md-table tbody td{padding:12px;border-bottom:1px solid var(--md-outline);vertical-align:top}
+.md-table tbody tr{background:var(--row);cursor:pointer}
+.md-table tbody tr:hover{background:var(--row-hover)}
+.md-table tbody tr.selected{outline:1px solid var(--md-primary); outline-offset:-1px}
+.col-id{width:72px}.col-time{width:120px}.col-kind{width:92px}.col-dir{width:96px}.col-method{width:92px}.col-status{width:92px}.col-url{width:auto}.col-actions{width:170px}
+
+/* Badges / pills */
+.kind-HTTP{color:#8ab4ff}.kind-WEBSOCKET{color:#7af59b}
+.dir-REQUEST,.dir-OUTBOUND{color:var(--md-warn)}.dir-RESPONSE,.dir-INBOUND{color:var(--md-success)}.dir-ERROR{color:var(--md-error)}.dir-STATE{color:#9bb}
+.status-2xx{color:var(--md-success)}.status-3xx{color:#fbbf24}.status-4xx{color:#fca5a5}.status-5xx{color:#fb7185}
+.col-method,.col-status{background:transparent;border:none;border-radius:0;text-align:left}
+
+/* Drawer */
+.drawer{border:1px solid var(--md-outline);border-radius:14px;height:calc(100vh - 160px);overflow:auto}
+.drawer.hidden{display:none}
+.drawer-head{display:flex;justify-content:space-between;align-items:center;padding:14px;border-bottom:1px solid var(--md-outline)}
+.drawer-title{font-weight:700}.drawer-sub{color:var(--md-muted);font-size:12px;margin-top:4px}
+
+/* Segmented tabs */
+.md-segmented{display:flex;gap:6px;padding:10px 12px;border-bottom:1px solid var(--md-outline)}
+.md-segmented .tab{background:transparent;color:var(--md-text);border:1px solid var(--md-outline);border-radius:999px;padding:6px 12px}
+.md-segmented .tab.active{background:var(--md-surface-3)}
+
+/* Panes */
+.tabpanes{padding:12px}
+.tabpane{display:none}
+.tabpane.active{display:block}
+.kv{display:grid;grid-template-columns:140px 1fr;gap:12px 16px}
+.kv dt{color:var(--md-muted)} .kv dd{margin:0}
+.kv .full{grid-column:1 / -1}
+.columns{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* Code blocks */
+.code{background:var(--code);border:1px solid var(--md-outline);border-radius:12px;padding:12px;overflow:auto;max-height:48vh;white-space:pre-wrap;word-break:break-word}
+.code.json .k{color:#7aa2f7}.code.json .s{color:#a6e3a1}.code.json .n{color:#f2cdcd}.code.json .b{color:#f9e2af}.code.json .l{color:#f28fad}.code.json .null{color:#cdd6f4;opacity:.8}
+#ov-summary{white-space:pre-wrap; word-break:break-word; width:100%; max-height:50vh; overflow:auto}
+.curl-row{display:flex; gap:8px; align-items:flex-start; width:100%}
+.curl-row .code{flex:1; min-height:160px}
+#ov-curl{white-space:pre-wrap; word-break:break-all; overflow:auto; max-height:70vh; width:100%}
+
+/* Helpers */
+.muted{color:var(--md-muted)}
+.badge{border:1px solid var(--md-outline);border-radius:6px;padding:2px 6px;background:#0002;font:12px ui-monospace,Menlo,monospace}
+.action-row{display:flex;gap:6px;flex-wrap:wrap}
+
+@media (max-width: 1200px){ .layout{grid-template-columns:1fr;} .drawer{height:auto;} }
+""".trimIndent()
 
     val appJs = """
         // ========================= LogTap Viewer (fixed runtime JS) =========================
@@ -223,6 +252,7 @@ internal object Resources {
         const methodFilter = document.querySelector('#methodFilter');
         const statusFilter = document.querySelector('#statusFilter');
         const statusCodeFilter = document.querySelector('#statusCodeFilter');
+        const errorFilter = document.querySelector('#errorFilter');
         const wsStatus = document.querySelector('#wsStatus');
         const exportJsonBtn = document.querySelector('#exportJson');
         const exportHtmlBtn = document.querySelector('#exportHtml');
@@ -323,6 +353,16 @@ internal object Resources {
           const s = statusFilter?.value || '';
           if(s && ev.status){ const x = Math.floor(ev.status/100)+'xx'; if(x!==s) return false; }
           if (statusCodeFilter && statusCodeFilter.value && !statusMatches(ev.status, statusCodeFilter.value)) return false;
+          // error/success class filter
+          if (errorFilter && errorFilter.value) {
+            const s = Number(ev.status || 0);
+            const v = errorFilter.value;
+            if (v === 'errors' && !(s >= 400 && s <= 599)) return false;
+            if (v === 'client' && !(s >= 400 && s <= 499)) return false;
+            if (v === 'server' && !(s >= 500 && s <= 599)) return false;
+            if (v === 'success' && !(s >= 200 && s <= 299)) return false;
+            if (v === 'redirect' && !(s >= 300 && s <= 399)) return false;
+          }
           return true;
         }
         function renderStats(){
@@ -436,6 +476,7 @@ internal object Resources {
         search?.addEventListener('input', ()=>{ filterText = search.value.trim().toLowerCase(); renderAll(); });
         methodFilter?.addEventListener('change', renderAll);
         statusFilter?.addEventListener('change', renderAll);
+        errorFilter?.addEventListener('change', renderAll);
         statusCodeFilter?.addEventListener('input', renderAll);
         clearBtn?.addEventListener('click', async ()=>{ try{ await fetch('/api/clear', {method:'POST'}); }catch{} rows=[]; renderAll(); });
         drawerClose?.addEventListener('click', ()=> drawer.classList.add('hidden'));

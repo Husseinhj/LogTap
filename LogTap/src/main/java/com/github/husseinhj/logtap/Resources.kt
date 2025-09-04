@@ -199,7 +199,7 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
 
 /* Stats */
 .stats{display:flex;gap:8px;flex-wrap:wrap;padding:10px 16px}
-.chip{background:var(--chip);border:1px solid var(--md-outline);padding:6px 10px;border-radius:999px;color:var(--md-muted)}
+.chip{background:var(--chip);border:1px solid var(--md-outline);padding:6px 10px;border-radius:999px}
 
 /* Layout */
 .layout{display:flex;gap:12px;padding:12px;align-items:stretch}

@@ -89,9 +89,10 @@ http://<device-ip>:8790/
 For more settings and to automatically collect logs from Android's logger, you can use `LogTapLogcatBridge` together with a `LogTapSinkAdapter`:
 
 ```kotlin
-private val logSink = LogTapSinkAdapter()
+class LogTapApp : Application() {
+  private val logSink = LogTapSinkAdapter()
 
-override fun onCreate() {
+  override fun onCreate() {
     super.onCreate()
 
     LogTapLogcatBridge.start(logSink)
@@ -101,11 +102,12 @@ override fun onCreate() {
     LogTapLogger.setDebug(BuildConfig.DEBUG)
     LogTapLogger.setAllowReleaseLogging(false)
     LogTapLogger.setMinLevel(
-        if (BuildConfig.DEBUG)
-            LogTapLogger.Level.DEBUG
-        else
-            LogTapLogger.Level.WARN
+      if (BuildConfig.DEBUG)
+        LogTapLogger.Level.DEBUG
+      else
+        LogTapLogger.Level.WARN
     )
+  }
 }
 ```
 

@@ -41,6 +41,7 @@ internal object Resources {
         <input id="statusCodeFilter" class="md-input narrow" type="text" inputmode="numeric" pattern="[0-9xX,-,\s]*" placeholder="Status e.g. 200, 2xx, 400-404" title="Filter by exact codes, ranges, or classes" />
 
         <label class="chk md-switch"><input type="checkbox" id="autoScroll" checked/><span>Auto‑scroll</span></label>
+        <label class="chk md-switch"><input type="checkbox" id="jsonPretty"/><span>Pretty JSON</span></label>
         <button id="clearBtn" class="md-btn md-tonal" title="Clear logs">Clear</button>
         <div id="wsStatus" class="status chip" title="WebSocket status">● Disconnected</div>
         <div class="split"></div>
@@ -256,6 +257,7 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
         const wsStatus = document.querySelector('#wsStatus');
         const exportJsonBtn = document.querySelector('#exportJson');
         const exportHtmlBtn = document.querySelector('#exportHtml');
+        const jsonPretty = document.querySelector('#jsonPretty');
         
         const drawer = document.querySelector('#drawer');
         const drawerClose = document.querySelector('#drawerClose');
@@ -276,6 +278,7 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
         let filtered = [];
         let filterText = '';
         let selectedIdx = -1;
+        let currentEv = null;
         
         // ---- Utils ----
         function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
@@ -409,7 +412,7 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
           const actions = document.createElement('div'); actions.className='action-row';
           if(ev.kind==='HTTP') actions.appendChild(btn('Copy cURL', ()=>{ try{ navigator.clipboard?.writeText(curlFor(ev)); }catch(e){ console.warn('clipboard failed', e); } }));
           const tdActions = document.createElement('td'); tdActions.className='col-actions'; tdActions.appendChild(actions);
-        
+
           tr.innerHTML =
             `<td class="col-id">${'$'}{ev.id ?? ''}</td>`+
             `<td class="col-time">${'$'}{fmtTime(ev.ts)}</td>`+
@@ -420,8 +423,15 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
             `<td class="col-url">`+
               `<div class="url">${'$'}{escapeHtml(ev.url || '')}</div>`+
               (ev.summary ? `<div class="muted">${'$'}{escapeHtml(ev.summary)}</div>` : '')+
-              (ev.bodyPreview ? `<pre class="body">${'$'}{escapeHtml(String(ev.bodyPreview))}</pre>` : '')+
             `</td>`;
+          // pretty body preview under URL cell (respects global Pretty JSON toggle)
+          if (ev.bodyPreview) {
+            const pre = document.createElement('pre');
+            pre.className = 'code mini body' + (jsonPretty?.checked ? ' json' : '');
+            pre.innerHTML = jsonPretty?.checked ? hlJson(ev.bodyPreview) : escapeHtml(String(ev.bodyPreview));
+            const urlCell = tr.querySelector('.col-url');
+            if (urlCell) urlCell.appendChild(pre);
+          }
           tr.appendChild(tdActions);
           tr.addEventListener('click', ()=> openDrawer(ev));
           return tr;
@@ -442,13 +452,21 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
         function activateTab(name){ tabs.forEach(b=>b.classList.toggle('active', b.dataset.tab===name)); document.querySelectorAll('.tabpane').forEach(p=>p.classList.toggle('active', p.id==='tab-'+name)); }
         function openDrawer(ev){
           if(!drawer) return;
+          currentEv = ev;
           drawer.classList.remove('hidden');
           const title = (ev.method? (ev.method+' ') : (ev.kind==='WEBSOCKET'?'WS ':'') ) + (ev.url || ev.summary || '');
           const tEl = document.getElementById('drawerTitle'); tEl && tEl.replaceChildren(document.createTextNode(title));
           const sub = `<span class="badge">id ${'$'}{ev.id}</span> ` + (ev.status? `<span class="badge">status ${'$'}{ev.status}</span> ` : '') + (ev.tookMs? `<span class="badge">${'$'}{ev.tookMs} ms</span>` : '');
           const sEl = document.getElementById('drawerSub'); if(sEl) sEl.innerHTML = sub;
           setText('ov-id', ev.id); setText('ov-time', new Date(ev.ts).toLocaleString()); setText('ov-kind', ev.kind); setText('ov-dir', ev.direction);
-          setText('ov-method', ev.method || (ev.kind==='WEBSOCKET'?'WS':'')); setText('ov-status', ev.status ?? ''); setText('ov-url', ev.url ?? ''); setText('ov-summary', ev.summary ?? ''); setText('ov-took', ev.tookMs? ev.tookMs+' ms' : ''); setText('ov-thread', ev.thread ?? '');
+          setText('ov-method', ev.method || (ev.kind==='WEBSOCKET'?'WS':'')); setText('ov-status', ev.status ?? ''); setText('ov-url', ev.url ?? '');
+          if (jsonPretty?.checked) {
+            const el = document.getElementById('ov-summary');
+            if (el) { el.classList.add('json'); el.innerHTML = hlJson(ev.summary ?? ''); }
+          } else {
+            setText('ov-summary', ev.summary ?? '');
+          }
+          setText('ov-took', ev.tookMs? ev.tookMs+' ms' : ''); setText('ov-thread', ev.thread ?? '');
           setJson('req-body', bodyFor(ev,'request'));
           setJson('resp-body', bodyFor(ev,'response'));
           const rh = document.getElementById('req-headers'); if(rh) rh.textContent = ev.headers ? Object.entries(ev.headers).map(([k,v])=> k+': '+(Array.isArray(v)?v.join(', '):v)).join('\n') : '';
@@ -478,6 +496,10 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
         statusFilter?.addEventListener('change', renderAll);
         errorFilter?.addEventListener('change', renderAll);
         statusCodeFilter?.addEventListener('input', renderAll);
+        jsonPretty?.addEventListener('change', ()=>{
+          renderAll();
+          if (currentEv) openDrawer(currentEv);
+        });
         clearBtn?.addEventListener('click', async ()=>{ try{ await fetch('/api/clear', {method:'POST'}); }catch{} rows=[]; renderAll(); });
         drawerClose?.addEventListener('click', ()=> drawer.classList.add('hidden'));
         

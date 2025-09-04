@@ -79,7 +79,7 @@ http://<device-ip>:8790/
 > When the embedded server is ready, LogTap writes the exact address to **Logcat** so you can copy/paste it easily. Look for a line like:
 >
 > ```
-> LogTap server ready at http://192.168.178.66:8790/
+> 2025-09-04 23:48:14.521 14129-14168 LogTap$start$1          com...hub.husseinhj.logtapsample  I  LogTap server ready at http://192.168.178.66:8790/
 > ```
 >
 > (If you don't see the IP, ensure your app has `ACCESS_NETWORK_STATE` or LogTap will fall back to best-effort interface detection.)

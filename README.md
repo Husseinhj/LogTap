@@ -73,6 +73,31 @@ Open in your desktop browser:
 http://<device-ip>:8790/
 ```
 
+### 5. Advanced: Automatic Logcat collection
+
+For more settings and to automatically collect logs from Android's logger, you can use `LogTapLogcatBridge` together with a `LogTapSinkAdapter`:
+
+```kotlin
+private val logSink = LogTapSinkAdapter()
+
+override fun onCreate() {
+    super.onCreate()
+
+    LogTapLogcatBridge.start(logSink)
+    LogTapLogger.d("LogTapLogcatBridge started")
+    LogTap.start(this, LogTap.Config(port = 8790, capacity = 5000))
+
+    LogTapLogger.setDebug(BuildConfig.DEBUG)
+    LogTapLogger.setAllowReleaseLogging(false)
+    LogTapLogger.setMinLevel(
+        if (BuildConfig.DEBUG)
+            LogTapLogger.Level.DEBUG
+        else
+            LogTapLogger.Level.WARN
+    )
+}
+```
+
 ---
 
 ## 🔐 Security

@@ -155,6 +155,7 @@ internal object Resources {
       </div>
 
       <aside id="drawer" class="drawer elev">
+        <div class="d-resize" id="drawerResizer" aria-hidden="true" title="Drag to resize"></div>
         <header class="d-head">
           <div>
             <div id="drawerTitle" class="d-title">Details</div>
@@ -523,6 +524,13 @@ body.hide-col-actions #logtbl .col-actions{display:none}
   box-shadow:var(--elev-2);
 }
 body.drawer-open .drawer{ flex-basis:var(--drawer-w); width:var(--drawer-w); opacity:1; pointer-events:auto }
+
+/* Drawer resizer */
+.d-resize{ position:absolute; left:-6px; top:0; bottom:0; width:12px; cursor:col-resize; z-index:2; }
+.d-resize::after{ content:""; position:absolute; inset:0; background:transparent; }
+.d-resize:hover::after{ background:color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent); }
+body.resizing{ cursor:col-resize !important; }
+body.resizing *{ user-select:none !important; }
 .d-head{display:flex;justify-content:space-between;align-items:center;padding:16px 16px;border-bottom:1px solid var(--line)}
 .d-title{font-weight:700}.d-sub{color:var(--muted);font-size:12px;margin-top:4px}
 .tabs{display:flex;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line)}
@@ -691,6 +699,20 @@ body.mode-log .col-url .url{display:none}
         const drawer = document.querySelector('#drawer');
         const drawerClose = document.querySelector('#drawerClose');
         const tabs = Array.from(document.querySelectorAll('.tab'));
+        const drawerResizer = document.querySelector('#drawerResizer');
+        const DRAWER_MIN = 360, DRAWER_MAX = 1000;
+        // ---- Drawer width persistence & drag-resize ----
+        function loadDrawerWidth(){
+          try{
+            const v = Number(localStorage.getItem('logtap:drawerW')||'');
+            if(v && !Number.isNaN(v)) document.documentElement.style.setProperty('--drawer-w', v+'px');
+          }catch{}
+        }
+        function saveDrawerWidth(px){ try{ localStorage.setItem('logtap:drawerW', String(px)); }catch{} }
+        let dragStartX=0, dragStartW=0, dragging=false;
+        function startResize(e){ if(!drawer) return; dragging=true; document.body.classList.add('resizing'); const r=drawer.getBoundingClientRect(); dragStartW=r.width; dragStartX=e.clientX; window.addEventListener('mousemove', onResizeMove); window.addEventListener('mouseup', endResize); }
+        function onResizeMove(e){ if(!dragging) return; const dx = dragStartX - e.clientX; let nw = Math.round(dragStartW + dx); nw = Math.max(DRAWER_MIN, Math.min(DRAWER_MAX, nw)); document.documentElement.style.setProperty('--drawer-w', nw+'px'); }
+        function endResize(){ if(!dragging) return; dragging=false; document.body.classList.remove('resizing'); const cur = getComputedStyle(document.documentElement).getPropertyValue('--drawer-w').trim(); const px = Number(cur.replace('px',''))||0; if(px>0) saveDrawerWidth(px); window.removeEventListener('mousemove', onResizeMove); window.removeEventListener('mouseup', endResize); }
         // wire tab clicks
         tabs.forEach(b => b.addEventListener('click', (e) => {
           e.preventDefault();
@@ -1292,6 +1314,9 @@ body.mode-log .col-url .url{display:none}
             ws.onmessage = (e)=>{ try{ const ev = JSON.parse(e.data); rows.push(ev); if(matchesFilters(ev)){ tbody.appendChild(renderRow(ev)); if(autoScroll?.checked) tbody.lastElementChild?.scrollIntoView({block:'end'}); renderStats(); } }catch(parseErr){ console.warn('[LogTap] bad WS payload', parseErr); } };
           }catch(wsErr){ console.warn('[LogTap] WS setup failed', wsErr); if(wsStatus){ wsStatus.textContent='● Disconnected'; wsStatus.classList.remove('status-on','status-connecting'); wsStatus.classList.add('status-off'); } }
         }
+        // Load saved drawer width and enable drag to resize
+        loadDrawerWidth();
+        drawerResizer?.addEventListener('mousedown', (e)=>{ e.preventDefault(); startResize(e); });
         bootstrap();
     """.trimIndent()
 

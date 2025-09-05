@@ -52,6 +52,121 @@ releaseImplementation 'com.github.Husseinhj.LogTap:logtap-noop:v0.2.0'
 > 💡 Always use the latest version from the [GitHub Releases](https://github.com/Husseinhj/LogTap/releases).
 
 
+#### Per-flavor installation
+
+You can restrict LogTap only to a specific build flavor (e.g., `dev`) by declaring dependencies under the corresponding configuration. For example:
+
+```gradle
+dependencies {
+    devDebugImplementation 'com.github.Husseinhj.LogTap:logtap:v0.2.0'
+    devReleaseImplementation 'com.github.Husseinhj.LogTap:logtap-noop:v0.2.0'
+}
+```
+
+> Note: Other flavors (like `staging` or `production`) will not include LogTap unless you declare the dependency for them as well.
+
+#### Per-flavor Kotlin code (safe stubs to avoid release deps)
+
+Sometimes you want **no LogTap library at all in release builds** (not even the `-noop` artifact), but still keep your source code compiling. The simplest and safest way is to **wrap LogTap** behind your own tiny facade and provide a **no-op implementation** in `release` sources.
+
+**1) Declare flavors (example)**
+
+```gradle
+android {
+  flavorDimensions += "env"
+  productFlavors {
+    create("dev") { dimension = "env" }
+    create("staging") { dimension = "env" }
+    create("production") { dimension = "env" }
+  }
+}
+```
+
+**2) Depend only where you need it**
+
+- If you want the library only in the `dev` flavor, keep:
+
+```gradle
+devDebugImplementation 'com.github.Husseinhj.LogTap:logtap:v0.2.0'
+// (Optional) If you also build devRelease, use the noop artifact there:
+devReleaseImplementation 'com.github.Husseinhj.LogTap:logtap-noop:v0.2.0'
+```
+
+- If you prefer **no dependency at all** on release variants (including prod/staging), **do not** add a release dependency. We’ll provide **stubs** instead.
+
+**3) Create a small facade that your app calls**
+
+_Use a single API from your app and hide LogTap behind it._
+
+```
+// src/main/java/com/example/logtap/LogTapFacade.kt
+package com.example.logtap
+
+import android.app.Application
+
+object LogTapFacade {
+  fun start(app: Application) {}
+  fun d(message: String) {}
+  fun e(message: String, t: Throwable? = null) {}
+}
+```
+
+**4) Provide real implementation only in the flavor that needs it**
+
+```
+// src/dev/java/com/example/logtap/LogTapFacade.kt
+package com.example.logtap
+
+import android.app.Application
+import com.github.husseinhj.logtap.LogTap
+import com.github.husseinhj.logtap.logger.LogTapLogger
+
+object LogTapFacade {
+  fun start(app: Application) {
+    LogTap.start(app)
+    LogTapLogger.d("LogTap started")
+  }
+  fun d(message: String) = LogTapLogger.d(message)
+  fun e(message: String, t: Throwable?) = LogTapLogger.e(message, t)
+}
+```
+
+**5) Provide a no-op implementation for release (and/or staging, production)**
+
+```
+// src/release/java/com/example/logtap/LogTapFacade.kt
+package com.example.logtap
+
+import android.app.Application
+
+object LogTapFacade {
+  fun start(app: Application) { /* no-op */ }
+  fun d(message: String) { /* no-op */ }
+  fun e(message: String, t: Throwable? = null) { /* no-op */ }
+}
+```
+
+> With this setup:
+> - Your **app code** always calls `LogTapFacade` (never the library directly).
+> - **Dev** variants get the real implementation and the actual dependency.
+> - **Release/Production** variants compile against the no-op class and **ship with zero LogTap code**.
+
+**6) Use in Application**
+
+```kotlin
+class MyApp : Application() {
+  override fun onCreate() {
+    super.onCreate()
+    // Facade is flavor-aware; in release this is a no-op
+    LogTapFacade.start(this)
+  }
+}
+```
+
+**7) Optional: variant-aware source sets**
+
+You can create stubs per-flavor too, e.g. `src/production/java/...` and `src/staging/java/...` if those should also be no-op.
+
 ### 1. Initialize in your Application
 ```kotlin
 class MyApp : Application() {

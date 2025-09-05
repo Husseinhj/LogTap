@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import com.github.husseinhj.logtap.LogTapLogger
+import com.github.husseinhj.logtap.newWebSocketWithLogging
 import com.github.husseinhj.logtapsample.ui.theme.LogTapSampleTheme
 import okhttp3.Call
 import okhttp3.Callback
@@ -169,7 +170,7 @@ private fun logCallbacks(label: String) = object : Callback {
 }
 
 private fun openEchoWebSocket(url: String) {
-    val ws = client().newWebSocket(
+    val ws = client().newWebSocketWithLogging(
         Request.Builder().url(url).build(),
         object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
@@ -195,7 +196,7 @@ private fun openEchoWebSocket(url: String) {
 }
 
 private fun openEchoWebSocketAndSend(url: String, payload: String) {
-    client().newWebSocket(
+    client().newWebSocketWithLogging(
         Request.Builder().url(url).build(),
         object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {

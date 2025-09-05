@@ -56,6 +56,7 @@ internal object Resources {
         <div class="split"></div>
         <button id="exportJson" class="md-btn" title="Download filtered logs as JSON">Export JSON</button>
         <button id="exportHtml" class="md-btn" title="Download a self-contained HTML report">Export Report</button>
+        <button id="themeToggle" class="md-btn md-tonal" title="Toggle light/dark theme">Theme: Dark</button>
       </div>
     </header>
 
@@ -153,8 +154,15 @@ internal object Resources {
 """.trimIndent()
 
     val appCss = """
-:root{
-  /* Material-ish palette */
+:root[data-theme="light"]{
+  /* Light palette */
+  --md-primary:#6750A4; --md-on-primary:#fff; --md-primary-container:#eaddff; --md-on-primary-container:#21005d;
+  --md-secondary:#625b71; --md-on-secondary:#000; --md-surface:#f7f8fa; --md-surface-2:#ffffff; --md-surface-3:#f2f4f8;
+  --md-outline:#d0d7de; --md-muted:#4b5563; --md-text:#0b1320; --md-success:#16a34a; --md-warn:#d97706; --md-error:#dc2626;
+  --code:#f6f8fa; --chip:#eef2f7; --row:#ffffff; --row-hover:#f5f7fb; --shadow:#0002;
+}
+:root[data-theme="dark"]{
+  /* Dark palette */
   --md-primary:#6750A4; --md-on-primary:#fff; --md-primary-container:#eaddff; --md-on-primary-container:#21005d;
   --md-secondary:#625b71; --md-on-secondary:#fff; --md-surface:#0b0f14; --md-surface-2:#0e131a; --md-surface-3:#101720;
   --md-outline:#2c3440; --md-muted:#9aa4b2; --md-text:#e6edf3; --md-success:#22c55e; --md-warn:#fbbf24; --md-error:#ef4444;
@@ -215,7 +223,7 @@ button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
 .md-table tbody tr{background:var(--row);cursor:pointer}
 .md-table tbody tr:hover{background:var(--row-hover)}
 .md-table tbody tr.selected{outline:1px solid var(--md-primary); outline-offset:-1px}
-.col-id{width:72px}.col-time{width:120px}.col-kind{width:100px}.col-tag{width:120px}.col-method{width:92px}.col-status{width:92px}.col-url{width:auto}.col-actions{width:170px}
+.col-id{width:72px}.col-time{width:150px}.col-kind{width:100px}.col-tag{width:120px}.col-method{width:92px}.col-status{width:92px}.col-url{width:auto}.col-actions{width:170px}
 
 /* Modes: mix/network/log */
 body.mode-network .col-tag{display:none}
@@ -232,6 +240,7 @@ body.mode-log .col-url .url{display:none}
 .status-2xx{color:var(--md-success)}.status-3xx{color:#fbbf24}.status-4xx{color:#fca5a5}.status-5xx{color:#fb7185}
 .col-method,.col-status{background:transparent;border:none;border-radius:0;text-align:left}
 
+
 /* Logger level colors */
 .md-table tbody tr.level-VERBOSE .col-kind{color:#9bb}
 .md-table tbody tr.level-DEBUG   .col-kind{color:#8ab4ff}
@@ -239,6 +248,11 @@ body.mode-log .col-url .url{display:none}
 .md-table tbody tr.level-WARN    .col-kind{color:#fbbf24}
 .md-table tbody tr.level-ERROR   .col-kind{color:#fb7185}
 .md-table tbody tr.level-ASSERT  .col-kind{color:#ff7dd1}
+
+/* WS direction icons */
+.ws-ico{margin-left:6px; font:12px ui-monospace,Menlo,monospace; vertical-align:middle}
+.ws-send{color:var(--md-warn)}
+.ws-recv{color:var(--md-success)}
 
 /* Subtle left accent bar by level */
 .md-table tbody tr.level-VERBOSE{box-shadow: inset 3px 0 0 #6b7280}
@@ -361,6 +375,7 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
         const levelFilter = document.querySelector('#levelFilter');
         const exportJsonBtn = document.querySelector('#exportJson');
         const exportHtmlBtn = document.querySelector('#exportHtml');
+        const themeToggle = document.querySelector('#themeToggle');
         const jsonPretty = document.querySelector('#jsonPretty');
         
         const drawer = document.querySelector('#drawer');
@@ -384,9 +399,43 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
         let selectedIdx = -1;
         let currentEv = null;
         
+        // ---- Theme ----
+        function applyTheme(t){
+          const theme = (t === 'light' || t === 'dark') ? t : 'dark';
+          document.documentElement.setAttribute('data-theme', theme);
+          if (themeToggle) themeToggle.textContent = 'Theme: ' + (theme.charAt(0).toUpperCase()+theme.slice(1));
+        }
+        function initTheme(){
+          let t = localStorage.getItem('logtap:theme');
+          if (!t) t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+          applyTheme(t);
+        }
+
         // ---- Utils ----
         function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
-        function fmtTime(ts){ try { return new Date(ts).toLocaleTimeString(); } catch { return String(ts ?? ''); } }
+        function fmtTime(ts){
+          try{
+            const d = new Date(ts);
+            const hh = String(d.getHours()).padStart(2,'0');
+            const mm = String(d.getMinutes()).padStart(2,'0');
+            const ss = String(d.getSeconds()).padStart(2,'0');
+            const ms = String(d.getMilliseconds()).padStart(3,'0');
+            return `${'$'}{hh}:${'$'}{mm}:${'$'}{ss}.${'$'}{ms}`;
+          } catch { return String(ts ?? ''); }
+        }
+        function fmtDateTime(ts){
+          try{
+            const d = new Date(ts);
+            const yyyy = d.getFullYear();
+            const mon = String(d.getMonth()+1).padStart(2,'0');
+            const day = String(d.getDate()).padStart(2,'0');
+            const hh = String(d.getHours()).padStart(2,'0');
+            const mm = String(d.getMinutes()).padStart(2,'0');
+            const ss = String(d.getSeconds()).padStart(2,'0');
+            const ms = String(d.getMilliseconds()).padStart(3,'0');
+            return `${'$'}{yyyy}-${'$'}{mon}-${'$'}{day} ${'$'}{hh}:${'$'}{mm}:${'$'}{ss}.${'$'}{ms}`;
+          } catch { return String(ts ?? ''); }
+        }
         function classForStatus(code){ if(!code) return ''; const x=Math.floor(code/100); return x===2?'status-2xx':x===3?'status-3xx':x===4?'status-4xx':x===5?'status-5xx':''; }
         function hlJson(raw){
           try { const obj=typeof raw==='string'?JSON.parse(raw):raw; const json=JSON.stringify(obj,null,2);
@@ -553,6 +602,17 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
         function renderRow(ev){
           const tr = document.createElement('tr');
           const kind = kindOf(ev); const dir = dirOf(ev);
+          // Build WS direction icon (send/receive)
+          let wsIconHtml = '';
+          if (kind === 'WEBSOCKET') {
+            const isSend = (dir === 'OUTBOUND' || dir === 'REQUEST');
+            const isRecv = (dir === 'INBOUND'  || dir === 'RESPONSE');
+            wsIconHtml = isSend
+              ? '<span class="ws-ico ws-send" title="WebSocket send">⇧</span>'
+              : isRecv
+                ? '<span class="ws-ico ws-recv" title="WebSocket receive">⇩</span>'
+                : '<span class="ws-ico" title="WebSocket">∿</span>';
+          }
           const lvl = (kind==='LOG') ? levelOf(ev) : '';
           if(lvl) tr.classList.add('level-'+lvl);
           const tagTxt = ev.tag ? String(ev.tag) : '';
@@ -570,7 +630,7 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
             `<td class="col-kind kind-${'$'}{kind}">${'$'}{
               kind==='LOG'
                 ? escapeHtml(ev.level || levelOf(ev) || 'LOG')
-                : kind
+                : (kind==='WEBSOCKET' ? ('WS'+wsIconHtml) : kind)
             }</td>`+
             `<td class="col-tag">${'$'}{escapeHtml(tagTxt)}</td>`+
             `<td class="col-method">${'$'}{escapeHtml(ev.method || (kind==='WEBSOCKET'?'WS':''))}</td>`+
@@ -638,9 +698,14 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
           bodyEl.classList.add('drawer-open');
           const title = (ev.method? (ev.method+' ') : (kind==='WEBSOCKET'?'WS ':'') ) + (ev.url || ev.summary || '');
           const tEl = document.getElementById('drawerTitle'); tEl && tEl.replaceChildren(document.createTextNode(title));
-          const sub = `<span class="badge">id ${'$'}{ev.id}</span> ` + (ev.status? `<span class="badge">status ${'$'}{ev.status}</span> ` : '') + (ev.tookMs? `<span class="badge">${'$'}{ev.tookMs} ms</span>` : '');
+          let sub = `<span class="badge">id ${'$'}{ev.id}</span> ` + (ev.status? `<span class="badge">status ${'$'}{ev.status}</span> ` : '') + (ev.tookMs? `<span class="badge">${'$'}{ev.tookMs} ms</span>` : '');
+          if (kind === 'WEBSOCKET') {
+            const d = dir;
+            const label = (d === 'OUTBOUND' || d === 'REQUEST') ? 'send' : (d === 'INBOUND' || d === 'RESPONSE') ? 'recv' : String(d||'').toLowerCase();
+            sub += ` <span class="badge">WS ${'$'}{label}</span>`;
+          }
           const sEl = document.getElementById('drawerSub'); if(sEl) sEl.innerHTML = sub;
-          setText('ov-id', ev.id); setText('ov-time', new Date(ev.ts).toLocaleString());
+          setText('ov-id', ev.id); setText('ov-time', fmtDateTime(ev.ts));
           // Set ov-kind: for LOG, use level or fallback; else kind.
           if(kind==='LOG'){
             setText('ov-kind', ev.level || levelOf(ev) || 'LOG');
@@ -698,9 +763,11 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
         });
         clearBtn?.addEventListener('click', async ()=>{ try{ await fetch('/api/clear', {method:'POST'}); }catch{} rows=[]; renderAll(); });
         drawerClose?.addEventListener('click', ()=> bodyEl.classList.remove('drawer-open'));
+        themeToggle?.addEventListener('click', ()=>{ const cur = document.documentElement.getAttribute('data-theme') || 'dark'; const next = cur==='dark'?'light':'dark'; applyTheme(next); localStorage.setItem('logtap:theme', next); });
         
         // ---- Bootstrap + WS status ----
         async function bootstrap(){
+          initTheme();
           try{ const res = await fetch('/api/logs?limit=1000'); if(!res.ok) throw new Error('HTTP '+res.status); rows = await res.json(); }
           catch(err){ console.error('[LogTap] failed to fetch /api/logs', err); rows=[]; }
           applyMode();

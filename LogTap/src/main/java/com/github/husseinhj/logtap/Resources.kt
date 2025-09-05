@@ -5,60 +5,71 @@ internal object Resources {
 <!doctype html>
 <html>
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>LogTap</title>
-    <link rel="stylesheet" href="/app.css" />
+    <link rel="stylesheet" href="/app.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400&display=swap" rel="stylesheet"/>
   </head>
-  <body class="md-body">
-    <header class="topbar md-surface md-elev-2">
-          <a class="gh" href="https://github.com/Husseinhj/LogTap" target="_blank" rel="noopener" title="Open repository" aria-label="Open GitHub repository">
-        <svg viewBox="0 0 16 16" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
-      </a>
-      <div class="brand md-title">LogTap</div>
-      <div class="controls">
-        <div class="input-wrap md-field">
-          <input id="search" type="search" class="md-input" placeholder="Search (url, method, headers, body)…  ⌘/Ctrl + K" />
-          <kbd class="key">K</kbd>
+  <body class="ui">
+    <!-- Header -->
+    <header class="hdr blur elev">
+      <div class="brand">
+        <a class="logo gh" href="https://github.com/Husseinhj/LogTap" target="_blank" rel="noopener" title="Open GitHub repository" aria-label="Open GitHub repository">
+          <svg class="gh-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.62-.17 1.29-.27 2-.27s1.38.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+        </a>
+        <div class="titles">
+          <div class="title">LogTap</div>
+          <div class="sub">Inspect HTTP · WebSocket · Logs</div>
         </div>
-
-        <button id="filtersBtn" class="md-btn md-tonal" title="Show filters">Filters</button>
-
-        <div id="wsStatus" class="status chip" title="WebSocket status">● Disconnected</div>
-        <div class="split"></div>
-
+      </div>
+      <nav class="bar">
+        <div class="search field">
+          <svg class="ico" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5Zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14Z"/></svg>
+          <input id="search" class="input" type="search" placeholder="Search url, method, headers, body…  ⌘/Ctrl + K"/>
+        </div>
+        <button id="filtersBtn" class="btn ghost" title="Filters" aria-haspopup="true" aria-expanded="false">
+          <span class="material-symbols-outlined" aria-hidden="true">filter_list</span>
+          <span class="label">Filters</span>
+          <span class="material-symbols-outlined dropdown" aria-hidden="true">arrow_drop_down</span>
+        </button>
+        <div id="wsStatus" class="chip stat">● Disconnected</div>
         <div class="menu">
-          <button id="exportBtn" class="md-btn" title="Export options">Export ▾</button>
+          <button id="exportBtn" class="icon" title="Export" aria-label="Export">
+            <span class="material-symbols-outlined" aria-hidden="true">ios_share</span>
+          </button>
           <div id="exportMenu" class="popover hidden" role="menu" aria-hidden="true">
-            <button id="exportJson" class="md-btn block" role="menuitem">Export JSON</button>
-            <button id="exportHtml" class="md-btn block" role="menuitem">Export Report</button>
+            <button id="exportJson" class="btn block" role="menuitem">Export JSON</button>
+            <button id="exportHtml" class="btn block" role="menuitem">Export Report</button>
           </div>
         </div>
+        <button id="clearBtn" class="icon" title="Clear all logs" aria-label="Clear all logs">
+          <span class="material-symbols-outlined" aria-hidden="true">delete_sweep</span>
+        </button>
+        <button id="themeToggle" class="icon" title="Toggle theme" aria-label="Toggle theme">
+          <span class="material-symbols-outlined ico-sun" aria-hidden="true">light_mode</span>
+          <span class="material-symbols-outlined ico-moon" aria-hidden="true">dark_mode</span>
+        </button>
 
-        <button id="clearBtn" class="md-btn md-tonal" title="Clear logs">Clear</button>
-        <button id="themeToggle" class="md-btn md-tonal" title="Toggle light/dark theme">Theme: Dark</button>
-
-        <!-- Filters popover (compact) -->
+        <!-- Filters popover -->
         <div id="filtersPanel" class="popover hidden" role="dialog" aria-label="Filters">
-          <div class="filters-grid">
+          <div class="grid">
             <label>View
-              <select id="viewMode" class="md-select" title="View mode">
+              <select id="viewMode" class="select">
                 <option value="mix">Mix (All)</option>
                 <option value="network">Network only</option>
                 <option value="log">Logger only</option>
               </select>
             </label>
-
             <label>Method
-              <select id="methodFilter" class="md-select" title="Method filter">
+              <select id="methodFilter" class="select">
                 <option value="">All</option>
                 <option>GET</option><option>POST</option><option>PUT</option>
                 <option>PATCH</option><option>DELETE</option><option>WS</option>
               </select>
             </label>
-
             <label>Status class
-              <select id="statusFilter" class="md-select" title="Status filter (HTTP)">
+              <select id="statusFilter" class="select">
                 <option value="">Any</option>
                 <option value="2xx">2xx</option>
                 <option value="3xx">3xx</option>
@@ -66,13 +77,11 @@ internal object Resources {
                 <option value="5xx">5xx</option>
               </select>
             </label>
-
             <label>Codes
-              <input id="statusCodeFilter" class="md-input" type="text" inputmode="numeric" pattern="[0-9xX,-,\s]*" placeholder="200, 2xx, 400-404" />
+              <input id="statusCodeFilter" class="input" type="text" inputmode="numeric" pattern="[0-9xX,-,\s]*" placeholder="200, 2xx, 400-404"/>
             </label>
-
             <label>Level
-              <select id="levelFilter" class="md-select" title="Log level (Logger)">
+              <select id="levelFilter" class="select">
                 <option value="">Any Level</option>
                 <option value="VERBOSE">Verbose</option>
                 <option value="DEBUG">Debug</option>
@@ -82,15 +91,15 @@ internal object Resources {
                 <option value="ASSERT">Assert</option>
               </select>
             </label>
-
-            <label class="chk md-switch"><input type="checkbox" id="jsonPretty"/><span>Pretty JSON</span></label>
-            <label class="chk md-switch"><input type="checkbox" id="autoScroll" checked/><span>Auto‑scroll</span></label>
+            <label class="switch"><input type="checkbox" id="jsonPretty"/><span>Pretty JSON</span></label>
+            <label class="switch"><input type="checkbox" id="autoScroll" checked/><span>Auto‑scroll</span></label>
           </div>
         </div>
-      </div>
+      </nav>
     </header>
 
-    <section class="stats md-surface md-elev-1">
+    <!-- Stat pills -->
+    <section class="stats">
       <div class="chip" id="chipTotal">Total: 0</div>
       <div class="chip" id="chipHttp">HTTP: 0</div>
       <div class="chip" id="chipWs">WS: 0</div>
@@ -99,9 +108,9 @@ internal object Resources {
       <div class="chip" id="chipPost">POST: 0</div>
     </section>
 
-    <main class="layout">
-      <div class="table-wrap md-surface md-elev-1">
-        <table id="logtbl" class="md-table">
+    <main class="shell">
+      <div class="panel elev">
+        <table id="logtbl" class="tbl">
           <thead>
             <tr>
               <th class="col-id">ID</th>
@@ -116,27 +125,24 @@ internal object Resources {
           </thead>
           <tbody></tbody>
         </table>
-        <div class="repo-link">
-          <a href="https://github.com/Husseinhj/LogTap" target="_blank" rel="noopener">View source on GitHub — Husseinhj/LogTap</a>
-        </div>
       </div>
 
-      <aside id="drawer" class="drawer md-surface md-elev-2">
-        <header class="drawer-head">
+      <aside id="drawer" class="drawer elev">
+        <header class="d-head">
           <div>
-            <div id="drawerTitle" class="drawer-title">Details</div>
-            <div id="drawerSub" class="drawer-sub"></div>
+            <div id="drawerTitle" class="d-title">Details</div>
+            <div id="drawerSub" class="d-sub"></div>
           </div>
-          <button id="drawerClose" class="icon-btn md-icon" title="Close (Esc)">×</button>
+          <button id="drawerClose" class="icon" title="Close (Esc)">×</button>
         </header>
-        <nav class="tabs md-segmented">
+        <nav class="tabs">
           <button class="tab active" data-tab="overview" id="tabBtn-overview">Overview</button>
           <button class="tab" data-tab="request" id="tabBtn-request">Request</button>
           <button class="tab" data-tab="response" id="tabBtn-response">Response</button>
           <button class="tab" data-tab="headers" id="tabBtn-headers">Headers</button>
         </nav>
-        <section class="tabpanes">
-          <div class="tabpane active" id="tab-overview">
+        <section class="panes">
+          <div class="pane active" id="tab-overview">
             <dl class="kv">
               <div><dt>ID</dt><dd id="ov-id"></dd></div>
               <div><dt>Time</dt><dd id="ov-time"></dd></div>
@@ -147,23 +153,23 @@ internal object Resources {
               <div id="row-url"><dt>URL</dt><dd id="ov-url"></dd></div>
               <div id="row-level" class="hidden"><dt>Level</dt><dd id="ov-level"></dd></div>
               <div id="row-tag" class="hidden"><dt>Tag</dt><dd id="ov-tag"></dd></div>
-              <div class="full"><dt>Summary</dt><dd><div class="summary-row"><button id="ov-summary-copy" class="xs md-btn md-tonal" title="Copy Summary">Copy</button><pre class="code" id="ov-summary"></pre></div></dd></div>
+              <div class="full"><dt>Summary</dt><dd><div class="sum"><button id="ov-summary-copy" class="icon" title="Copy Summary" aria-label="Copy Summary"><span class="material-symbols-outlined" aria-hidden="true">content_copy</span></button><pre class="code" id="ov-summary"></pre></div></dd></div>
               <div id="row-took"><dt>Took</dt><dd id="ov-took"></dd></div>
               <div><dt>Thread</dt><dd id="ov-thread"></dd></div>
-              <div class="full" id="row-curl"><dt>cURL</dt><dd><div class="curl-row"><button id="ov-curl-copy" class="xs md-btn md-tonal" title="Copy cURL">Copy</button><pre class="code" id="ov-curl"></pre></div></dd></div>
+              <div class="full" id="row-curl"><dt>cURL</dt><dd><div class="curl"><button id="ov-curl-copy" class="icon" title="Copy cURL" aria-label="Copy cURL"><span class="material-symbols-outlined" aria-hidden="true">content_copy</span></button><pre class="code" id="ov-curl"></pre></div></dd></div>
             </dl>
           </div>
-          <div class="tabpane" id="tab-request">
+          <div class="pane" id="tab-request">
             <h4>Request Body</h4>
             <pre class="code json" id="req-body"></pre>
           </div>
-          <div class="tabpane" id="tab-response">
+          <div class="pane" id="tab-response">
             <h4>Response Body</h4>
             <pre class="code json" id="resp-body"></pre>
           </div>
-          <div class="tabpane" id="tab-headers">
+          <div class="pane" id="tab-headers">
             <h4>Headers</h4>
-            <div class="columns">
+            <div class="cols">
               <div>
                 <h5>Request</h5>
                 <pre class="code" id="req-headers"></pre>
@@ -179,218 +185,270 @@ internal object Resources {
     </main>
 
     <script src="/app.js"></script>
+   <div class="repo"><a href="https://github.com/Husseinhj/LogTap" target="_blank" rel="noopener">GitHub — Husseinhj/LogTap</a></div>
+
   </body>
 </html>
 """.trimIndent()
 
     val appCss = """
+/* ========================= Material 3 (tokens + components) ========================= */
+/* Color roles */
 :root[data-theme="light"]{
-  /* Light palette */
-  --md-primary:#6750A4; --md-on-primary:#fff; --md-primary-container:#eaddff; --md-on-primary-container:#21005d;
-  --md-secondary:#625b71; --md-on-secondary:#000; --md-surface:#f7f8fa; --md-surface-2:#ffffff; --md-surface-3:#f2f4f8;
-  --md-outline:#d0d7de; --md-muted:#4b5563; --md-text:#0b1320; --md-success:#16a34a; --md-warn:#d97706; --md-error:#dc2626;
-  --code:#f6f8fa; --chip:#eef2f7; --row:#ffffff; --row-hover:#f5f7fb; --shadow:#0002;
+  --md-sys-color-primary:#6750A4;         /* Indigo 500-ish */
+  --md-sys-color-on-primary:#FFFFFF;
+  --md-sys-color-primary-container:#EADDFF;
+  --md-sys-color-on-primary-container:#21005E;
+  --md-sys-color-secondary:#625B71;
+  --md-sys-color-on-secondary:#FFFFFF;
+  --md-sys-color-secondary-container:#E8DEF8;
+  --md-sys-color-on-secondary-container:#1D192B;
+  --md-sys-color-surface:#FFFBFE;
+  --md-sys-color-surface-dim:#E6E0E9;
+  --md-sys-color-surface-bright:#FEF7FF;
+  --md-sys-color-surface-container:#F3EDF7;
+  --md-sys-color-surface-container-high:#ECE6F0;
+  --md-sys-color-surface-container-highest:#E6E0E9;
+  --md-sys-color-on-surface:#1D1B20;
+  --md-sys-color-on-surface-variant:#49454F;
+  --md-sys-color-outline:#79747E;
+  --md-sys-color-outline-variant:#CAC4D0;
+  --md-sys-color-error:#B3261E;
+  --md-sys-color-on-error:#FFFFFF;
+  --md-sys-color-inverse-surface:#313033;
+  --md-sys-color-inverse-on-surface:#F4EFF4;
+  --md-sys-color-scrim:#000000;
 }
 :root[data-theme="dark"]{
-  /* Dark palette */
-  --md-primary:#6750A4; --md-on-primary:#fff; --md-primary-container:#eaddff; --md-on-primary-container:#21005d;
-  --md-secondary:#625b71; --md-on-secondary:#fff; --md-surface:#0b0f14; --md-surface-2:#0e131a; --md-surface-3:#101720;
-  --md-outline:#2c3440; --md-muted:#9aa4b2; --md-text:#e6edf3; --md-success:#22c55e; --md-warn:#fbbf24; --md-error:#ef4444;
-  --code:#0d1117; --chip:#141b24; --row:#0f1620; --row-hover:#142030; --shadow:#0008;
+  --md-sys-color-primary:#D0BCFF;
+  --md-sys-color-on-primary:#371E73;
+  --md-sys-color-primary-container:#4F378B;
+  --md-sys-color-on-primary-container:#EADDFF;
+  --md-sys-color-secondary:#CCC2DC;
+  --md-sys-color-on-secondary:#332D41;
+  --md-sys-color-secondary-container:#4A4458;
+  --md-sys-color-on-secondary-container:#E8DEF8;
+  --md-sys-color-surface:#141218;
+  --md-sys-color-surface-dim:#141218;
+  --md-sys-color-surface-bright:#3B383E;
+  --md-sys-color-surface-container:#1D1B20;
+  --md-sys-color-surface-container-high:#2B2930;
+  --md-sys-color-surface-container-highest:#36343B;
+  --md-sys-color-on-surface:#E6E0E9;
+  --md-sys-color-on-surface-variant:#CAC4D0;
+  --md-sys-color-outline:#938F99;
+  --md-sys-color-outline-variant:#49454F;
+  --md-sys-color-error:#F2B8B5;
+  --md-sys-color-on-error:#601410;
+  --md-sys-color-inverse-surface:#E6E0E9;
+  --md-sys-color-inverse-on-surface:#313033;
+  --md-sys-color-scrim:#000000;
 }
+
+/* Semantic aliases used by existing markup (mapped to M3 roles) */
+:root{
+  --bg:var(--md-sys-color-surface);
+  --bg2:var(--md-sys-color-surface-bright);
+  --surface:var(--md-sys-color-surface-container);
+  --surface-2:var(--md-sys-color-surface-container-high);
+  --text:var(--md-sys-color-on-surface);
+  --muted:var(--md-sys-color-on-surface-variant);
+  --line:var(--md-sys-color-outline-variant);
+  --chip:var(--md-sys-color-surface-container-highest);
+  --code:var(--md-sys-color-on-surface);
+  --codebg:var(--md-sys-color-surface-dim);
+  --primary:var(--md-sys-color-primary);
+  --on-primary:var(--md-sys-color-on-primary);
+  --accent:var(--md-sys-color-primary);
+  --accent2:#22c55e; /* success (not in core M3 set) */
+  --warn:#f59e0b;    /* warning (custom) */
+  --err:var(--md-sys-color-error);
+
+  /* Elevation levels (M3 uses surface tonal overlays; we approximate with shadow) */
+  --elev-1:0 1px 2px rgba(0,0,0,.14), 0 1px 3px 1px rgba(0,0,0,.12);
+  --elev-2:0 2px 6px rgba(0,0,0,.18), 0 1px 2px rgba(0,0,0,.08);
+  --elev-3:0 6px 10px rgba(0,0,0,.20), 0 1px 3px rgba(0,0,0,.10);
+
+  /* State layer opacities */
+  --state-hover: .08;
+  --state-focus: .12;
+  --state-pressed: .12;
+}
+
 *{box-sizing:border-box}
 html,body{height:100%}
-body.md-body{margin:0;background:linear-gradient(180deg, var(--md-surface) 0%, var(--md-surface) 60%, #0a0d12 100%);color:var(--md-text);font:14px system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+body.ui{margin:0;background:var(--bg);color:var(--text);font:14px ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial}
 
-/* Elevation & Surfaces */
-.md-surface{background:var(--md-surface-2);border:1px solid var(--md-outline)}
-.md-elev-1{box-shadow:0 2px 8px var(--shadow)}
-.md-elev-2{box-shadow:0 6px 16px var(--shadow)}
+/* ========================= Top App Bar (M3) ========================= */
+.hdr{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--md-sys-color-surface);border-bottom:1px solid var(--line)}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;border:1px solid var(--line);background:var(--md-sys-color-surface-container);color:var(--accent)}
+.logo svg{width:22px;height:22px;fill:currentColor}
+.titles .title{font-weight:700;letter-spacing:.2px}
+.titles .sub{color:var(--muted);font-size:12px}
 
-.topbar{position:sticky;top:0;z-index:20;display:flex;gap:16px;align-items:center;padding:12px 16px;backdrop-filter:blur(10px)}
-.brand.md-title{font-weight:800;letter-spacing:.3px}
-.topbar .gh{display:inline-flex;align-items:center;justify-content:center;color:var(--md-text);opacity:.85;border:1px solid var(--md-outline);border-radius:10px;width:34px;height:34px;margin-left:8px;text-decoration:none}
-.topbar .gh:hover{opacity:1;background:var(--md-surface-3)}
-.repo-link{padding:10px 12px;text-align:center;color:var(--md-muted);font-size:13px}
-.repo-link a{color:var(--md-text);text-decoration:none;border-bottom:1px dashed var(--md-outline)}
-.repo-link a:hover{color:var(--md-primary);border-bottom-color:var(--md-primary)}
-.controls{display:flex;gap:8px;align-items:center;margin-left:auto}
-.controls{flex-wrap:wrap}
-.split{width:1px;height:28px;background:var(--md-outline);margin:0 8px}
+/* ========================= Inputs & Buttons (M3) ========================= */
+.field{position:relative;display:flex;align-items:center}
+.field .ico{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:18px;height:18px;opacity:.7;fill:var(--muted)}
+.input{background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px 36px 10px 34px}
+.select{background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
 
-/* Compact toolbar & popovers */
-.controls{position:relative; gap:6px}
-.controls .md-btn.block{display:block; width:100%; text-align:left}
+.btn{--bgc:var(--md-sys-color-primary);--fgc:var(--md-sys-color-on-primary);background:var(--bgc);color:var(--fgc);border:0;border-radius:20px;padding:8px 16px;cursor:pointer;position:relative;overflow:hidden}
+.btn.ghost{--bgc:transparent;--fgc:var(--text);border:1px solid var(--line)}
+.btn.block{display:block;width:100%;text-align:left}
+.btn.xs{padding:6px 10px;border-radius:16px}
+.btn::after,.icon::after{content:"";position:absolute;inset:0;background:currentColor;opacity:0;transition:opacity .15s}
+.btn:hover::after,.icon:hover::after{opacity:var(--state-hover)}
+.btn:active::after,.icon:active::after{opacity:var(--state-pressed)}
+#filtersBtn{display:flex;align-items:center;gap:4px}
+#filtersBtn .material-symbols-outlined.dropdown{font-size:20px;opacity:.7}
+#filtersBtn .label{font-size:14px}
+
+.icon{width:36px;height:36px;border-radius:12px;background:transparent;border:1px solid var(--line);color:var(--text);font-size:18px;line-height:1;display:grid;place-items:center;position:relative;overflow:hidden}
+.icon.solid{background:var(--surface)}
+.icon .material-symbols-outlined{font-size:20px}
+
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .menu{position:relative}
-.popover{position:absolute; top:100%; margin-top:8px; right:0; background:var(--md-surface-2); border:1px solid var(--md-outline); border-radius:12px; box-shadow:0 8px 24px var(--shadow); padding:10px; z-index:50; min-width:220px}
+
+.popover{position:absolute;top:100%;margin-top:8px;right:0;background:var(--md-sys-color-surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--elev-3);padding:10px;z-index:50;min-width:220px}
 .popover.hidden{display:none}
-.filters-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
-@media (max-width: 640px){ .filters-grid{grid-template-columns:1fr} }
 
-/* Inputs */
-.md-field{position:relative}
-.md-input, .md-select{background:var(--md-surface-3);color:var(--md-text);border:1px solid var(--md-outline);border-radius:12px;padding:10px 12px}
-.md-input.narrow{min-width:140px}
-.input-wrap .key{position:absolute;right:8px;top:50%;transform:translateY(-50%);opacity:.6;background:#0002;border:1px solid var(--md-outline);border-radius:6px;padding:0 6px;font:11px ui-monospace,Menlo,monospace}
-.chk{display:flex;gap:6px;align-items:center;opacity:.9}
+/* Export menu buttons styled as Material 3 list items */
+#exportMenu .btn.block {
+  background: transparent;
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 14px;
+  color: var(--text);
+  justify-content: flex-start;
+  width: 100%;
+  text-align: left;
+}
+#exportMenu .btn.block:hover::after {
+  opacity: var(--state-hover);
+}
+#exportMenu .btn.block:active::after {
+  opacity: var(--state-pressed);
+}
 
-/* Buttons */
-.md-btn{background:var(--md-primary);color:var(--md-on-primary);border:0;border-radius:12px;padding:8px 12px;cursor:pointer}
-.md-btn.md-tonal{background:transparent;border:1px solid var(--md-outline);color:var(--md-text)}
-button.xs{padding:4px 10px;border-radius:8px;font-size:12px}
-.md-icon{width:28px;height:28px;border-radius:8px;background:transparent;border:1px solid var(--md-outline);color:var(--md-text);font-size:18px;line-height:1}
-
-/* Status chips */
-.status.chip{border:1px solid var(--md-outline);border-radius:999px;padding:4px 10px;font:12px ui-monospace,Menlo,monospace}
-.status-on{color:var(--md-success);} .status-off{color:var(--md-error);}
-
-/* Stats */
+/* ========================= Assist/Stat Chips (M3) ========================= */
 .stats{display:flex;gap:8px;flex-wrap:wrap;padding:10px 16px}
-.chip{background:var(--chip);border:1px solid var(--md-outline);padding:6px 10px;border-radius:999px}
+.chip{background:var(--md-sys-color-surface-container-high);border:1px solid var(--line);padding:6px 12px;border-radius:999px}
 
-/* Layout */
-.layout{display:flex;gap:12px;padding:12px;align-items:stretch}
-.table-wrap{flex:1 1 auto;overflow:auto;max-height:calc(100vh - 160px);border-radius:14px;transition:width 260ms ease}
-.table-wrap::-webkit-scrollbar{height:10px;width:10px}
-.table-wrap::-webkit-scrollbar-thumb{background:var(--md-outline);border-radius:10px}
-:root{--drawer-w:520px}
+.chip.stat{font:12px ui-monospace,Menlo,monospace}
 
-/* Table */
-.md-table{width:100%;border-collapse:separate;border-spacing:0}
-.md-table thead th{position:sticky;top:0;background:var(--md-surface-3);z-index:5;padding:12px;border-bottom:1px solid var(--md-outline);text-align:left}
-.md-table tbody td{padding:12px;border-bottom:1px solid var(--md-outline);vertical-align:top}
-.md-table tbody tr{background:var(--row);cursor:pointer}
-.md-table tbody tr:hover{background:var(--row-hover)}
-.md-table tbody tr.selected{outline:1px solid var(--md-primary); outline-offset:-1px}
-.col-id{width:72px}.col-time{width:150px}.col-kind{width:100px}.col-tag{width:120px}.col-method{width:92px}.col-status{width:92px}.col-url{width:auto}.col-actions{width:170px}
+/* Clickable stats */
+.stats .chip{cursor:default; user-select:none}
+.stats .chip.clickable{cursor:pointer}
+.stats .chip.clickable:hover{background:var(--md-sys-color-surface-container-highest)}
+.stats .chip.active{outline:2px solid var(--accent); outline-offset:2px; background:var(--md-sys-color-primary-container); color:var(--md-sys-color-on-primary-container)}
 
-/* Modes: mix/network/log */
-body.mode-network .col-tag{display:none}
-body.mode-log .col-method, body.mode-log .col-status, body.mode-log .col-actions{display:none}
-/* In log mode, we still use URL/Summary col but hide empty URL line */
-body.mode-log .col-url .url{display:none}
-/* Optional: in network-only, keep kind visible to distinguish HTTP/WS */
-/* No change needed for mix */
+/* WS colorful status (kept) */
+#wsStatus{transition:background-color .2s ease,color .2s ease,border-color .2s ease}
+#wsStatus.status-on{background:rgba(34,197,94,.15);color:#16a34a;border-color:#16a34a33}
+#wsStatus.status-off{background:rgba(244,63,94,.15);color:#ef4444;border-color:#ef444433}
+#wsStatus.status-connecting{background:rgba(245,158,11,.18);color:#d97706;border-color:#d9770633}
 
-/* Badges / pills */
-.kind-HTTP{color:#8ab4ff}.kind-WEBSOCKET{color:#7af59b}
-.kind-LOG{color:#eab308}
-.dir-REQUEST,.dir-OUTBOUND{color:var(--md-warn)}.dir-RESPONSE,.dir-INBOUND{color:var(--md-success)}.dir-ERROR{color:var(--md-error)}.dir-STATE{color:#9bb}
-.status-2xx{color:var(--md-success)}.status-3xx{color:#fbbf24}.status-4xx{color:#fca5a5}.status-5xx{color:#fb7185}
-.col-method,.col-status{background:transparent;border:none;border-radius:0;text-align:left}
+/* ========================= Layout ========================= */
+.shell{display:flex;gap:12px;padding:12px;align-items:stretch}
+.panel{flex:1 1 auto;border:1px solid var(--line);border-radius:16px;background:var(--md-sys-color-surface);box-shadow:var(--elev-1);overflow:auto;max-height:calc(100vh - 180px)}
+.repo{padding:10px 12px;text-align:center;color:var(--muted);font-size:13px}
+.repo a{color:inherit;text-decoration:none;border-bottom:1px dashed var(--line)}
+.repo a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* ========================= Data Table (M3) ========================= */
+.tbl{width:100%;border-collapse:separate;border-spacing:0}
+.tbl thead th{position:sticky;top:0;background:var(--md-sys-color-surface-container);color:var(--muted);padding:12px 12px;text-align:left;border-bottom:1px solid var(--line);z-index:1;font-weight:600}
+.tbl tbody tr{background:var(--md-sys-color-surface);border-bottom:1px solid var(--line)}
+.tbl tbody tr:hover{background:var(--md-sys-color-surface-container-high)}
+.tbl tbody td{padding:14px 12px;vertical-align:top}
+.col-id{width:72px}.col-time{width:150px}.col-kind{width:120px}.col-tag{width:140px}.col-method{width:92px}.col-status{width:92px}.col-actions{width:170px}
+
+/* Status & kind colors */
+.kind-HTTP{color:#8ab4ff}.kind-WEBSOCKET{color:#7af59b}.kind-LOG{color:#eab308}
+.status-2xx{color:#22c55e}.status-3xx{color:#fbbf24}.status-4xx{color:#fca5a5}.status-5xx{color:#fb7185}
 
 
-/* Logger level colors */
-.md-table tbody tr.level-VERBOSE .col-kind{color:#9bb}
-.md-table tbody tr.level-DEBUG   .col-kind{color:#8ab4ff}
-.md-table tbody tr.level-INFO    .col-kind{color:#7af59b}
-.md-table tbody tr.level-WARN    .col-kind{color:#fbbf24}
-.md-table tbody tr.level-ERROR   .col-kind{color:#fb7185}
-.md-table tbody tr.level-ASSERT  .col-kind{color:#ff7dd1}
+/* Log level colors */
+.level-VERBOSE .col-kind{color:#9ca3af}   /* gray */
+.level-DEBUG .col-kind{color:#3b82f6}     /* blue */
+.level-INFO .col-kind{color:#22c55e}      /* green */
+.level-WARN .col-kind{color:#f59e0b}      /* amber */
+.level-ERROR .col-kind{color:#ef4444}     /* red */
+.level-ASSERT .col-kind{color:#a855f7}    /* purple */
 
-/* WS direction icons */
-.ws-ico{margin-left:6px; font:12px ui-monospace,Menlo,monospace; vertical-align:middle}
-.ws-send{color:var(--md-warn)}
-.ws-recv{color:var(--md-success)}
+/* Log level row tints */
+.tbl tbody tr.level-VERBOSE{ background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 #9ca3af55; }
+.tbl tbody tr.level-DEBUG  { background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 #3b82f655; }
+.tbl tbody tr.level-INFO   { background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 #22c55e55; }
+.tbl tbody tr.level-WARN   { background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 #f59e0b55; }
+.tbl tbody tr.level-ERROR  { background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 #ef444455; }
+.tbl tbody tr.level-ASSERT { background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 #a855f755; }
 
-/* Subtle left accent bar by level */
-.md-table tbody tr.level-VERBOSE{box-shadow: inset 3px 0 0 #6b7280}
-.md-table tbody tr.level-DEBUG  {box-shadow: inset 3px 0 0 #60a5fa}
-.md-table tbody tr.level-INFO   {box-shadow: inset 3px 0 0 #22c55e}
-.md-table tbody tr.level-WARN   {box-shadow: inset 3px 0 0 #f59e0b}
-.md-table tbody tr.level-ERROR  {box-shadow: inset 3px 0 0 #ef4444}
-.md-table tbody tr.level-ASSERT {box-shadow: inset 3px 0 0 #d946ef}
+/* Preserve tint on hover while slightly lifting surface */
+.tbl tbody tr.level-VERBOSE:hover{ background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 #9ca3af77; }
+.tbl tbody tr.level-DEBUG:hover  { background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 #3b82f677; }
+.tbl tbody tr.level-INFO:hover   { background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 #22c55e77; }
+.tbl tbody tr.level-WARN:hover   { background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 #f59e0b77; }
+.tbl tbody tr.level-ERROR:hover  { background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 #ef444477; }
+.tbl tbody tr.level-ASSERT:hover { background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 #a855f777; }
 
-.drawer{border:1px solid transparent;border-radius:14px;height:calc(100vh - 160px);overflow:auto;flex:0 0 0;width:0;opacity:0;pointer-events:none;transition:width 260ms ease, flex-basis 260ms ease, opacity 200ms ease, border-color 200ms ease}
-body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacity:1;pointer-events:auto;border-color:var(--md-outline)}
-.drawer-head{display:flex;justify-content:space-between;align-items:center;padding:14px;border-bottom:1px solid var(--md-outline)}
-.drawer-title{font-weight:700}.drawer-sub{color:var(--md-muted);font-size:12px;margin-top:4px}
-
-/* Segmented tabs */
-.md-segmented{display:flex;gap:6px;padding:10px 12px;border-bottom:1px solid var(--md-outline)}
-.md-segmented .tab{background:transparent;color:var(--md-text);border:1px solid var(--md-outline);border-radius:999px;padding:6px 12px}
-.md-segmented .tab.active{background:var(--md-surface-3)}
-
-/* Panes */
-.tabpanes{padding:12px}
-.tabpane{display:none}
-.tabpane.active{display:block}
-.kv{display:grid;grid-template-columns:140px 1fr;gap:12px 16px}
-.kv dt{color:var(--md-muted)} .kv dd{margin:0}
+/* Drawer (M3 side sheet) */
+:root{--drawer-w:560px}
+.drawer{border:1px solid var(--line);border-radius:16px;height:calc(100vh - 180px);overflow:auto;flex:0 0 0;width:0;opacity:0;pointer-events:none;transition:width .26s ease,flex-basis .26s ease,opacity .2s ease,border-color .2s ease;background:var(--md-sys-color-surface);box-shadow:var(--elev-2)}
+body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacity:1;pointer-events:auto}
+.d-head{display:flex;justify-content:space-between;align-items:center;padding:16px 16px;border-bottom:1px solid var(--line)}
+.d-title{font-weight:700}.d-sub{color:var(--muted);font-size:12px;margin-top:4px}
+.tabs{display:flex;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line)}
+.tab{background:transparent;color:var(--text);border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+.tab.active{background:var(--surface)}
+.panes{padding:12px}
+.pane{display:none}
+.pane.active{display:block}
+.kv{display:grid;grid-template-columns:160px 1fr;gap:12px 16px}
+.kv dt{color:var(--muted)} .kv dd{margin:0}
 .kv .full{grid-column:1 / -1}
-.columns{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
 /* Code blocks */
-.code{background:var(--code);border:1px solid var(--md-outline);border-radius:12px;padding:12px;overflow:auto;max-height:20vh;white-space:pre-wrap;word-break:break-word}
-.code.json .k{color:#7aa2f7}.code.json .s{color:#a6e3a1}.code.json .n{color:#f2cdcd}.code.json .b{color:#f9e2af}.code.json .l{color:#f28fad}.code.json .null{color:#cdd6f4;opacity:.8}
-#ov-summary{white-space:pre-wrap; word-break:break-word; width:100%; max-height:50vh; overflow:auto}
-.curl-row{display:flex; gap:8px; align-items:flex-start; width:100%}
-.curl-row .code{flex:1; min-height:160px}
-#ov-curl{white-space:pre-wrap; word-break:break-all; overflow:auto; max-height:70vh; width:100%}
+.code{background:var(--codebg);color:var(--code);border:1px solid var(--line);border-radius:12px;padding:12px;overflow:auto;max-height:22vh;white-space:pre-wrap;word-break:break-word}
+#ov-summary{white-space:pre-wrap;word-break:break-word;width:100%;max-height:50vh;overflow:auto}
+.curl{display:flex;gap:8px;align-items:flex-start;width:100%}
+.curl .code{flex:1;min-height:160px}
+#ov-curl{white-space:pre-wrap;word-break:break-all;overflow:auto;max-height:70vh;width:100%}
+
+/* WebSocket direction glyphs */
+.ws-ico{margin-left:6px;font:12px ui-monospace,Menlo,monospace;vertical-align:middle}
+.ws-send{color:var(--warn)} .ws-recv{color:#22c55e}
+
+/* Modes */
+body.mode-network .col-tag{display:none}
+body.mode-log .col-method,body.mode-log .col-status,body.mode-log .col-actions{display:none}
+body.mode-log .col-url .url{display:none}
 
 /* Helpers */
-.muted{color:var(--md-muted)}
-.badge{border:1px solid var(--md-outline);border-radius:6px;padding:2px 6px;background:#0002;font:12px ui-monospace,Menlo,monospace}
-.action-row{display:flex;gap:6px;flex-wrap:wrap}
+.muted{color:var(--muted)} .badge{border:1px solid var(--line);border-radius:6px;padding:2px 6px;background:transparent;font:12px ui-monospace,Menlo,monospace}
 .hidden{display:none !important}
 
-/* ===== Responsive ===== */
-@media (max-width: 1200px){
-  .layout{grid-template-columns:1fr;gap:10px;padding:10px}
-  .drawer{height:auto}
-  .md-input.narrow{min-width:180px}
-}
+/* Material Symbols font setup */
+.material-symbols-outlined{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:20px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-feature-settings:'liga';-webkit-font-smoothing:antialiased;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24}
 
-@media (max-width: 1024px){
-  .md-table thead th,.md-table tbody td{padding:10px}
-  .col-actions{width:140px}
-}
+/* Theme toggle icon visibility (default: hide both, then show correct for theme) */
+#themeToggle .ico-sun,
+#themeToggle .ico-moon { display:none }
+:root[data-theme="light"] #themeToggle .ico-sun{ display:block }
+:root[data-theme="light"] #themeToggle .ico-moon{ display:none }
+:root[data-theme="dark"] #themeToggle .ico-sun{ display:none }
+:root[data-theme="dark"] #themeToggle .ico-moon{ display:block }
 
-@media (max-width: 900px){
-  /* hide low-signal columns to reduce clutter */
-  #logtbl thead .col-id, #logtbl tbody .col-id{display:none}
-  #logtbl thead .col-kind, #logtbl tbody .col-kind{display:none}
-  .col-time{width:96px}
-  .col-method{width:80px}
-  .col-status{width:80px}
-  .col-actions{width:120px}
-  .table-wrap{max-height:calc(100vh - 200px)}
-  .kv{grid-template-columns:120px 1fr}
-}
-
-@media (max-width: 768px){
-  .topbar{padding:10px}
-  .controls > *{flex:1 1 100%}
-  .input-wrap{width:100%}
-  .md-input, .md-select{width:100%}
-  .md-input.narrow{min-width:unset}
-  .stats{padding:8px 10px}
-  .layout{padding:8px}
-  .table-wrap{border-radius:10px}
-  .kv{grid-template-columns:1fr}
-  .kv .full{grid-column:1 / -1}
-  .columns{grid-template-columns:1fr}
-  #ov-curl{max-height:50vh}
-  #ov-summary{max-height:40vh}
-}
-
-@media (max-width: 600px){
-  /* make drawer behave like a full-screen sheet */
-  .drawer{position:fixed;inset:56px 0 0 0;z-index:30;border-radius:0;max-height:none;height:auto}
-  .drawer-head{position:sticky;top:0;background:var(--md-surface-2);z-index:5}
-  .md-segmented{position:sticky;top:48px;background:var(--md-surface-2);z-index:4}
-  .table-wrap{max-height:calc(100vh - 240px)}
-  .md-table thead th,.md-table tbody td{padding:9px}
-  .col-actions{display:none}
-}
-
-@media (max-width: 420px){
-  .brand{display:none}
-  .status.chip{font-size:11px;padding:3px 8px}
-  .chip{font-size:12px}
-  .md-btn{padding:7px 10px}
-  .md-icon{width:26px;height:26px}
-}
+/* Responsive */
+@media (max-width:1024px){ .tbl thead th,.tbl tbody td{padding:10px} .col-actions{width:140px} }
+@media (max-width:900px){ #logtbl thead .col-id,#logtbl tbody .col-id{display:none} #logtbl thead .col-kind,#logtbl tbody .col-kind{display:none} .col-time{width:96px}.col-method{width:80px}.col-status{width:80px}.col-actions{width:120px} .panel{max-height:calc(100vh - 220px)} .kv{grid-template-columns:140px 1fr} }
+@media (max-width:768px){ .hdr{padding:10px} .bar>*{flex:1 1 100%} .field{width:100%} .input,.select{width:100%} .stats{padding:8px 10px} .shell{padding:8px} .kv{grid-template-columns:1fr} .kv .full{grid-column:1 / -1} .cols{grid-template-columns:1fr} #ov-curl{max-height:50vh} #ov-summary{max-height:40vh} }
+@media (max-width:600px){ .drawer{position:fixed;inset:56px 0 0 0;z-index:30;border-radius:0;max-height:none;height:auto} .d-head{position:sticky;top:0;background:var(--md-sys-color-surface);z-index:5} .tabs{position:sticky;top:48px;background:var(--md-sys-color-surface);z-index:4} .panel{max-height:calc(100vh - 260px)} .tbl thead th,.tbl tbody td{padding:9px} .col-actions{display:none} }
+@media (max-width:420px){ .titles{display:none} .chip{font-size:12px} .btn{padding:7px 10px} .icon{width:32px;height:32px} }
 """.trimIndent()
 
     val appJs = """
@@ -421,6 +479,13 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
         const themeToggle = document.querySelector('#themeToggle');
         const jsonPretty = document.querySelector('#jsonPretty');
         
+        const chipTotal = document.querySelector('#chipTotal');
+        const chipHttp  = document.querySelector('#chipHttp');
+        const chipWs    = document.querySelector('#chipWs');
+        const chipLog   = document.querySelector('#chipLog');
+        const chipGet   = document.querySelector('#chipGet');
+        const chipPost  = document.querySelector('#chipPost');
+        
         const drawer = document.querySelector('#drawer');
         const drawerClose = document.querySelector('#drawerClose');
         const tabs = Array.from(document.querySelectorAll('.tab'));
@@ -446,7 +511,7 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
         function applyTheme(t){
           const theme = (t === 'light' || t === 'dark') ? t : 'dark';
           document.documentElement.setAttribute('data-theme', theme);
-          if (themeToggle) themeToggle.textContent = 'Theme: ' + (theme.charAt(0).toUpperCase()+theme.slice(1));
+          if (themeToggle) { const next = (theme==='dark'?'light':'dark'); themeToggle.setAttribute('title', 'Switch to '+next+' mode'); themeToggle.setAttribute('aria-label', 'Switch to '+next+' mode'); }
         }
         function initTheme(){
           let t = localStorage.getItem('logtap:theme');
@@ -519,6 +584,56 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
           bodyEl.classList.remove('mode-mix','mode-network','mode-log');
           bodyEl.classList.add('mode-'+m);
        }
+
+        // ---- Stat chip filtering ----
+        const allChips = [];
+        function setActiveChip(el){ allChips.forEach(c=>c?.classList.remove('active')); el?.classList.add('active'); }
+        function resetFilters(){
+          if(search){ search.value=''; filterText=''; }
+          if(methodFilter) methodFilter.value='';
+          if(statusFilter) statusFilter.value='';
+          if(statusCodeFilter) statusCodeFilter.value='';
+          if(levelFilter) levelFilter.value='';
+        }
+        function applyStatFilter(kind){
+          switch(kind){
+            case 'TOTAL':
+              resetFilters();
+              if(viewMode) viewMode.value='mix';
+              applyMode();
+              break;
+            case 'HTTP':
+              resetFilters();
+              if(viewMode) viewMode.value='network';
+              if(methodFilter) methodFilter.value='';
+              applyMode();
+              break;
+            case 'WS':
+              resetFilters();
+              if(viewMode) viewMode.value='network';
+              if(methodFilter) methodFilter.value='WS';
+              applyMode();
+              break;
+            case 'LOG':
+              resetFilters();
+              if(viewMode) viewMode.value='log';
+              applyMode();
+              break;
+            case 'GET':
+              resetFilters();
+              if(viewMode) viewMode.value='network';
+              if(methodFilter) methodFilter.value='GET';
+              applyMode();
+              break;
+            case 'POST':
+              resetFilters();
+              if(viewMode) viewMode.value='network';
+              if(methodFilter) methodFilter.value='POST';
+              applyMode();
+              break;
+          }
+          renderAll();
+        }
 
         // ---- Status code filter helpers ----
         function statusMatches(code, query){
@@ -661,10 +776,18 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
           const tagTxt = ev.tag ? String(ev.tag) : '';
           tr.dataset.id = String(ev.id ?? '');
           const actions = document.createElement('div'); actions.className='action-row';
-          if(kind==='HTTP') actions.appendChild(btn('Copy cURL', async (button)=>{
+          if(kind==='HTTP') {
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'icon';
+            copyBtn.title = 'Copy cURL';
+            copyBtn.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">content_copy</span>';
+            copyBtn.addEventListener('click', async (e)=>{
+              e.preventDefault(); e.stopPropagation();
               const ok = await copyText(curlFor(ev));
-              if(ok){ const old = button.textContent; button.textContent = 'Copied!'; setTimeout(()=> button.textContent = old, 1200); }
-            }));
+              if(ok){ copyBtn.classList.add('active'); setTimeout(()=> copyBtn.classList.remove('active'), 800); }
+            });
+            actions.appendChild(copyBtn);
+          }
           const tdActions = document.createElement('td'); tdActions.className='col-actions'; tdActions.appendChild(actions);
 
           tr.innerHTML =
@@ -707,7 +830,7 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
         // ---- Drawer ----
         function setText(id,v){ const el=document.getElementById(id); if(el) el.textContent = v==null?'':String(v); }
         function setJson(id,raw){ const el=document.getElementById(id); if(!el) return; if(!raw){ el.textContent=''; return;} el.innerHTML = hlJson(raw); }
-        function activateTab(name){ tabs.forEach(b=>b.classList.toggle('active', b.dataset.tab===name)); document.querySelectorAll('.tabpane').forEach(p=>p.classList.toggle('active', p.id==='tab-'+name)); }
+        function activateTab(name){ tabs.forEach(b=>b.classList.toggle('active', b.dataset.tab===name)); document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('active', p.id==='tab-'+name)); }
         function show(id, on){ const el=document.getElementById(id); if(!el) return; el.classList.toggle('hidden', !on); }
         function setActiveTabIfHidden(){
           // ensure the active tab button/pane are visible; if not, switch to overview
@@ -739,7 +862,14 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
           currentEv = ev;
           const kind = kindOf(ev); const dir = dirOf(ev);
           bodyEl.classList.add('drawer-open');
-          const title = (ev.method? (ev.method+' ') : (kind==='WEBSOCKET'?'WS ':'') ) + (ev.url || ev.summary || '');
+          let title = '';
+          if (kind === 'LOG') {
+            // For logger entries: show the tag (fallback to summary or 'LOG')
+            title = ev.tag || ev.summary || 'LOG';
+          } else {
+            // For interceptor entries (HTTP / WebSocket): show the URL only
+            title = ev.url || ev.summary || '';
+          }
           const tEl = document.getElementById('drawerTitle'); tEl && tEl.replaceChildren(document.createTextNode(title));
           let sub = `<span class="badge">id ${'$'}{ev.id}</span> ` + (ev.status? `<span class="badge">status ${'$'}{ev.status}</span> ` : '') + (ev.tookMs? `<span class="badge">${'$'}{ev.tookMs} ms</span>` : '');
           if (kind === 'WEBSOCKET') {
@@ -795,6 +925,15 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
         
         // ---- Events ----
         search?.addEventListener('input', ()=>{ filterText = search.value.trim().toLowerCase(); renderAll(); });
+        // Make stat chips clickable
+        allChips.push(chipTotal, chipHttp, chipWs, chipLog, chipGet, chipPost);
+        allChips.forEach(c=> c?.classList.add('clickable'));
+        chipTotal?.addEventListener('click', ()=>{ setActiveChip(chipTotal); applyStatFilter('TOTAL'); });
+        chipHttp ?.addEventListener('click', ()=>{ setActiveChip(chipHttp ); applyStatFilter('HTTP');  });
+        chipWs   ?.addEventListener('click', ()=>{ setActiveChip(chipWs   ); applyStatFilter('WS');    });
+        chipLog  ?.addEventListener('click', ()=>{ setActiveChip(chipLog  ); applyStatFilter('LOG');   });
+        chipGet  ?.addEventListener('click', ()=>{ setActiveChip(chipGet  ); applyStatFilter('GET');   });
+        chipPost ?.addEventListener('click', ()=>{ setActiveChip(chipPost ); applyStatFilter('POST');  });
         methodFilter?.addEventListener('change', renderAll);
         viewMode?.addEventListener('change', ()=>{ applyMode(); renderAll(); });
         statusFilter?.addEventListener('change', renderAll);
@@ -844,14 +983,16 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
           applyMode();
           renderAll();
           try{
+            const setWs = (text, cls)=>{ if(wsStatus){ wsStatus.textContent = text; wsStatus.classList.remove('status-on','status-off','status-connecting'); if(cls) wsStatus.classList.add(cls); } };
+            setWs('● Connecting…', 'status-connecting');
             const ws = new WebSocket((location.protocol==='https:'?'wss':'ws')+'://'+location.host+'/ws');
-            const on = ()=>{ if(wsStatus){ wsStatus.textContent = '● Connected'; wsStatus.classList.remove('status-off'); wsStatus.classList.add('status-on'); } };
-            const off= ()=>{ if(wsStatus){ wsStatus.textContent = '● Disconnected'; wsStatus.classList.remove('status-on'); wsStatus.classList.add('status-off'); } };
+            const on = ()=> setWs('● Connected', 'status-on');
+            const off = ()=> setWs('● Disconnected', 'status-off');
             ws.addEventListener('open', on);
             ws.addEventListener('close', off);
             ws.addEventListener('error', off);
             ws.onmessage = (e)=>{ try{ const ev = JSON.parse(e.data); rows.push(ev); if(matchesFilters(ev)){ tbody.appendChild(renderRow(ev)); if(autoScroll?.checked) tbody.lastElementChild?.scrollIntoView({block:'end'}); renderStats(); } }catch(parseErr){ console.warn('[LogTap] bad WS payload', parseErr); } };
-          }catch(wsErr){ console.warn('[LogTap] WS setup failed', wsErr); if(wsStatus){ wsStatus.textContent='● Disconnected'; wsStatus.classList.add('status-off'); } }
+          }catch(wsErr){ console.warn('[LogTap] WS setup failed', wsErr); if(wsStatus){ wsStatus.textContent='● Disconnected'; wsStatus.classList.remove('status-on','status-connecting'); wsStatus.classList.add('status-off'); } }
         }
         bootstrap();
     """.trimIndent()

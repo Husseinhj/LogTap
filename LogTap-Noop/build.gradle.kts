@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -95,8 +97,8 @@ publishing {
             name = "Central"
             url = uri("https://central.sonatype.com/repository/maven-releases/")
             credentials {
-                username = System.getenv("OSSRH_USERNAME") // token id
-                password = System.getenv("OSSRH_PASSWORD") // token secret
+                username = getSecret("OSSRH_USERNAME") // token id
+                password = getSecret("OSSRH_PASSWORD") // token secret
             }
         }
     }
@@ -104,8 +106,26 @@ publishing {
 
 signing {
     useInMemoryPgpKeys(
-        System.getenv("SIGNING_KEY"),       // base64(ASCII-armored private key)
-        System.getenv("SIGNING_PASSWORD")
+        getSecret("SIGNING_KEY"),       // base64(ASCII-armored private key)
+        getSecret("SIGNING_PASSWORD")
     )
     sign(publishing.publications)
+}
+
+fun getSecret(name: String): String? {
+    // 1) env (CI)
+    System.getenv(name)?.let { return it }
+
+    // 2) gradle.properties (root or ~/.gradle)
+    providers.gradleProperty(name).orNull?.let { return it }
+
+    // 3) local.properties (manual load)
+    val lp = Properties()
+    val f = rootProject.file("local.properties")
+    if (f.exists()) f.inputStream().use { lp.load(it) }
+    val key = lp.getProperty(name)
+
+    println("===========> KEY $name is ${if (key == null) "NULL" else "HAS IT"} <============")
+
+    return key
 }

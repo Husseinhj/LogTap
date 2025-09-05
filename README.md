@@ -45,8 +45,8 @@
 Add the dependency in your `build.gradle`:
 
 ```gradle
-debugImplementation 'com.github.Husseinhj.LogTap:logtap:v0.2.0'
-releaseImplementation 'com.github.Husseinhj.LogTap:logtap-noop:v0.2.0'
+debugImplementation 'com.github.Husseinhj.LogTap:logtap:v0.5.0'
+releaseImplementation 'com.github.Husseinhj.LogTap:logtap-noop:v0..0'
 ```
 
 > 💡 Always use the latest version from the [GitHub Releases](https://github.com/Husseinhj/LogTap/releases).
@@ -93,6 +93,56 @@ http://<device-ip>:8790/
 >
 > (If you don't see the IP, ensure your app has `ACCESS_NETWORK_STATE` or LogTap will fall back to best-effort interface detection.)
 
+### Multiple apps at once (auto‑port increment)
+
+If you run LogTap from **multiple apps on the same device** at the same time, LogTap will automatically try the next port when the base port is busy. By default it starts at **8790**; if that’s taken, it tries **8791**, **8792**, and so on until it finds a free port (a small, bounded range).
+
+You’ll see the chosen address printed to **Logcat** when the server is ready, for example:
+
+```
+… I LogTap server ready at http://192.168.178.66:8790/
+… I LogTap server ready at http://192.168.178.66:8791/
+```
+
+> Tip: You can also **pick different base ports** per app to avoid clashes entirely.
+
+#### Example
+
+**App A** – use default base port (8790):
+```kotlin
+class AppA : Application() {
+  override fun onCreate() {
+    super.onCreate()
+    LogTap.start(this) // tries 8790, then 8791, ... if needed
+  }
+}
+```
+
+**App B** – set an explicit base port (e.g., 8795):
+```kotlin
+class AppB : Application() {
+  override fun onCreate() {
+    super.onCreate()
+    LogTap.start(
+      this,
+      LogTap.Config(
+        port = 8795,        // base port; LogTap will auto‑increment if 8795 is in use
+        capacity = 5000
+      )
+    )
+  }
+}
+```
+
+Then open in your browser from the same network:
+
+```
+http://<device-ip>:8790/   // App A
+http://<device-ip>:8791/   // App A (if 8790 was busy)
+http://<device-ip>:8795/   // App B
+http://<device-ip>:8796/   // App B (if 8795 was busy)
+```
+
 ### 5. Advanced: Automatic Logcat collection
 
 For more settings and to automatically collect logs from Android's logger, you can use `LogTapLogcatBridge` together with a `LogTapSinkAdapter`:
@@ -129,8 +179,8 @@ You can restrict LogTap only to a specific build flavor (e.g., `dev`) by declari
 
 ```gradle
 dependencies {
-    devDebugImplementation 'com.github.Husseinhj.LogTap:logtap:v0.2.0'
-    devReleaseImplementation 'com.github.Husseinhj.LogTap:logtap-noop:v0.2.0'
+    devDebugImplementation 'com.github.Husseinhj.LogTap:logtap:v0.5.0'
+    devReleaseImplementation 'com.github.Husseinhj.LogTap:logtap-noop:v0.5.0'
 }
 ```
 
@@ -158,9 +208,9 @@ android {
 - If you want the library only in the `dev` flavor, keep:
 
 ```gradle
-devDebugImplementation 'com.github.Husseinhj.LogTap:logtap:v0.2.0'
+devDebugImplementation 'com.github.Husseinhj.LogTap:logtap:v0.5.0'
 // (Optional) If you also build devRelease, use the noop artifact there:
-devReleaseImplementation 'com.github.Husseinhj.LogTap:logtap-noop:v0.2.0'
+devReleaseImplementation 'com.github.Husseinhj.LogTap:logtap-noop:v0.5.0'
 ```
 
 - If you prefer **no dependency at all** on release variants (including prod/staging), **do not** add a release dependency. We’ll provide **stubs** instead.

@@ -40,6 +40,18 @@
 
 ## ⚡ Usage
 
+### Installation
+
+Add the dependency in your `build.gradle`:
+
+```gradle
+debugImplementation 'com.github.Husseinhj.LogTap:logtap:v0.2.0'
+releaseImplementation 'com.github.Husseinhj.LogTap:logtap-noop:v0.2.0'
+```
+
+> 💡 Always use the latest version from the [GitHub Releases](https://github.com/Husseinhj/LogTap/releases).
+
+
 ### 1. Initialize in your Application
 ```kotlin
 class MyApp : Application() {

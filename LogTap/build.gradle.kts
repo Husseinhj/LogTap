@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     `maven-publish`
-    signing
+//    signing
 }
 
 android {
@@ -71,28 +71,28 @@ afterEvaluate {
                 }
             }
         }
-        repositories {
-            maven {
-                name = "Central"
-                url = uri("https://central.sonatype.com/repository/maven-releases/")
-                credentials {
-                    // Use Central Portal Publishing Token
-                    username = getSecret("OSSRH_USERNAME") // token id
-                    password = getSecret("OSSRH_PASSWORD")// token secret
-                }
-            }
-        }
+//        repositories {
+//            maven {
+//                name = "Central"
+//                url = uri("https://central.sonatype.com/repository/maven-releases/")
+//                credentials {
+//                    // Use Central Portal Publishing Token
+//                    username = getSecret("OSSRH_USERNAME") // token id
+//                    password = getSecret("OSSRH_PASSWORD")// token secret
+//                }
+//            }
+//        }
     }
 
 }
 
-signing {
-    useInMemoryPgpKeys(
-        getSecret("SIGNING_KEY"),
-        getSecret("SIGNING_PASSWORD")
-    )
-    sign(publishing.publications)
-}
+//signing {
+//    useInMemoryPgpKeys(
+//        getSecret("SIGNING_KEY"),
+//        getSecret("SIGNING_PASSWORD")
+//    )
+//    sign(publishing.publications)
+//}
 
 fun getSecret(name: String): String? {
     // 1) env (CI)

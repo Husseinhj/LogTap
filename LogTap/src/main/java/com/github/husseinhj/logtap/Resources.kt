@@ -21,42 +21,72 @@ internal object Resources {
           <input id="search" type="search" class="md-input" placeholder="Search (url, method, headers, body)…  ⌘/Ctrl + K" />
           <kbd class="key">K</kbd>
         </div>
-        <select id="methodFilter" class="md-select" title="Method filter">
-          <option value="">All</option>
-          <option>GET</option><option>POST</option><option>PUT</option>
-          <option>PATCH</option><option>DELETE</option><option>WS</option>
-        </select>
-        <select id="viewMode" class="md-select" title="View mode">
-          <option value="mix">Mix (All)</option>
-          <option value="network">Network only</option>
-          <option value="log">Logger only</option>
-        </select>
-        <select id="statusFilter" class="md-select" title="Status filter (HTTP)">
-          <option value="">Any</option>
-          <option value="2xx">2xx</option>
-          <option value="3xx">3xx</option>
-          <option value="4xx">4xx</option>
-          <option value="5xx">5xx</option>
-        </select>
-        <select id="levelFilter" class="md-select" title="Log level (Logger)">
-          <option value="">Any Level</option>
-          <option value="VERBOSE">Verbose</option>
-          <option value="DEBUG">Debug</option>
-          <option value="INFO">Info</option>
-          <option value="WARN">Warn</option>
-          <option value="ERROR">Error</option>
-          <option value="ASSERT">Assert</option>
-        </select>
-        <input id="statusCodeFilter" class="md-input narrow" type="text" inputmode="numeric" pattern="[0-9xX,-,\s]*" placeholder="Status e.g. 200, 2xx, 400-404" title="Filter by exact codes, ranges, or classes" />
 
-        <label class="chk md-switch"><input type="checkbox" id="autoScroll" checked/><span>Auto‑scroll</span></label>
-        <label class="chk md-switch"><input type="checkbox" id="jsonPretty"/><span>Pretty JSON</span></label>
-        <button id="clearBtn" class="md-btn md-tonal" title="Clear logs">Clear</button>
+        <button id="filtersBtn" class="md-btn md-tonal" title="Show filters">Filters</button>
+
         <div id="wsStatus" class="status chip" title="WebSocket status">● Disconnected</div>
         <div class="split"></div>
-        <button id="exportJson" class="md-btn" title="Download filtered logs as JSON">Export JSON</button>
-        <button id="exportHtml" class="md-btn" title="Download a self-contained HTML report">Export Report</button>
+
+        <div class="menu">
+          <button id="exportBtn" class="md-btn" title="Export options">Export ▾</button>
+          <div id="exportMenu" class="popover hidden" role="menu" aria-hidden="true">
+            <button id="exportJson" class="md-btn block" role="menuitem">Export JSON</button>
+            <button id="exportHtml" class="md-btn block" role="menuitem">Export Report</button>
+          </div>
+        </div>
+
+        <button id="clearBtn" class="md-btn md-tonal" title="Clear logs">Clear</button>
         <button id="themeToggle" class="md-btn md-tonal" title="Toggle light/dark theme">Theme: Dark</button>
+
+        <!-- Filters popover (compact) -->
+        <div id="filtersPanel" class="popover hidden" role="dialog" aria-label="Filters">
+          <div class="filters-grid">
+            <label>View
+              <select id="viewMode" class="md-select" title="View mode">
+                <option value="mix">Mix (All)</option>
+                <option value="network">Network only</option>
+                <option value="log">Logger only</option>
+              </select>
+            </label>
+
+            <label>Method
+              <select id="methodFilter" class="md-select" title="Method filter">
+                <option value="">All</option>
+                <option>GET</option><option>POST</option><option>PUT</option>
+                <option>PATCH</option><option>DELETE</option><option>WS</option>
+              </select>
+            </label>
+
+            <label>Status class
+              <select id="statusFilter" class="md-select" title="Status filter (HTTP)">
+                <option value="">Any</option>
+                <option value="2xx">2xx</option>
+                <option value="3xx">3xx</option>
+                <option value="4xx">4xx</option>
+                <option value="5xx">5xx</option>
+              </select>
+            </label>
+
+            <label>Codes
+              <input id="statusCodeFilter" class="md-input" type="text" inputmode="numeric" pattern="[0-9xX,-,\s]*" placeholder="200, 2xx, 400-404" />
+            </label>
+
+            <label>Level
+              <select id="levelFilter" class="md-select" title="Log level (Logger)">
+                <option value="">Any Level</option>
+                <option value="VERBOSE">Verbose</option>
+                <option value="DEBUG">Debug</option>
+                <option value="INFO">Info</option>
+                <option value="WARN">Warn</option>
+                <option value="ERROR">Error</option>
+                <option value="ASSERT">Assert</option>
+              </select>
+            </label>
+
+            <label class="chk md-switch"><input type="checkbox" id="jsonPretty"/><span>Pretty JSON</span></label>
+            <label class="chk md-switch"><input type="checkbox" id="autoScroll" checked/><span>Auto‑scroll</span></label>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -187,6 +217,15 @@ body.md-body{margin:0;background:linear-gradient(180deg, var(--md-surface) 0%, v
 .controls{display:flex;gap:8px;align-items:center;margin-left:auto}
 .controls{flex-wrap:wrap}
 .split{width:1px;height:28px;background:var(--md-outline);margin:0 8px}
+
+/* Compact toolbar & popovers */
+.controls{position:relative; gap:6px}
+.controls .md-btn.block{display:block; width:100%; text-align:left}
+.menu{position:relative}
+.popover{position:absolute; top:100%; margin-top:8px; right:0; background:var(--md-surface-2); border:1px solid var(--md-outline); border-radius:12px; box-shadow:0 8px 24px var(--shadow); padding:10px; z-index:50; min-width:220px}
+.popover.hidden{display:none}
+.filters-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+@media (max-width: 640px){ .filters-grid{grid-template-columns:1fr} }
 
 /* Inputs */
 .md-field{position:relative}
@@ -375,6 +414,10 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
         const levelFilter = document.querySelector('#levelFilter');
         const exportJsonBtn = document.querySelector('#exportJson');
         const exportHtmlBtn = document.querySelector('#exportHtml');
+        const filtersBtn = document.querySelector('#filtersBtn');
+        const filtersPanel = document.querySelector('#filtersPanel');
+        const exportBtn = document.querySelector('#exportBtn');
+        const exportMenu = document.querySelector('#exportMenu');
         const themeToggle = document.querySelector('#themeToggle');
         const jsonPretty = document.querySelector('#jsonPretty');
         
@@ -763,6 +806,34 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
         });
         clearBtn?.addEventListener('click', async ()=>{ try{ await fetch('/api/clear', {method:'POST'}); }catch{} rows=[]; renderAll(); });
         drawerClose?.addEventListener('click', ()=> bodyEl.classList.remove('drawer-open'));
+        // Filters & Export popovers (don't close when clicking inside)
+        function isInside(el, target){ return !!(el && target && el instanceof Node && el.contains(target)); }
+        function closePopovers(e){
+          if (e) {
+            const t = e.target;
+            // If click is inside either popover or on their trigger buttons, don't close
+            if (isInside(filtersPanel, t) || isInside(exportMenu, t) || isInside(filtersBtn, t) || isInside(exportBtn, t)) return;
+          }
+          filtersPanel?.classList.add('hidden');
+          exportMenu?.classList.add('hidden');
+        }
+        filtersBtn?.addEventListener('click', (e)=>{
+          e.preventDefault(); e.stopPropagation();
+          const wasOpen = !filtersPanel?.classList.contains('hidden');
+          closePopovers();
+          if(!wasOpen) filtersPanel?.classList.remove('hidden');
+        });
+        exportBtn?.addEventListener('click', (e)=>{
+          e.preventDefault(); e.stopPropagation();
+          const wasOpen = !exportMenu?.classList.contains('hidden');
+          closePopovers();
+          if(!wasOpen) exportMenu?.classList.remove('hidden');
+        });
+        // Prevent clicks inside popovers from bubbling to document
+        filtersPanel?.addEventListener('click', (e)=> e.stopPropagation());
+        exportMenu?.addEventListener('click', (e)=> e.stopPropagation());
+        document.addEventListener('click', (e)=> closePopovers(e));
+        document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closePopovers(); });
         themeToggle?.addEventListener('click', ()=>{ const cur = document.documentElement.getAttribute('data-theme') || 'dark'; const next = cur==='dark'?'light':'dark'; applyTheme(next); localStorage.setItem('logtap:theme', next); });
         
         // ---- Bootstrap + WS status ----

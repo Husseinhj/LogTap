@@ -135,9 +135,24 @@ class LogTapInterceptor : Interceptor {
     }
 
     private fun isWebSocketUpgrade(resp: Response): Boolean {
-        return resp.code == 101 &&
-                resp.header("Connection")?.contains("upgrade", true) == true &&
-                resp.header("Upgrade")?.equals("websocket", true) == true
+        val req = resp.request
+
+        // HTTP/1.1 classic upgrade: 101 + headers
+        val isH1Upgrade = resp.code == 101 &&
+            resp.header("Connection")?.contains("upgrade", true) == true &&
+            resp.header("Upgrade")?.equals("websocket", true) == true
+
+        // Heuristics that are present in both H1/H2 handshakes
+        val hasWsHandshakeHeaders =
+            req.header("Upgrade")?.equals("websocket", true) == true ||
+            req.header("Sec-WebSocket-Key") != null ||
+            resp.header("Sec-WebSocket-Accept") != null
+
+        // HTTP/2 Extended CONNECT (RFC 8441): success uses 200, not 101.
+        // OkHttp may tunnel this without classic Upgrade headers on the response.
+        val isH2ExtendedConnect = resp.code == 200 && hasWsHandshakeHeaders
+
+        return isH1Upgrade || isH2ExtendedConnect
     }
 
     private fun hasNoResponseBody(resp: Response): Boolean {

@@ -450,6 +450,7 @@ body.hide-col-actions #logtbl .col-actions{display:none}
 
 /* ========================= Layout ========================= */
 .shell{display:flex;gap:12px;padding:12px;align-items:stretch}
+.stats{ overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:thin; }
 .panel{flex:1 1 auto;border:1px solid var(--line);border-radius:16px;background:var(--md-sys-color-surface);box-shadow:var(--elev-1);overflow:auto;overflow-x:auto;max-height:calc(100vh - 180px)}
 .repo{
   position:sticky;
@@ -474,6 +475,8 @@ body.hide-col-actions #logtbl .col-actions{display:none}
 /* ========================= Data Table (M3) ========================= */
 .tbl{width:100%;border-collapse:separate;border-spacing:0}
 .tbl thead th{position:sticky;top:0;background:var(--md-sys-color-surface-container);color:var(--muted);padding:12px 12px;text-align:left;border-bottom:1px solid var(--line);z-index:1;font-weight:600}
+/* Keep first header cells readable when table scrolls */
+.tbl thead th:first-child{ position:sticky; left:0; z-index:2 }
 .tbl tbody tr{background:var(--md-sys-color-surface);border-bottom:1px solid var(--line)}
 .tbl tbody tr:hover{background:var(--md-sys-color-surface-container-high)}
 .tbl tbody td{padding:14px 12px;vertical-align:top}
@@ -631,24 +634,52 @@ body.mode-log .col-url .url{display:none}
 /* Responsive */
 @media (max-width:1024px){ .tbl thead th,.tbl tbody td{padding:10px} .col-actions{width:140px} }
 @media (max-width:900px){ #logtbl thead .col-id,#logtbl tbody .col-id{display:none} #logtbl thead .col-kind,#logtbl tbody .col-kind{display:none} .col-time{width:96px}.col-method{width:80px}.col-status{width:80px}.col-actions{width:120px} .panel{max-height:calc(100vh - 220px)} .kv{grid-template-columns:140px 1fr} }
-@media (max-width:768px){ .hdr{padding:10px} .bar>*{flex:1 1 100%} .field{width:100%} .input,.select{width:100%} .stats{padding:8px 10px} .shell{padding:8px} .kv{grid-template-columns:1fr} .kv .full{grid-column:1 / -1} .cols{grid-template-columns:1fr} #ov-curl{max-height:50vh} #ov-summary{max-height:40vh} }
+@media (max-width:700px){
+  .shell{ flex-direction:column; }
+  /* Hide less critical columns by default on narrow viewports */
+  #logtbl thead .col-method, #logtbl tbody .col-method{ display:none }
+  #logtbl thead .col-status, #logtbl tbody .col-status{ display:none }
+  /* Make URL/Summary breathe */
+  .col-url{ width:auto }
+}
+@media (max-width:768px){
+  .tbl{ font-size:13px }
+  .hdr{padding:10px} .bar>*{flex:1 1 100%} .field{width:100%} .input,.select{width:100%} .stats{padding:8px 10px} .shell{padding:8px} .kv{grid-template-columns:1fr} .kv .full{grid-column:1 / -1} .cols{grid-template-columns:1fr} #ov-curl{max-height:50vh} #ov-summary{max-height:40vh}
+}
 @media (max-width:600px){
   .drawer{
-    position:static;
-    right:auto; left:auto; top:auto; bottom:auto;
-    width:0; flex:0 0 0; opacity:0; pointer-events:none;
+    position:fixed;
+    left:0; right:0;
+    top:96px; /* below header + stats */
+    bottom:0;
+    z-index:60;
+    width:auto; flex:0 0 auto;
+    opacity:0; pointer-events:none;
     max-width:none;
-    border-radius:16px;
-    height:calc(100vh - 260px);
+    border-radius:16px 16px 0 0;
+    height:auto;
   }
-  body.drawer-open .drawer{ width:min(90vw, var(--drawer-w)); flex-basis:min(90vw, var(--drawer-w)); opacity:1; pointer-events:auto; }
+  body.drawer-open .drawer{ opacity:1; pointer-events:auto; }
   .d-head{position:sticky;top:0;background:var(--md-sys-color-surface);z-index:5}
   .tabs{position:sticky;top:48px;background:var(--md-sys-color-surface);z-index:4}
   .panel{max-height:calc(100vh - 260px)}
   .tbl thead th,.tbl tbody td{padding:9px}
   .col-actions{display:none}
+  /* Compact table on phones */
+  #logtbl thead .col-tag, #logtbl tbody .col-tag{ display:none }
+  .tbl thead th, .tbl tbody td{ padding:8px }
+  .hdr{ flex-wrap:wrap }
+  .bar{ gap:6px }
+  .stats{ padding:6px 8px }
+  /* Popovers snap to left for small screens to avoid clipping */
+  .popover{ left:0; right:auto; }
+  .fp{ width: calc(100vw - 24px); max-width:none; }
 }
-@media (max-width:420px){ .titles{display:none} .chip{font-size:12px} .btn{padding:7px 10px} .icon{width:32px;height:32px} }
+@media (max-width:420px){
+  .titles{display:none} .chip{font-size:12px} .btn{padding:7px 10px} .icon{width:32px;height:32px}
+  #logtbl thead .col-time, #logtbl tbody .col-time{ display:none }
+  .tbl thead th, .tbl tbody td{ padding:7px }
+}
 """.trimIndent()
 
     val appJs = """

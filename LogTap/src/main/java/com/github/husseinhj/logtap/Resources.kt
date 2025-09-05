@@ -24,6 +24,7 @@ internal object Resources {
         </div>
       </div>
       <nav class="bar">
+        <div id="wsStatus" class="chip stat">● Disconnected</div>
         <div class="search field">
           <svg class="ico" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5Zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14Z"/></svg>
           <input id="search" class="input" type="search" placeholder="Search url, method, headers, body…  ⌘/Ctrl + K"/>
@@ -33,7 +34,6 @@ internal object Resources {
           <span class="label">Filters</span>
           <span class="material-symbols-outlined dropdown" aria-hidden="true">arrow_drop_down</span>
         </button>
-        <div id="wsStatus" class="chip stat">● Disconnected</div>
         <div class="menu">
           <button id="exportBtn" class="icon" title="Export" aria-label="Export">
             <span class="material-symbols-outlined" aria-hidden="true">ios_share</span>
@@ -51,24 +51,28 @@ internal object Resources {
           <span class="material-symbols-outlined ico-moon" aria-hidden="true">dark_mode</span>
         </button>
 
-        <!-- Filters popover -->
-        <div id="filtersPanel" class="popover hidden" role="dialog" aria-label="Filters">
-          <div class="grid">
-            <label>View
+        <!-- Filters popover (Material 3 sheet) -->
+        <div id="filtersPanel" class="popover hidden fp" role="dialog" aria-label="Filters">
+          <div class="fp-head">
+            <div class="fp-title">Filters</div>
+            <div class="fp-sub">Narrow what you see in the table</div>
+          </div>
+          <div class="fp-grid">
+            <label class="fp-field">View
               <select id="viewMode" class="select">
                 <option value="mix">Mix (All)</option>
                 <option value="network">Network only</option>
                 <option value="log">Logger only</option>
               </select>
             </label>
-            <label>Method
+            <label class="fp-field">Method
               <select id="methodFilter" class="select">
                 <option value="">All</option>
                 <option>GET</option><option>POST</option><option>PUT</option>
                 <option>PATCH</option><option>DELETE</option><option>WS</option>
               </select>
             </label>
-            <label>Status class
+            <label class="fp-field">Status class
               <select id="statusFilter" class="select">
                 <option value="">Any</option>
                 <option value="2xx">2xx</option>
@@ -77,10 +81,10 @@ internal object Resources {
                 <option value="5xx">5xx</option>
               </select>
             </label>
-            <label>Codes
+            <label class="fp-field">Codes
               <input id="statusCodeFilter" class="input" type="text" inputmode="numeric" pattern="[0-9xX,-,\s]*" placeholder="200, 2xx, 400-404"/>
             </label>
-            <label>Level
+            <label class="fp-field">Level
               <select id="levelFilter" class="select">
                 <option value="">Any Level</option>
                 <option value="VERBOSE">Verbose</option>
@@ -91,8 +95,31 @@ internal object Resources {
                 <option value="ASSERT">Assert</option>
               </select>
             </label>
-            <label class="switch"><input type="checkbox" id="jsonPretty"/><span>Pretty JSON</span></label>
-            <label class="switch"><input type="checkbox" id="autoScroll" checked/><span>Auto‑scroll</span></label>
+            <label class="fp-checkbox">
+              <input type="checkbox" id="jsonPretty"/>
+              <span class="box"></span>
+              <span class="lbl">Pretty JSON</span>
+            </label>
+            <label class="fp-checkbox">
+              <input type="checkbox" id="autoScroll" checked/>
+              <span class="box"></span>
+              <span class="lbl">Auto‑scroll</span>
+            </label>
+            <div class="fp-cols">
+              <div class="fp-cols-title">Columns</div>
+              <label class="fp-checkbox"><input type="checkbox" id="colId" checked/><span class="box"></span><span class="lbl">ID</span></label>
+              <label class="fp-checkbox"><input type="checkbox" id="colTime" checked/><span class="box"></span><span class="lbl">Time</span></label>
+              <label class="fp-checkbox"><input type="checkbox" id="colKind" checked/><span class="box"></span><span class="lbl">Kind</span></label>
+              <label class="fp-checkbox"><input type="checkbox" id="colTag" checked/><span class="box"></span><span class="lbl">Tag</span></label>
+              <label class="fp-checkbox"><input type="checkbox" id="colMethod" checked/><span class="box"></span><span class="lbl">Method</span></label>
+              <label class="fp-checkbox"><input type="checkbox" id="colStatus" checked/><span class="box"></span><span class="lbl">Status</span></label>
+              <label class="fp-checkbox"><input type="checkbox" id="colUrl" checked/><span class="box"></span><span class="lbl">URL / Summary</span></label>
+              <label class="fp-checkbox"><input type="checkbox" id="colActions" checked/><span class="box"></span><span class="lbl">Actions</span></label>
+            </div>
+          </div>
+          <div class="fp-actions">
+            <button id="filtersReset" class="btn ghost"><span class="material-symbols-outlined" aria-hidden="true">restart_alt</span> Reset</button>
+            <button id="filtersClose" class="btn"><span class="material-symbols-outlined" aria-hidden="true">done</span> Apply</button>
           </div>
         </div>
       </nav>
@@ -185,7 +212,13 @@ internal object Resources {
     </main>
 
     <script src="/app.js"></script>
-   <div class="repo"><a href="https://github.com/Husseinhj/LogTap" target="_blank" rel="noopener">GitHub — Husseinhj/LogTap</a></div>
+   <div class="repo">
+     <a href="https://github.com/Husseinhj/LogTap" target="_blank" rel="noopener">
+       <svg class="gh-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.62-.17 1.29-.27 2-.27s1.38.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+       GitHub — Husseinhj/LogTap
+     </a>
+     <div class="made">Made with ❤️ from Germany</div>
+   </div>
 
   </body>
 </html>
@@ -273,6 +306,7 @@ internal object Resources {
   --state-hover: .08;
   --state-focus: .12;
   --state-pressed: .12;
+  --drawer-w:560px;
 }
 
 *{box-sizing:border-box}
@@ -314,7 +348,19 @@ body.ui{margin:0;background:var(--bg);color:var(--text);font:14px ui-sans-serif,
 .popover{position:absolute;top:100%;margin-top:8px;right:0;background:var(--md-sys-color-surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--elev-3);padding:10px;z-index:50;min-width:220px}
 .popover.hidden{display:none}
 
-/* Export menu buttons styled as Material 3 list items */
+/* Filters popover (Material 3) */
+.fp{ padding:0; min-width: 360px; max-width: 520px; }
+.fp-head{ padding:14px 16px 8px; border-bottom:1px solid var(--line); }
+.fp-title{ font-weight:700; }
+.fp-sub{ color:var(--muted); font-size:12px; margin-top:2px; }
+.fp-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px 12px; padding:12px 12px 4px; }
+.fp-field .input, .fp-field .select{ width:100%; }
+.fp-switch{ display:flex; align-items:center; gap:10px; padding:6px 4px; }
+.fp-actions{ display:flex; justify-content:flex-end; gap:8px; padding:10px 12px; border-top:1px solid var(--line); }
+.fp-actions .btn{ display:inline-flex; align-items:center; gap:6px; }
+@media (max-width:520px){ .fp{ min-width: 280px; } .fp-grid{ grid-template-columns:1fr; } }
+
+# Export menu buttons styled as Material 3 list items
 #exportMenu .btn.block {
   background: transparent;
   border: 0;
@@ -332,6 +378,56 @@ body.ui{margin:0;background:var(--bg);color:var(--text);font:14px ui-sans-serif,
 #exportMenu .btn.block:active::after {
   opacity: var(--state-pressed);
 }
+
+/* Material 3 checkboxes inside filter panel */
+.fp-checkbox {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:6px 4px;
+  cursor:pointer;
+  user-select:none;
+}
+.fp-checkbox input {
+  appearance:none;
+  -webkit-appearance:none;
+  width:18px;
+  height:18px;
+  border:2px solid var(--line);
+  border-radius:4px;
+  background:var(--surface);
+  display:grid;
+  place-items:center;
+  margin:0;
+}
+.fp-checkbox input:checked {
+  background:var(--md-sys-color-primary);
+  border-color:var(--md-sys-color-primary);
+}
+.fp-checkbox input:checked::before {
+  content:"✓";
+  color:var(--md-sys-color-on-primary);
+  font-size:14px;
+  line-height:1;
+}
+.fp-checkbox .lbl {
+  font-size:14px;
+}
+
+/* Filters: Columns grid */
+.fp-cols{ grid-column:1 / -1; display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:6px 12px; padding-top:4px; }
+.fp-cols-title{ grid-column:1 / -1; font-weight:600; color:var(--muted); margin:4px 0; }
+@media (max-width:520px){ .fp-cols{ grid-template-columns:1fr; } }
+
+/* Column visibility (body classes) */
+body.hide-col-id      #logtbl .col-id{display:none}
+body.hide-col-time    #logtbl .col-time{display:none}
+body.hide-col-kind    #logtbl .col-kind{display:none}
+body.hide-col-tag     #logtbl .col-tag{display:none}
+body.hide-col-method  #logtbl .col-method{display:none}
+body.hide-col-status  #logtbl .col-status{display:none}
+body.hide-col-url     #logtbl .col-url{display:none}
+body.hide-col-actions #logtbl .col-actions{display:none}
 
 /* ========================= Assist/Stat Chips (M3) ========================= */
 .stats{display:flex;gap:8px;flex-wrap:wrap;padding:10px 16px}
@@ -353,10 +449,26 @@ body.ui{margin:0;background:var(--bg);color:var(--text);font:14px ui-sans-serif,
 
 /* ========================= Layout ========================= */
 .shell{display:flex;gap:12px;padding:12px;align-items:stretch}
-.panel{flex:1 1 auto;border:1px solid var(--line);border-radius:16px;background:var(--md-sys-color-surface);box-shadow:var(--elev-1);overflow:auto;max-height:calc(100vh - 180px)}
-.repo{padding:10px 12px;text-align:center;color:var(--muted);font-size:13px}
+.panel{flex:1 1 auto;border:1px solid var(--line);border-radius:16px;background:var(--md-sys-color-surface);box-shadow:var(--elev-1);overflow:auto;overflow-x:auto;max-height:calc(100vh - 180px)}
+.repo{
+  position:sticky;
+  bottom:0;
+  z-index:20;
+  padding:12px 16px;
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  background:var(--md-sys-color-surface);
+  border-top:1px solid var(--line);
+  box-shadow:var(--elev-1);
+}
 .repo a{color:inherit;text-decoration:none;border-bottom:1px dashed var(--line)}
 .repo a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+.repo .gh-ico{width:16px;height:16px;vertical-align:middle;margin-right:4px;fill:currentColor}
 
 /* ========================= Data Table (M3) ========================= */
 .tbl{width:100%;border-collapse:separate;border-spacing:0}
@@ -371,34 +483,46 @@ body.ui{margin:0;background:var(--bg);color:var(--text);font:14px ui-sans-serif,
 .status-2xx{color:#22c55e}.status-3xx{color:#fbbf24}.status-4xx{color:#fca5a5}.status-5xx{color:#fb7185}
 
 
-/* Log level colors */
-.level-VERBOSE .col-kind{color:#9ca3af}   /* gray */
-.level-DEBUG .col-kind{color:#3b82f6}     /* blue */
-.level-INFO .col-kind{color:#22c55e}      /* green */
-.level-WARN .col-kind{color:#f59e0b}      /* amber */
-.level-ERROR .col-kind{color:#ef4444}     /* red */
-.level-ASSERT .col-kind{color:#a855f7}    /* purple */
+/* Log level colors — Android Studio Logcat palette (Material 500) */
+.level-VERBOSE { color:#9E9E9E }  /* Grey 500 */
+.level-DEBUG   { color:#2196F3 }  /* Blue 500 */
+.level-INFO    { color:#4CAF50 }  /* Green 500 */
+.level-WARN    { color:#FFC107 }  /* Amber 500 */
+.level-ERROR   { color:#F44336 }  /* Red 500 */
+.level-ASSERT  { color:#9C27B0 }  /* Purple 500 */
 
-/* Log level row tints */
-.tbl tbody tr.level-VERBOSE{ background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 #9ca3af55; }
-.tbl tbody tr.level-DEBUG  { background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 #3b82f655; }
-.tbl tbody tr.level-INFO   { background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 #22c55e55; }
-.tbl tbody tr.level-WARN   { background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 #f59e0b55; }
-.tbl tbody tr.level-ERROR  { background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 #ef444455; }
-.tbl tbody tr.level-ASSERT { background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 #a855f755; }
+/* Log level row tints (matching Logcat colors) */
+.tbl tbody tr.level-VERBOSE{ background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 rgba(158,158,158,.33); }
+.tbl tbody tr.level-DEBUG  { background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 rgba(33,150,243,.33); }
+.tbl tbody tr.level-INFO   { background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 rgba(76,175,80,.33); }
+.tbl tbody tr.level-WARN   { background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 rgba(255,193,7,.33); }
+.tbl tbody tr.level-ERROR  { background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 rgba(244,67,54,.33); }
+.tbl tbody tr.level-ASSERT { background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 rgba(156,39,176,.33); }
 
-/* Preserve tint on hover while slightly lifting surface */
-.tbl tbody tr.level-VERBOSE:hover{ background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 #9ca3af77; }
-.tbl tbody tr.level-DEBUG:hover  { background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 #3b82f677; }
-.tbl tbody tr.level-INFO:hover   { background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 #22c55e77; }
-.tbl tbody tr.level-WARN:hover   { background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 #f59e0b77; }
-.tbl tbody tr.level-ERROR:hover  { background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 #ef444477; }
-.tbl tbody tr.level-ASSERT:hover { background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 #a855f777; }
+/* Preserve tint on hover */
+.tbl tbody tr.level-VERBOSE:hover{ background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 rgba(158,158,158,.47); }
+.tbl tbody tr.level-DEBUG:hover  { background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 rgba(33,150,243,.47); }
+.tbl tbody tr.level-INFO:hover   { background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 rgba(76,175,80,.47); }
+.tbl tbody tr.level-WARN:hover   { background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 rgba(255,193,7,.47); }
+.tbl tbody tr.level-ERROR:hover  { background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 rgba(244,67,54,.47); }
+.tbl tbody tr.level-ASSERT:hover { background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 rgba(156,39,176,.47); }
 
-/* Drawer (M3 side sheet) */
-:root{--drawer-w:560px}
-.drawer{border:1px solid var(--line);border-radius:16px;height:calc(100vh - 180px);overflow:auto;flex:0 0 0;width:0;opacity:0;pointer-events:none;transition:width .26s ease,flex-basis .26s ease,opacity .2s ease,border-color .2s ease;background:var(--md-sys-color-surface);box-shadow:var(--elev-2)}
-body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacity:1;pointer-events:auto}
+/* Drawer styles (hidden by default) */
+.drawer{
+  position:relative;
+  border:1px solid var(--line);
+  border-radius:16px;
+  height:calc(100vh - 180px);
+  overflow:auto;
+  flex:0 0 0;
+  width:0;
+  opacity:0;
+  pointer-events:none;
+  transition:flex-basis .2s ease,width .2s ease,opacity .2s ease,border-color .2s ease;
+  background:var(--md-sys-color-surface);
+  box-shadow:var(--elev-2);
+}
+body.drawer-open .drawer{ flex-basis:var(--drawer-w); width:var(--drawer-w); opacity:1; pointer-events:auto }
 .d-head{display:flex;justify-content:space-between;align-items:center;padding:16px 16px;border-bottom:1px solid var(--line)}
 .d-title{font-weight:700}.d-sub{color:var(--muted);font-size:12px;margin-top:4px}
 .tabs{display:flex;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line)}
@@ -410,7 +534,54 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
 .kv{display:grid;grid-template-columns:160px 1fr;gap:12px 16px}
 .kv dt{color:var(--muted)} .kv dd{margin:0}
 .kv .full{grid-column:1 / -1}
+
 .cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* Colorful drawer content */
+#drawer .d-title{ color: var(--md-sys-color-primary); }
+#drawer .d-sub{ color: var(--md-sys-color-secondary); }
+#drawer .kv dt{ color: var(--md-sys-color-on-surface-variant); font-weight:600; }
+#drawer .kv dd{ color: var(--md-sys-color-on-surface); }
+#drawer .badge{ background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); border:none; }
+#drawer pre.code{ background: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface); }
+
+/* Colorful panes */
+.panes h4{ color: var(--md-sys-color-primary); margin: 6px 0 8px; }
+.panes h5{ color: var(--md-sys-color-secondary); margin: 4px 0 6px; }
+#tab-request pre.code,
+#tab-response pre.code,
+#tab-headers pre.code{ background: var(--md-sys-color-surface-container-high); border-color: var(--md-sys-color-outline-variant); }
+
+/* Extra color accents inside panes */
+.panes a{ color: var(--md-sys-color-primary); text-decoration: none; }
+.panes a:hover{ text-decoration: underline; }
+.panes .badge{ background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); border: none; }
+.panes pre.code{ border-left: 3px solid var(--md-sys-color-primary); }
+.panes .muted{ color: var(--md-sys-color-on-surface-variant); }
+.panes .callout{ border:1px solid var(--md-sys-color-outline-variant); background: var(--md-sys-color-surface-container); border-radius: 12px; padding: 10px 12px; }
+
+/* Headers highlighting inside code blocks */
+.code.headers { background: var(--md-sys-color-surface-container-high); }
+.code.headers .hk{ color: var(--md-sys-color-primary); font-weight:600; }
+.code.headers .hv{ color: var(--md-sys-color-on-surface); }
+
+/* Colorful JSON syntax highlighting (applies in drawer + table) */
+.json .k { color:#d19a66; }   /* keys - orange */
+.json .s { color:#98c379; }   /* strings - green */
+.json .n { color:#61afef; }   /* numbers - blue */
+.json .b { color:#c678dd; }   /* booleans - purple */
+.json .null { color:#e06c75; } /* null - red */
+
+/* Colorful summary block container */
+#drawer .sum {
+  padding: 8px;
+}
+#drawer .sum pre.code {
+  background: transparent;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.4;
+}
 
 /* Code blocks */
 .code{background:var(--codebg);color:var(--code);border:1px solid var(--line);border-radius:12px;padding:12px;overflow:auto;max-height:22vh;white-space:pre-wrap;word-break:break-word}
@@ -422,6 +593,12 @@ body.drawer-open .drawer{flex-basis:var(--drawer-w);width:var(--drawer-w);opacit
 /* WebSocket direction glyphs */
 .ws-ico{margin-left:6px;font:12px ui-monospace,Menlo,monospace;vertical-align:middle}
 .ws-send{color:var(--warn)} .ws-recv{color:#22c55e}
+
+/* Logcat line styling */
+.lc{font:12px ui-monospace,Menlo,monospace; white-space:pre-wrap; word-break:break-word}
+.lc-ts{color:var(--muted)}
+.lc-prio{font-weight:700}
+.lc-tag{color:#00bcd4}
 
 /* Modes */
 body.mode-network .col-tag{display:none}
@@ -447,7 +624,22 @@ body.mode-log .col-url .url{display:none}
 @media (max-width:1024px){ .tbl thead th,.tbl tbody td{padding:10px} .col-actions{width:140px} }
 @media (max-width:900px){ #logtbl thead .col-id,#logtbl tbody .col-id{display:none} #logtbl thead .col-kind,#logtbl tbody .col-kind{display:none} .col-time{width:96px}.col-method{width:80px}.col-status{width:80px}.col-actions{width:120px} .panel{max-height:calc(100vh - 220px)} .kv{grid-template-columns:140px 1fr} }
 @media (max-width:768px){ .hdr{padding:10px} .bar>*{flex:1 1 100%} .field{width:100%} .input,.select{width:100%} .stats{padding:8px 10px} .shell{padding:8px} .kv{grid-template-columns:1fr} .kv .full{grid-column:1 / -1} .cols{grid-template-columns:1fr} #ov-curl{max-height:50vh} #ov-summary{max-height:40vh} }
-@media (max-width:600px){ .drawer{position:fixed;inset:56px 0 0 0;z-index:30;border-radius:0;max-height:none;height:auto} .d-head{position:sticky;top:0;background:var(--md-sys-color-surface);z-index:5} .tabs{position:sticky;top:48px;background:var(--md-sys-color-surface);z-index:4} .panel{max-height:calc(100vh - 260px)} .tbl thead th,.tbl tbody td{padding:9px} .col-actions{display:none} }
+@media (max-width:600px){
+  .drawer{
+    position:static;
+    right:auto; left:auto; top:auto; bottom:auto;
+    width:0; flex:0 0 0; opacity:0; pointer-events:none;
+    max-width:none;
+    border-radius:16px;
+    height:calc(100vh - 260px);
+  }
+  body.drawer-open .drawer{ width:min(90vw, var(--drawer-w)); flex-basis:min(90vw, var(--drawer-w)); opacity:1; pointer-events:auto; }
+  .d-head{position:sticky;top:0;background:var(--md-sys-color-surface);z-index:5}
+  .tabs{position:sticky;top:48px;background:var(--md-sys-color-surface);z-index:4}
+  .panel{max-height:calc(100vh - 260px)}
+  .tbl thead th,.tbl tbody td{padding:9px}
+  .col-actions{display:none}
+}
 @media (max-width:420px){ .titles{display:none} .chip{font-size:12px} .btn{padding:7px 10px} .icon{width:32px;height:32px} }
 """.trimIndent()
 
@@ -485,6 +677,16 @@ body.mode-log .col-url .url{display:none}
         const chipLog   = document.querySelector('#chipLog');
         const chipGet   = document.querySelector('#chipGet');
         const chipPost  = document.querySelector('#chipPost');
+
+        // Column toggles
+        const colId = document.querySelector('#colId');
+        const colTime = document.querySelector('#colTime');
+        const colKind = document.querySelector('#colKind');
+        const colTag = document.querySelector('#colTag');
+        const colMethod = document.querySelector('#colMethod');
+        const colStatus = document.querySelector('#colStatus');
+        const colUrl = document.querySelector('#colUrl');
+        const colActions = document.querySelector('#colActions');
         
         const drawer = document.querySelector('#drawer');
         const drawerClose = document.querySelector('#drawerClose');
@@ -518,6 +720,45 @@ body.mode-log .col-url .url{display:none}
           if (!t) t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
           applyTheme(t);
         }
+
+        // ---- Preferences ----
+        function initPrefs(){
+          try{
+            const v = localStorage.getItem('logtap:jsonPretty');
+            if(jsonPretty && v!==null){ jsonPretty.checked = (v === '1'); }
+          }catch{}
+        }
+
+        // ---- Column visibility persistence ----
+        function loadCols(){
+          try{ return JSON.parse(localStorage.getItem('logtap:cols')||'{}') }catch{ return {} }
+        }
+        function saveCols(cfg){ try{ localStorage.setItem('logtap:cols', JSON.stringify(cfg||{})) }catch{}
+        }
+        function applyCols(cfg){
+          const m = Object.assign({
+            id:true,time:true,kind:true,tag:true,method:true,status:true,url:true,actions:true
+          }, cfg||{});
+          // set checkbox states
+          if(colId) colId.checked = !!m.id;
+          if(colTime) colTime.checked = !!m.time;
+          if(colKind) colKind.checked = !!m.kind;
+          if(colTag) colTag.checked = !!m.tag;
+          if(colMethod) colMethod.checked = !!m.method;
+          if(colStatus) colStatus.checked = !!m.status;
+          if(colUrl) colUrl.checked = !!m.url;
+          if(colActions) colActions.checked = !!m.actions;
+          // toggle body classes
+          bodyEl.classList.toggle('hide-col-id',      !m.id);
+          bodyEl.classList.toggle('hide-col-time',    !m.time);
+          bodyEl.classList.toggle('hide-col-kind',    !m.kind);
+          bodyEl.classList.toggle('hide-col-tag',     !m.tag);
+          bodyEl.classList.toggle('hide-col-method',  !m.method);
+          bodyEl.classList.toggle('hide-col-status',  !m.status);
+          bodyEl.classList.toggle('hide-col-url',     !m.url);
+          bodyEl.classList.toggle('hide-col-actions', !m.actions);
+        }
+        let colCfg = loadCols();
 
         // ---- Utils ----
         function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
@@ -577,6 +818,24 @@ body.mode-log .col-url .url{display:none}
             if(m) l = m[1].toUpperCase();
           }
           return l;
+       }
+
+       function logcatLine(ev){
+          // Return only the message content for table summary; strip duplicates like ts/level/tag/pid
+          let msg = (ev.summary!=null && ev.summary!=='') ? String(ev.summary) : (ev.message || '');
+          if (!msg) return '';
+          try{
+            // Strip leading timestamp like "MM-DD HH:mm:ss.SSS" or "YYYY-MM-DD HH:mm:ss.SSS"
+            msg = msg.replace(/^\s*(\d{2}|\d{4})-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?\s*/,'');
+            // Strip classic logcat prefix: "E/Tag(123): " or "D/Tag:" etc.
+            msg = msg.replace(/^\s*[VDIWEA]\s*\/\s*[^:()]+(?:\([^)]*\))?\s*:\s*/,'');
+            // If we know the level or tag, strip them if they appear at the start like "[INFO] Tag:"
+            const lvl = (levelOf(ev)||'').toUpperCase();
+            if(lvl) msg = msg.replace(new RegExp('^\\s*\\['+lvl+'\\]\\s*:?\\s*',''),'');
+            const tag = (ev.tag||'');
+            if(tag) msg = msg.replace(new RegExp('^\\s*'+tag.replace(/[.*+?^${'$'}}()|[\\]\\\\]/g,'\\$&')+'\\s*:?\\s*'),'');
+          }catch{}
+          return msg.trim();
        }
 
        function applyMode(){
@@ -801,10 +1060,13 @@ body.mode-log .col-url .url{display:none}
             `<td class="col-tag">${'$'}{escapeHtml(tagTxt)}</td>`+
             `<td class="col-method">${'$'}{escapeHtml(ev.method || (kind==='WEBSOCKET'?'WS':''))}</td>`+
             `<td class="col-status ${'$'}{classForStatus(ev.status)}">${'$'}{ev.status ?? ''}</td>`+
-            `<td class="col-url">`+
-              `<div class="url">${'$'}{escapeHtml(ev.url || '')}</div>`+
-              (ev.summary ? `<div class="muted">${'$'}{escapeHtml(ev.summary)}</div>` : '')+
-            `</td>`;
+            (kind==='LOG'
+              ? (`<td class="col-url"><div class="lc">${'$'}{logcatLine(ev)}</div></td>`)
+              : (`<td class="col-url">`+
+                   `<div class="url">${'$'}{escapeHtml(ev.url || '')}</div>`+
+                   (ev.summary ? `<div class="muted">${'$'}{escapeHtml(ev.summary)}</div>` : '')+
+                 `</td>`)
+            );
           // pretty body preview under URL cell (respects global Pretty JSON toggle)
           if (ev.bodyPreview) {
             const pre = document.createElement('pre');
@@ -830,6 +1092,24 @@ body.mode-log .col-url .url{display:none}
         // ---- Drawer ----
         function setText(id,v){ const el=document.getElementById(id); if(el) el.textContent = v==null?'':String(v); }
         function setJson(id,raw){ const el=document.getElementById(id); if(!el) return; if(!raw){ el.textContent=''; return;} el.innerHTML = hlJson(raw); }
+        function headersToLines(map){
+          try{ return Object.entries(map||{}).map(([k,v])=> k+': '+(Array.isArray(v)?v.join(', '): String(v))).join('\n'); }catch{ return ''; }
+        }
+        function hlHeaders(text){
+          return String(text||'').split('\n').map(line=>{
+            const m = line.match(/^([^:]+):\s*(.*)$/);
+            if(m){
+              return '<span class="hk">'+escapeHtml(m[1])+'</span>: <span class="hv">'+escapeHtml(m[2])+'</span>';
+            }
+            return escapeHtml(line);
+          }).join('\n');
+        }
+        function setHeaders(id, map){
+          const el = document.getElementById(id); if(!el) return;
+          const txt = headersToLines(map);
+          el.classList.add('headers');
+          el.innerHTML = hlHeaders(txt);
+        }
         function activateTab(name){ tabs.forEach(b=>b.classList.toggle('active', b.dataset.tab===name)); document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('active', p.id==='tab-'+name)); }
         function show(id, on){ const el=document.getElementById(id); if(!el) return; el.classList.toggle('hidden', !on); }
         function setActiveTabIfHidden(){
@@ -901,8 +1181,8 @@ body.mode-log .col-url .url{display:none}
           else setText('ov-thread', ev.thread ?? '');
           setJson('req-body', bodyFor(ev,'request'));
           setJson('resp-body', bodyFor(ev,'response'));
-          const rh = document.getElementById('req-headers'); if(rh) rh.textContent = ev.headers ? Object.entries(ev.headers).map(([k,v])=> k+': '+(Array.isArray(v)?v.join(', '):v)).join('\n') : '';
-          const ph = document.getElementById('resp-headers'); if(ph) ph.textContent = '';
+          setHeaders('req-headers', ev.headers || {});
+          setHeaders('resp-headers', ev.responseHeaders || {});
           const oc = document.getElementById('ov-curl'); if(oc) oc.textContent = curlFor(ev);
           if(curlCopyBtn){ curlCopyBtn.onclick = async (e)=>{ e.preventDefault(); e.stopPropagation(); const ocEl = document.getElementById('ov-curl'); const ok = await copyText(ocEl?.textContent || ''); if(ok){ const old = curlCopyBtn.textContent; curlCopyBtn.textContent = 'Copied!'; setTimeout(()=> curlCopyBtn.textContent = old, 1200); } }; }
           const os = document.getElementById('ov-summary');
@@ -924,6 +1204,16 @@ body.mode-log .col-url .url{display:none}
         });
         
         // ---- Events ----
+        function onColChange(){
+          colCfg = {
+            id: !!(colId?.checked), time: !!(colTime?.checked), kind: !!(colKind?.checked), tag: !!(colTag?.checked),
+            method: !!(colMethod?.checked), status: !!(colStatus?.checked), url: !!(colUrl?.checked), actions: !!(colActions?.checked)
+          };
+          saveCols(colCfg); applyCols(colCfg);
+        }
+        [colId,colTime,colKind,colTag,colMethod,colStatus,colUrl,colActions].forEach(el=> el?.addEventListener('change', onColChange));
+        // Apply saved column visibility on startup
+        applyCols(colCfg);
         search?.addEventListener('input', ()=>{ filterText = search.value.trim().toLowerCase(); renderAll(); });
         // Make stat chips clickable
         allChips.push(chipTotal, chipHttp, chipWs, chipLog, chipGet, chipPost);
@@ -940,6 +1230,7 @@ body.mode-log .col-url .url{display:none}
         statusCodeFilter?.addEventListener('input', renderAll);
         levelFilter?.addEventListener('change', renderAll);
         jsonPretty?.addEventListener('change', ()=>{
+          try{ localStorage.setItem('logtap:jsonPretty', jsonPretty.checked ? '1' : '0'); }catch{}
           renderAll();
           if (currentEv) openDrawer(currentEv);
         });
@@ -968,6 +1259,12 @@ body.mode-log .col-url .url{display:none}
           closePopovers();
           if(!wasOpen) exportMenu?.classList.remove('hidden');
         });
+        // Filters actions (Reset / Apply)
+        const filtersReset = document.querySelector('#filtersReset');
+        const filtersClose = document.querySelector('#filtersClose');
+        filtersReset?.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); resetFilters(); renderAll(); });
+        filtersClose?.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); filtersPanel?.classList.add('hidden'); });
+
         // Prevent clicks inside popovers from bubbling to document
         filtersPanel?.addEventListener('click', (e)=> e.stopPropagation());
         exportMenu?.addEventListener('click', (e)=> e.stopPropagation());
@@ -978,6 +1275,7 @@ body.mode-log .col-url .url{display:none}
         // ---- Bootstrap + WS status ----
         async function bootstrap(){
           initTheme();
+          initPrefs();
           try{ const res = await fetch('/api/logs?limit=1000'); if(!res.ok) throw new Error('HTTP '+res.status); rows = await res.json(); }
           catch(err){ console.error('[LogTap] failed to fetch /api/logs', err); rows=[]; }
           applyMode();

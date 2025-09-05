@@ -117,7 +117,7 @@ class LoggingWebSocket(private val real: WebSocket) : WebSocket by real {
 fun okhttp3.OkHttpClient.newWebSocketWithLogging(
     request: Request,
     listener: WebSocketListener
-): WebSocket? {
+): WebSocket {
     val loggingListener = LoggingWebSocketListener(listener)
     val ws = this.newWebSocket(request, loggingListener)
     return LoggingWebSocket(ws)

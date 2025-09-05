@@ -7,6 +7,6 @@ import okhttp3.WebSocketListener
 fun okhttp3.OkHttpClient.newWebSocketWithLogging(
     request: Request,
     listener: WebSocketListener
-): WebSocket? {
-    return null
+): WebSocket {
+    return this.newWebSocket(request, listener)
 }

@@ -901,11 +901,27 @@ body.mode-log .col-url .url{display:none}
         const allChips = [];
         function setActiveChip(el){ allChips.forEach(c=>c?.classList.remove('active')); el?.classList.add('active'); }
         function resetFilters(){
+          // Text & selects
           if(search){ search.value=''; filterText=''; }
           if(methodFilter) methodFilter.value='';
           if(statusFilter) statusFilter.value='';
           if(statusCodeFilter) statusCodeFilter.value='';
           if(levelFilter) levelFilter.value='';
+          if(viewMode){ viewMode.value='mix'; applyMode(); }
+          
+          // Pretty JSON defaults to OFF
+          if(jsonPretty){
+            jsonPretty.checked = false;
+            try{ localStorage.setItem('logtap:jsonPretty','0'); }catch{}
+          }
+
+          // Columns: show all
+          const allTrue = {id:true,time:true,kind:true,tag:true,method:true,status:true,url:true,actions:true};
+          try{ localStorage.setItem('logtap:cols', JSON.stringify(allTrue)); }catch{}
+          applyCols(allTrue);
+
+          // Clear active stat chip highlight
+          try{ allChips.forEach(c=>c?.classList.remove('active')); }catch{}
         }
         function applyStatFilter(kind){
           switch(kind){

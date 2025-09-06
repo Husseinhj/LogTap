@@ -508,9 +508,27 @@ body.hide-col-actions #logtbl .col-actions{display:none}
 
 /* ========================= Data Table (M3) ========================= */
 .tbl{width:100%;border-collapse:separate;border-spacing:0}
-.tbl thead th{position:sticky;top:0;background:var(--md-sys-color-surface-container);color:var(--muted);padding:12px 12px;text-align:left;border-bottom:1px solid var(--line);z-index:1;font-weight:600}
+.tbl thead th {
+  position: sticky;
+  top: 0;
+  background: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: .5px;
+  padding: 14px 12px;
+  text-align: left;
+  border-bottom: 2px solid var(--md-sys-color-outline-variant);
+  z-index: 2;
+  text-transform: uppercase;
+}
 /* Keep first header cells readable when table scrolls */
-.tbl thead th:first-child{ position:sticky; left:0; z-index:2 }
+.tbl thead th:first-child{
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  background: var(--md-sys-color-surface-container-high);
+}
 .tbl tbody tr{background:var(--md-sys-color-surface);border-bottom:1px solid var(--line)}
 .tbl tbody tr:hover{background:var(--md-sys-color-surface-container-high)}
 .tbl tbody td{padding:14px 12px;vertical-align:top}
@@ -554,6 +572,7 @@ body.hide-col-actions #logtbl .col-actions{display:none}
   --m-ws:#06b6d4;    /* cyan  */
 }
 :/* === Scheme overrides for HTTP/WS palettes === */
+
 :root[data-scheme="android"]{
   /* Android Studio style */
   --m-get:#3b82f6; --m-post:#22c55e; --m-put:#f59e0b; --m-patch:#a855f7; --m-delete:#ef4444; --m-ws:#06b6d4;
@@ -573,6 +592,85 @@ body.hide-col-actions #logtbl .col-actions{display:none}
   /* Grafana palette */
   --m-get:#60a5fa; --m-post:#22c55e; --m-put:#f59e0b; --m-patch:#d946ef; --m-delete:#ef4444; --m-ws:#06b6d4;
   --ws-send:#06b6d4; --ws-recv:#22c55e; --ws-ping:#a3e635; --ws-pong:#f59e0b; --ws-close:#ef4444;
+}
+
+/* === Scheme-driven UI theming (fonts, density, radii) === */
+:root{
+  /* defaults */
+  --font-ui: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
+  --font-mono: ui-monospace, Menlo, Consolas, "Cascadia Code", monospace;
+  --font-size: 14px;
+  --radius: 12px;           /* component corner radius */
+  --radius-lg: 16px;        /* large containers */
+  --row-pad: 14px;          /* table row vertical padding */
+  --chip-radius: 999px;     /* pills */
+}
+:root[data-scheme="android"]{
+  --font-ui: Roboto, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial;
+  --font-mono: Roboto Mono, ui-monospace, Menlo, Consolas, monospace;
+  --font-size: 14px;
+  --radius: 12px; --radius-lg: 16px; --row-pad: 14px;
+}
+:root[data-scheme="xcode"]{
+  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui;
+  --font-mono: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+  --font-size: 13px;
+  --radius: 10px; --radius-lg: 14px; --row-pad: 12px;
+}
+:root[data-scheme="vscode"]{
+  --font-ui: "Segoe UI", system-ui, Roboto, Helvetica, Arial;
+  --font-mono: "Cascadia Code", Consolas, ui-monospace, Menlo, monospace;
+  --font-size: 13.5px;
+  --radius: 8px; --radius-lg: 12px; --row-pad: 10px;
+}
+:root[data-scheme="grafana"]{
+  --font-ui: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --font-size: 14px;
+  --radius: 6px; --radius-lg: 10px; --row-pad: 12px;
+}
+
+/* === THEME-DRIVEN COLOR OVERRIDES (Light/Dark) ===
+   These override scheme colors so hues follow theme. */
+:root[data-theme="light"]{
+  /* HTTP methods */
+  --m-get: var(--md-sys-color-primary);
+  --m-post: var(--md-sys-color-secondary);
+  --m-put: color-mix(in srgb, var(--md-sys-color-primary) 55%, var(--md-sys-color-surface));
+  --m-patch: color-mix(in srgb, var(--md-sys-color-secondary) 55%, var(--md-sys-color-surface));
+  --m-delete: var(--md-sys-color-error);
+  --m-ws: color-mix(in srgb, var(--md-sys-color-primary) 40%, var(--md-sys-color-secondary) 60%);
+  /* WebSocket */
+  --ws-send: var(--m-ws);
+  --ws-recv: var(--m-post);
+  --ws-ping: color-mix(in srgb, var(--md-sys-color-secondary) 65%, var(--md-sys-color-surface));
+  --ws-pong: color-mix(in srgb, var(--md-sys-color-primary) 65%, var(--md-sys-color-surface));
+  --ws-close: var(--md-sys-color-error);
+  /* HTTP status classes */
+  --st-2xx: var(--m-post);
+  --st-3xx: color-mix(in srgb, var(--md-sys-color-primary) 55%, #fbbf24);
+  --st-4xx: color-mix(in srgb, var(--md-sys-color-error) 85%, var(--md-sys-color-surface));
+  --st-5xx: color-mix(in srgb, var(--md-sys-color-error) 95%, black);
+}
+:root[data-theme="dark"]{
+  /* HTTP methods */
+  --m-get: var(--md-sys-color-primary);
+  --m-post: var(--md-sys-color-secondary);
+  --m-put: color-mix(in srgb, var(--md-sys-color-primary) 65%, var(--md-sys-color-surface));
+  --m-patch: color-mix(in srgb, var(--md-sys-color-secondary) 65%, var(--md-sys-color-surface));
+  --m-delete: var(--md-sys-color-error);
+  --m-ws: color-mix(in srgb, var(--md-sys-color-primary) 50%, var(--md-sys-color-secondary) 50%);
+  /* WebSocket */
+  --ws-send: var(--m-ws);
+  --ws-recv: var(--m-post);
+  --ws-ping: color-mix(in srgb, var(--md-sys-color-secondary) 75%, var(--md-sys-color-surface));
+  --ws-pong: color-mix(in srgb, var(--md-sys-color-primary) 75%, var(--md-sys-color-surface));
+  --ws-close: var(--md-sys-color-error);
+  /* HTTP status classes */
+  --st-2xx: var(--m-post);
+  --st-3xx: color-mix(in srgb, var(--md-sys-color-primary) 70%, #f59e0b);
+  --st-4xx: color-mix(in srgb, var(--md-sys-color-error) 85%, var(--md-sys-color-surface));
+  --st-5xx: color-mix(in srgb, var(--md-sys-color-error) 92%, black);
 }
 /* Method tints in table */
 .tbl tbody tr .col-method.method-GET   { color: var(--m-get); }
@@ -666,10 +764,10 @@ body.hide-col-actions #logtbl .col-actions{display:none}
 .tbl tbody tr.level-ASSERT  .col-url { color: var(--lv-a); }
 
 /* Color by HTTP status class (for network rows) */
-.tbl tbody tr.status-2xx .col-time, .tbl tbody tr.status-2xx .col-url .url { color:#22c55e; }
-.tbl tbody tr.status-3xx .col-time, .tbl tbody tr.status-3xx .col-url .url { color:#fbbf24; }
-.tbl tbody tr.status-4xx .col-time, .tbl tbody tr.status-4xx .col-url .url { color:#fca5a5; }
-.tbl tbody tr.status-5xx .col-time, .tbl tbody tr.status-5xx .col-url .url { color:#fb7185; }
+.tbl tbody tr.status-2xx .col-time, .tbl tbody tr.status-2xx .col-url .url { color: var(--st-2xx); }
+.tbl tbody tr.status-3xx .col-time, .tbl tbody tr.status-3xx .col-url .url { color: var(--st-3xx); }
+.tbl tbody tr.status-4xx .col-time, .tbl tbody tr.status-4xx .col-url .url { color: var(--st-4xx); }
+.tbl tbody tr.status-5xx .col-time, .tbl tbody tr.status-5xx .col-url .url { color: var(--st-5xx); }
 
 /* ===== Make all table column values colorful by row context ===== */
 /* Logger rows: color all cells by level */
@@ -855,6 +953,25 @@ body.mode-log .col-url .url{display:none}
 :root[data-theme="light"] #themeToggle .ico-moon{ display:none }
 :root[data-theme="dark"] #themeToggle .ico-sun{ display:none }
 :root[data-theme="dark"] #themeToggle .ico-moon{ display:block }
+
+/* === Apply scheme UI variables globally === */
+body.ui{ font-size: var(--font-size); font-family: var(--font-ui); }
+.code, pre, kbd, samp, .lc{ font-family: var(--font-mono); }
+
+/* Corners follow scheme */
+.input, .select, .btn, .icon, .panel, .popover, .tbl thead th, .drawer, .badge, .chip{  }
+.drawer{ border-radius: var(--radius-lg); }
+
+/* Density: table paddings by scheme */
+.tbl thead th{ padding: calc(var(--row-pad) - 2px) 12px; }
+.tbl tbody td{ padding: var(--row-pad) 12px; }
+
+/* Buttons compactness varies subtly per scheme */
+.btn{ padding: calc(var(--row-pad) - 6px) 16px; }
+.btn.xs{ padding: calc(var(--row-pad) - 8px) 10px; }
+
+/* Chips reflect scheme corners */
+.chip{ border-radius: var(--chip-radius); }
 
 /* Responsive */
 @media (max-width:1024px){ .tbl thead th,.tbl tbody td{padding:10px} .col-actions{width:140px} }

@@ -95,6 +95,14 @@ internal object Resources {
                 <option value="ASSERT">Assert</option>
               </select>
             </label>
+            <label class="fp-field">Colors
+              <select id="colorScheme" class="select">
+                <option value="android">Android Studio</option>
+                <option value="xcode">Xcode</option>
+                <option value="vscode">Visual Studio Code</option>
+                <option value="grafana">Grafana</option>
+              </select>
+            </label>
             <label class="fp-checkbox">
               <input type="checkbox" id="jsonPretty"/>
               <span class="box"></span>
@@ -432,15 +440,41 @@ body.hide-col-actions #logtbl .col-actions{display:none}
 
 /* ========================= Assist/Stat Chips (M3) ========================= */
 .stats{display:flex;gap:8px;flex-wrap:wrap;padding:10px 16px}
-.chip{background:var(--md-sys-color-surface-container-high);border:1px solid var(--line);padding:6px 12px;border-radius:999px}
+.chip{background:var(--md-sys-color-surface-container-high);border:1px solid var(--line);padding:6px 12px;border-radius:999px;transition:background .15s,border-color .15s,color .15s,box-shadow .15s}
 
 .chip.stat{font:12px ui-monospace,Menlo,monospace}
 
 /* Clickable stats */
 .stats .chip{cursor:default; user-select:none}
-.stats .chip.clickable{cursor:pointer}
-.stats .chip.clickable:hover{background:var(--md-sys-color-surface-container-highest)}
-.stats .chip.active{outline:2px solid var(--accent); outline-offset:2px; background:var(--md-sys-color-primary-container); color:var(--md-sys-color-on-primary-container)}
+.stats .chip.clickable{cursor:pointer; position:relative}
+.stats .chip.clickable:hover{background:var(--md-sys-color-surface-container-highest); box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%, transparent) inset}
+.stats .chip.clickable:active{box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 32%, transparent) inset}
+/* Selected (visible even in dark): allow aria-pressed or .active */
+.stats .chip.active,
+.stats .chip[aria-pressed="true"]{
+  background:var(--md-sys-color-primary);
+  color:var(--md-sys-color-on-primary);
+  border-color:transparent;
+  box-shadow:0 0 0 2px color-mix(in srgb,var(--md-sys-color-primary) 60%, transparent), 0 1px 2px rgba(0,0,0,.25);
+  font-weight:700;
+  transform:translateY(-1px);
+}
+/* Add an obvious check dot on the left for selected state */
+.stats .chip.active::before,
+.stats .chip[aria-pressed="true"]::before{
+  content:"";
+  display:inline-block;
+  width:10px; height:10px; border-radius:50%;
+  background:var(--md-sys-color-on-primary);
+  margin-right:8px;
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--md-sys-color-on-primary) 35%, transparent);
+  vertical-align:middle;
+}
+/* Keyboard focus ring for accessibility */
+.stats .chip.clickable:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--md-sys-color-primary) 70%, transparent);
+}
 
 /* WS colorful status (kept) */
 #wsStatus{transition:background-color .2s ease,color .2s ease,border-color .2s ease}
@@ -487,29 +521,133 @@ body.hide-col-actions #logtbl .col-actions{display:none}
 .status-2xx{color:#22c55e}.status-3xx{color:#fbbf24}.status-4xx{color:#fca5a5}.status-5xx{color:#fb7185}
 
 
-/* Log level colors — Android Studio Logcat palette (Material 500) */
-.level-VERBOSE { color:#9E9E9E }  /* Grey 500 */
-.level-DEBUG   { color:#2196F3 }  /* Blue 500 */
-.level-INFO    { color:#4CAF50 }  /* Green 500 */
-.level-WARN    { color:#FFC107 }  /* Amber 500 */
-.level-ERROR   { color:#F44336 }  /* Red 500 */
-.level-ASSERT  { color:#9C27B0 }  /* Purple 500 */
+:root{
+  /* default scheme = android */
+  --lv-v:#9E9E9E; /* VERBOSE */
+  --lv-d:#2196F3; /* DEBUG   */
+  --lv-i:#4CAF50; /* INFO    */
+  --lv-w:#FFC107; /* WARN    */
+  --lv-e:#F44336; /* ERROR   */
+  --lv-a:#9C27B0; /* ASSERT  */
+}
+:root[data-scheme="android"]{ /* Android Studio */
+  --lv-v:#9E9E9E; --lv-d:#2196F3; --lv-i:#4CAF50; --lv-w:#FFC107; --lv-e:#F44336; --lv-a:#9C27B0;
+}
+:root[data-scheme="xcode"]{ /* Xcode inspired */
+  --lv-v:#8E8E93; --lv-d:#0A84FF; --lv-i:#34C759; --lv-w:#FF9F0A; --lv-e:#FF453A; --lv-a:#BF5AF2;
+}
+:root[data-scheme="vscode"]{ /* VS Code */
+  --lv-v:#808080; --lv-d:#4FC1FF; --lv-i:#89D185; --lv-w:#CCA700; --lv-e:#F14C4C; --lv-a:#C586C0;
+}
+:root[data-scheme="grafana"]{ /* Grafana */
+  --lv-v:#6b7280; --lv-d:#60a5fa; --lv-i:#22c55e; --lv-w:#f59e0b; --lv-e:#ef4444; --lv-a:#d946ef;
+}
+/* Text color for the Kind column when row has a level */
+.tbl tbody tr.level-VERBOSE .col-kind{ color: var(--lv-v) }
+.tbl tbody tr.level-DEBUG   .col-kind{ color: var(--lv-d) }
+.tbl tbody tr.level-INFO    .col-kind{ color: var(--lv-i) }
+.tbl tbody tr.level-WARN    .col-kind{ color: var(--lv-w) }
+.tbl tbody tr.level-ERROR   .col-kind{ color: var(--lv-e) }
+.tbl tbody tr.level-ASSERT  .col-kind{ color: var(--lv-a) }
+/* Left accent bar tint using current scheme vars */
+.tbl tbody tr.level-VERBOSE{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 55%, transparent) }
+.tbl tbody tr.level-DEBUG  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 55%, transparent) }
+.tbl tbody tr.level-INFO   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 55%, transparent) }
+.tbl tbody tr.level-WARN   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 55%, transparent) }
+.tbl tbody tr.level-ERROR  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 55%, transparent) }
+.tbl tbody tr.level-ASSERT { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 55%, transparent) }
+/* Preserve accent on hover */
+.tbl tbody tr.level-VERBOSE:hover{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 70%, transparent) }
+.tbl tbody tr.level-DEBUG:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 70%, transparent) }
+.tbl tbody tr.level-INFO:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 70%, transparent) }
+.tbl tbody tr.level-WARN:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 70%, transparent) }
+.tbl tbody tr.level-ERROR:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 70%, transparent) }
+.tbl tbody tr.level-ASSERT:hover { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 70%, transparent) }
 
-/* Log level row tints (matching Logcat colors) */
-.tbl tbody tr.level-VERBOSE{ background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 rgba(158,158,158,.33); }
-.tbl tbody tr.level-DEBUG  { background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 rgba(33,150,243,.33); }
-.tbl tbody tr.level-INFO   { background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 rgba(76,175,80,.33); }
-.tbl tbody tr.level-WARN   { background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 rgba(255,193,7,.33); }
-.tbl tbody tr.level-ERROR  { background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 rgba(244,67,54,.33); }
-.tbl tbody tr.level-ASSERT { background: var(--md-sys-color-surface); box-shadow: inset 4px 0 0 rgba(156,39,176,.33); }
+:/* ===== Color URL/Summary & Time columns ===== */
+/* Color by LOG level (for logger rows) */
+.tbl tbody tr.level-VERBOSE .col-time,
+.tbl tbody tr.level-VERBOSE .col-url { color: var(--lv-v); }
+.tbl tbody tr.level-DEBUG   .col-time,
+.tbl tbody tr.level-DEBUG   .col-url { color: var(--lv-d); }
+.tbl tbody tr.level-INFO    .col-time,
+.tbl tbody tr.level-INFO    .col-url { color: var(--lv-i); }
+.tbl tbody tr.level-WARN    .col-time,
+.tbl tbody tr.level-WARN    .col-url { color: var(--lv-w); }
+.tbl tbody tr.level-ERROR   .col-time,
+.tbl tbody tr.level-ERROR   .col-url { color: var(--lv-e); }
+.tbl tbody tr.level-ASSERT  .col-time,
+.tbl tbody tr.level-ASSERT  .col-url { color: var(--lv-a); }
 
-/* Preserve tint on hover */
-.tbl tbody tr.level-VERBOSE:hover{ background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 rgba(158,158,158,.47); }
-.tbl tbody tr.level-DEBUG:hover  { background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 rgba(33,150,243,.47); }
-.tbl tbody tr.level-INFO:hover   { background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 rgba(76,175,80,.47); }
-.tbl tbody tr.level-WARN:hover   { background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 rgba(255,193,7,.47); }
-.tbl tbody tr.level-ERROR:hover  { background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 rgba(244,67,54,.47); }
-.tbl tbody tr.level-ASSERT:hover { background: var(--md-sys-color-surface-container-high); box-shadow: inset 4px 0 0 rgba(156,39,176,.47); }
+/* Color by HTTP status class (for network rows) */
+.tbl tbody tr.status-2xx .col-time, .tbl tbody tr.status-2xx .col-url .url { color:#22c55e; }
+.tbl tbody tr.status-3xx .col-time, .tbl tbody tr.status-3xx .col-url .url { color:#fbbf24; }
+.tbl tbody tr.status-4xx .col-time, .tbl tbody tr.status-4xx .col-url .url { color:#fca5a5; }
+.tbl tbody tr.status-5xx .col-time, .tbl tbody tr.status-5xx .col-url .url { color:#fb7185; }
+
+/* ===== Make all table column values colorful by row context ===== */
+/* Logger rows: color all cells by level */
+.tbl tbody tr.level-VERBOSE td:not(.col-actions){ color: var(--lv-v); }
+.tbl tbody tr.level-DEBUG   td:not(.col-actions){ color: var(--lv-d); }
+.tbl tbody tr.level-INFO    td:not(.col-actions){ color: var(--lv-i); }
+.tbl tbody tr.level-WARN    td:not(.col-actions){ color: var(--lv-w); }
+.tbl tbody tr.level-ERROR   td:not(.col-actions){ color: var(--lv-e); }
+.tbl tbody tr.level-ASSERT  td:not(.col-actions){ color: var(--lv-a); }
+
+/* HTTP rows: color all cells by status class */
+:root{ --st-2xx:#22c55e; --st-3xx:#fbbf24; --st-4xx:#fca5a5; --st-5xx:#fb7185; }
+.tbl tbody tr.status-2xx td:not(.col-actions){ color: var(--st-2xx); }
+.tbl tbody tr.status-3xx td:not(.col-actions){ color: var(--st-3xx); }
+.tbl tbody tr.status-4xx td:not(.col-actions){ color: var(--st-4xx); }
+.tbl tbody tr.status-5xx td:not(.col-actions){ color: var(--st-5xx); }
+
+/* Keep chips, icons and code readable (don’t inherit the tint) */
+.tbl tbody tr td .muted,
+.tbl tbody tr td .badge,
+.tbl tbody tr td .material-symbols-outlined,
+.tbl tbody tr td pre.code{ color: inherit; opacity: 0.95; }
+:root{
+  /* default scheme = android */
+  --lv-v:#9E9E9E; /* VERBOSE */
+  --lv-d:#2196F3; /* DEBUG   */
+  --lv-i:#4CAF50; /* INFO    */
+  --lv-w:#FFC107; /* WARN    */
+  --lv-e:#F44336; /* ERROR   */
+  --lv-a:#9C27B0; /* ASSERT  */
+}
+:root[data-scheme="android"]{ /* Android Studio */
+  --lv-v:#9E9E9E; --lv-d:#2196F3; --lv-i:#4CAF50; --lv-w:#FFC107; --lv-e:#F44336; --lv-a:#9C27B0;
+}
+:root[data-scheme="xcode"]{ /* Xcode inspired */
+  --lv-v:#8E8E93; --lv-d:#0A84FF; --lv-i:#34C759; --lv-w:#FF9F0A; --lv-e:#FF453A; --lv-a:#BF5AF2;
+}
+:root[data-scheme="vscode"]{ /* VS Code */
+  --lv-v:#808080; --lv-d:#4FC1FF; --lv-i:#89D185; --lv-w:#CCA700; --lv-e:#F14C4C; --lv-a:#C586C0;
+}
+:root[data-scheme="grafana"]{ /* Grafana */
+  --lv-v:#6b7280; --lv-d:#60a5fa; --lv-i:#22c55e; --lv-w:#f59e0b; --lv-e:#ef4444; --lv-a:#d946ef;
+}
+/* Text color for the Kind column when row has a level */
+.tbl tbody tr.level-VERBOSE .col-kind{ color: var(--lv-v) }
+.tbl tbody tr.level-DEBUG   .col-kind{ color: var(--lv-d) }
+.tbl tbody tr.level-INFO    .col-kind{ color: var(--lv-i) }
+.tbl tbody tr.level-WARN    .col-kind{ color: var(--lv-w) }
+.tbl tbody tr.level-ERROR   .col-kind{ color: var(--lv-e) }
+.tbl tbody tr.level-ASSERT  .col-kind{ color: var(--lv-a) }
+/* Left accent bar tint using current scheme vars */
+.tbl tbody tr.level-VERBOSE{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 55%, transparent) }
+.tbl tbody tr.level-DEBUG  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 55%, transparent) }
+.tbl tbody tr.level-INFO   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 55%, transparent) }
+.tbl tbody tr.level-WARN   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 55%, transparent) }
+.tbl tbody tr.level-ERROR  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 55%, transparent) }
+.tbl tbody tr.level-ASSERT { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 55%, transparent) }
+/* Preserve accent on hover */
+.tbl tbody tr.level-VERBOSE:hover{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 70%, transparent) }
+.tbl tbody tr.level-DEBUG:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 70%, transparent) }
+.tbl tbody tr.level-INFO:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 70%, transparent) }
+.tbl tbody tr.level-WARN:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 70%, transparent) }
+.tbl tbody tr.level-ERROR:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 70%, transparent) }
+.tbl tbody tr.level-ASSERT:hover { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 70%, transparent) }
 
 /* Drawer styles (hidden by default) */
 .drawer{
@@ -688,7 +826,21 @@ body.mode-log .col-url .url{display:none}
         // - Fixed cURL builder (no nested template literal confusions)
         // - Removed fragile ${'$'}{JSON.stringify(...)} nesting inside Kotlin
         // - Stronger error logging so JS errors don't silently stop rendering
-        
+        const colorScheme = document.querySelector('#colorScheme');
+
+        function applyScheme(s){
+          const scheme = (s||'').toLowerCase();
+          const valid = ['android','xcode','vscode','grafana'];
+          const pick = valid.includes(scheme) ? scheme : 'android';
+          document.documentElement.setAttribute('data-scheme', pick);
+          if(colorScheme) colorScheme.value = pick;
+          try{ localStorage.setItem('logtap:scheme', pick); }catch{}
+        }
+        function initScheme(){
+          let s = 'android';
+          try{ s = localStorage.getItem('logtap:scheme') || 'android'; }catch{}
+          applyScheme(s);
+        }
         // ---- DOM ----
         const tbody = document.querySelector('#logtbl tbody');
         const search = document.querySelector('#search');
@@ -897,9 +1049,13 @@ body.mode-log .col-url .url{display:none}
           bodyEl.classList.add('mode-'+m);
        }
 
-        // ---- Stat chip filtering ----
+        // ---- Stat chip filtering (toggleable) ----
         const allChips = [];
-        function setActiveChip(el){ allChips.forEach(c=>c?.classList.remove('active')); el?.classList.add('active'); }
+        let activeChip = null; // currently selected chip element or null
+        function highlightChip(el){
+          allChips.forEach(c=>c?.classList.remove('active'));
+          if(el){ el.classList.add('active'); activeChip = el; } else { activeChip = null; }
+        }
         function resetFilters(){
           // Text & selects
           if(search){ search.value=''; filterText=''; }
@@ -908,7 +1064,7 @@ body.mode-log .col-url .url{display:none}
           if(statusCodeFilter) statusCodeFilter.value='';
           if(levelFilter) levelFilter.value='';
           if(viewMode){ viewMode.value='mix'; applyMode(); }
-          
+
           // Pretty JSON defaults to OFF
           if(jsonPretty){
             jsonPretty.checked = false;
@@ -921,9 +1077,25 @@ body.mode-log .col-url .url{display:none}
           applyCols(allTrue);
 
           // Clear active stat chip highlight
-          try{ allChips.forEach(c=>c?.classList.remove('active')); }catch{}
+          highlightChip(null);
         }
-        function applyStatFilter(kind){
+        function applyStatFilter(kind, toggledOff){
+          if (toggledOff) {
+            // clear any visual/aria selection on chips
+            allChips.forEach(ch=>{ ch?.setAttribute('aria-pressed','false'); ch?.classList.remove('active'); });
+            highlightChip(null); // also sets activeChip = null
+            // force view back to Mix and clear method/level/status filters
+            if(viewMode) viewMode.value = 'mix';
+            if(methodFilter) methodFilter.value = '';
+            if(levelFilter) levelFilter.value = '';
+            if(statusFilter) statusFilter.value = '';
+            if(statusCodeFilter) statusCodeFilter.value = '';
+            applyMode();
+            // user clicked the active chip again -> clear selection and reset filters
+            resetFilters();
+            renderAll();
+            return;
+          }
           switch(kind){
             case 'TOTAL':
               resetFilters();
@@ -1101,6 +1273,8 @@ body.mode-log .col-url .url{display:none}
           }
           const lvl = (kind==='LOG') ? levelOf(ev) : '';
           if(lvl) tr.classList.add('level-'+lvl);
+          const stCls = classForStatus(ev.status);
+          if (stCls) tr.classList.add(stCls);
           const tagTxt = ev.tag ? String(ev.tag) : '';
           tr.dataset.id = String(ev.id ?? '');
           const actions = document.createElement('div'); actions.className='action-row';
@@ -1130,12 +1304,12 @@ body.mode-log .col-url .url{display:none}
             `<td class="col-method">${'$'}{escapeHtml(ev.method || (kind==='WEBSOCKET'?'WS':''))}</td>`+
             `<td class="col-status ${'$'}{classForStatus(ev.status)}">${'$'}{ev.status ?? ''}</td>`+
             (kind==='LOG'
-              ? (`<td class="col-url"><div class="lc">${'$'}{logcatLine(ev)}</div></td>`)
-              : (`<td class="col-url">`+
-                   `<div class="url">${'$'}{escapeHtml(ev.url || '')}</div>`+
-                   (ev.summary ? `<div class="muted">${'$'}{escapeHtml(ev.summary)}</div>` : '')+
-                 `</td>`)
-            );
+              ? (`<td class="col-url"><div class="url"><div class="lc">${'$'}{logcatLine(ev)}</div></div></td>`)
+              : (`<td class="col-url">`
+                   + `<div class="url">${'$'}{escapeHtml(ev.url || '')}</div>`
+                   + (ev.summary ? `<div class="muted">${'$'}{escapeHtml(ev.summary)}</div>` : '')
+                 + `</td>`)
+            )
           // pretty body preview under URL cell (respects global Pretty JSON toggle)
           if (ev.bodyPreview) {
             const pre = document.createElement('pre');
@@ -1284,15 +1458,36 @@ body.mode-log .col-url .url{display:none}
         // Apply saved column visibility on startup
         applyCols(colCfg);
         search?.addEventListener('input', ()=>{ filterText = search.value.trim().toLowerCase(); renderAll(); });
-        // Make stat chips clickable
+        // Make stat chips clickable (toggle selection on re-click)
         allChips.push(chipTotal, chipHttp, chipWs, chipLog, chipGet, chipPost);
-        allChips.forEach(c=> c?.classList.add('clickable'));
-        chipTotal?.addEventListener('click', ()=>{ setActiveChip(chipTotal); applyStatFilter('TOTAL'); });
-        chipHttp ?.addEventListener('click', ()=>{ setActiveChip(chipHttp ); applyStatFilter('HTTP');  });
-        chipWs   ?.addEventListener('click', ()=>{ setActiveChip(chipWs   ); applyStatFilter('WS');    });
-        chipLog  ?.addEventListener('click', ()=>{ setActiveChip(chipLog  ); applyStatFilter('LOG');   });
-        chipGet  ?.addEventListener('click', ()=>{ setActiveChip(chipGet  ); applyStatFilter('GET');   });
-        chipPost ?.addEventListener('click', ()=>{ setActiveChip(chipPost ); applyStatFilter('POST');  });
+        // Set default selection to "Total" chip on boot
+        highlightChip(chipTotal);
+        chipTotal.setAttribute('aria-pressed','true');
+        chipTotal.classList.add('active');
+        allChips.forEach(c=>{
+          if(!c) return;
+          c.classList.add('clickable');
+          c.setAttribute('role','button');
+          c.setAttribute('tabindex','0');
+          // Set all chips aria-pressed to false except chipTotal
+          if (c !== chipTotal) c.setAttribute('aria-pressed','false');
+          c.addEventListener('click', ()=>{
+            const isSame = (activeChip === c);
+            // update aria and visual state
+            if(isSame){
+              c.setAttribute('aria-pressed','false');
+              highlightChip(null);
+            } else {
+              allChips.forEach(ch=>{ ch?.setAttribute('aria-pressed','false'); ch?.classList.remove('active'); });
+              c.setAttribute('aria-pressed','true');
+              c.classList.add('active');
+              activeChip = c;
+            }
+            const kind = (c===chipTotal)?'TOTAL':(c===chipHttp)?'HTTP':(c===chipWs)?'WS':(c===chipLog)?'LOG':(c===chipGet)?'GET':'POST';
+            applyStatFilter(kind, isSame);
+          });
+          c.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); c.click(); } });
+        });
         methodFilter?.addEventListener('change', renderAll);
         viewMode?.addEventListener('change', ()=>{ applyMode(); renderAll(); });
         statusFilter?.addEventListener('change', renderAll);
@@ -1303,6 +1498,7 @@ body.mode-log .col-url .url{display:none}
           renderAll();
           if (currentEv) openDrawer(currentEv);
         });
+        colorScheme?.addEventListener('change', ()=> applyScheme(colorScheme.value));
         clearBtn?.addEventListener('click', async ()=>{ try{ await fetch('/api/clear', {method:'POST'}); }catch{} rows=[]; renderAll(); });
         drawerClose?.addEventListener('click', ()=> bodyEl.classList.remove('drawer-open'));
         // Filters & Export popovers (don't close when clicking inside)
@@ -1345,6 +1541,7 @@ body.mode-log .col-url .url{display:none}
         async function bootstrap(){
           initTheme();
           initPrefs();
+          initScheme();
           try{ const res = await fetch('/api/logs?limit=1000'); if(!res.ok) throw new Error('HTTP '+res.status); rows = await res.json(); }
           catch(err){ console.error('[LogTap] failed to fetch /api/logs', err); rows=[]; }
           applyMode();

@@ -517,6 +517,69 @@ body.hide-col-actions #logtbl .col-actions{display:none}
 .col-id{width:72px}.col-time{width:150px}.col-kind{width:120px}.col-tag{width:140px}.col-method{width:92px}.col-status{width:92px}.col-actions{width:170px}
 
 /* Status & kind colors */
+
+:root{
+  --ws-send:#06b6d4;   /* cyan for client → server */
+  --ws-recv:#22c55e;   /* green for server → client */
+  --ws-ping:#a3e635;   /* lime */
+  --ws-pong:#f59e0b;   /* amber */
+  --ws-close:#ef4444;  /* red   */
+}
+/* Table tinting for WebSocket rows */
+.tbl tbody tr.ws-send  td.col-url .url{ color: color-mix(in srgb, var(--ws-send) 85%, currentColor); }
+.tbl tbody tr.ws-recv  td.col-url .url{ color: color-mix(in srgb, var(--ws-recv) 85%, currentColor); }
+.tbl tbody tr.ws-send  td.col-method{ color: var(--ws-send); }
+.tbl tbody tr.ws-recv  td.col-method{ color: var(--ws-recv); }
+/* Mini body preview tint */
+.tbl tbody tr.ws-send  pre.code.mini{ border-left:4px solid var(--ws-send); }
+.tbl tbody tr.ws-recv  pre.code.mini{ border-left:4px solid var(--ws-recv); }
+/* Drawer tinting for WS frames */
+#tab-request pre.code.ws-send,  #tab-response pre.code.ws-send{  border-left:4px solid var(--ws-send); }
+#tab-request pre.code.ws-recv,  #tab-response pre.code.ws-recv{  border-left:4px solid var(--ws-recv); }
+#tab-request pre.code.ws-ping,  #tab-response pre.code.ws-ping{  border-left:4px solid var(--ws-ping); }
+#tab-request pre.code.ws-pong,  #tab-response pre.code.ws-pong{  border-left:4px solid var(--ws-pong); }
+#tab-request pre.code.ws-close, #tab-response pre.code.ws-close{ border-left:4px solid var(--ws-close); }
+/* WS icon colors */
+.ws-send{ color: var(--ws-send); }
+.ws-recv{ color: var(--ws-recv); }
+
+:root{
+  --m-get:#3b82f6;   /* blue  */
+  --m-post:#22c55e;  /* green */
+  --m-put:#f59e0b;   /* amber */
+  --m-patch:#a855f7; /* violet*/
+  --m-delete:#ef4444;/* red   */
+  --m-ws:#06b6d4;    /* cyan  */
+}
+/* Method tints in table */
+.tbl tbody tr .col-method.method-GET   { color: var(--m-get); }
+.tbl tbody tr .col-method.method-POST  { color: var(--m-post); }
+.tbl tbody tr .col-method.method-PUT   { color: var(--m-put); }
+.tbl tbody tr .col-method.method-PATCH { color: var(--m-patch); }
+.tbl tbody tr .col-method.method-DELETE{ color: var(--m-delete); }
+.tbl tbody tr .col-method.method-WS    { color: var(--m-ws); }
+/* URL primary line inherits method color slightly for quick scan */
+.tbl tbody tr .col-url .url.method-GET   { color: color-mix(in srgb, var(--m-get) 85%, currentColor); }
+.tbl tbody tr .col-url .url.method-POST  { color: color-mix(in srgb, var(--m-post) 85%, currentColor); }
+.tbl tbody tr .col-url .url.method-PUT   { color: color-mix(in srgb, var(--m-put) 85%, currentColor); }
+.tbl tbody tr .col-url .url.method-PATCH { color: color-mix(in srgb, var(--m-patch) 85%, currentColor); }
+.tbl tbody tr .col-url .url.method-DELETE{ color: color-mix(in srgb, var(--m-delete) 85%, currentColor); }
+.tbl tbody tr .col-url .url.method-WS    { color: color-mix(in srgb, var(--m-ws) 85%, currentColor); }
+/* Drawer: method/status colored borders for code blocks */
+#tab-request pre.code.method-GET,   #tab-response pre.code.method-GET   { border-left:4px solid var(--m-get); }
+#tab-request pre.code.method-POST,  #tab-response pre.code.method-POST  { border-left:4px solid var(--m-post); }
+#tab-request pre.code.method-PUT,   #tab-response pre.code.method-PUT   { border-left:4px solid var(--m-put); }
+#tab-request pre.code.method-PATCH, #tab-response pre.code.method-PATCH { border-left:4px solid var(--m-patch); }
+#tab-request pre.code.method-DELETE,#tab-response pre.code.method-DELETE{ border-left:4px solid var(--m-delete); }
+#tab-request pre.code.method-WS,    #tab-response pre.code.method-WS    { border-left:4px solid var(--m-ws); }
+/* Drawer: headers highlighted with method hue */
+#tab-headers .code.headers.method-GET   .hk{ color: var(--m-get); }
+#tab-headers .code.headers.method-POST  .hk{ color: var(--m-post); }
+#tab-headers .code.headers.method-PUT   .hk{ color: var(--m-put); }
+#tab-headers .code.headers.method-PATCH .hk{ color: var(--m-patch); }
+#tab-headers .code.headers.method-DELETE .hk{ color: var(--m-delete); }
+#tab-headers .code.headers.method-WS    .hk{ color: var(--m-ws); }
+
 .kind-HTTP{color:#8ab4ff}.kind-WEBSOCKET{color:#7af59b}.kind-LOG{color:#eab308}
 .status-2xx{color:#22c55e}.status-3xx{color:#fbbf24}.status-4xx{color:#fca5a5}.status-5xx{color:#fb7185}
 
@@ -741,7 +804,8 @@ body.resizing *{ user-select:none !important; }
 
 /* WebSocket direction glyphs */
 .ws-ico{margin-left:6px;font:12px ui-monospace,Menlo,monospace;vertical-align:middle}
-.ws-send{color:var(--warn)} .ws-recv{color:#22c55e}
+.ws-send{ color: var(--ws-send); }
+.ws-recv{ color: var(--ws-recv); }
 
 /* Logcat line styling */
 .lc{font:12px ui-monospace,Menlo,monospace; white-space:pre-wrap; word-break:break-word}
@@ -1260,11 +1324,17 @@ body.mode-log .col-url .url{display:none}
         function renderRow(ev){
           const tr = document.createElement('tr');
           const kind = kindOf(ev); const dir = dirOf(ev);
+          // Add WS direction classes to row
+          const isSend = (dir === 'OUTBOUND' || dir === 'REQUEST');
+          const isRecv = (dir === 'INBOUND'  || dir === 'RESPONSE');
+          if (kind === 'WEBSOCKET'){
+            if (isSend) tr.classList.add('ws-send');
+            else if (isRecv) tr.classList.add('ws-recv');
+          }
           // Build WS direction icon (send/receive)
           let wsIconHtml = '';
+          const mU = (ev.method ? String(ev.method).toUpperCase() : (kind==='WEBSOCKET' ? 'WS' : ''));
           if (kind === 'WEBSOCKET') {
-            const isSend = (dir === 'OUTBOUND' || dir === 'REQUEST');
-            const isRecv = (dir === 'INBOUND'  || dir === 'RESPONSE');
             wsIconHtml = isSend
               ? '<span class="ws-ico ws-send" title="WebSocket send">⇧</span>'
               : isRecv
@@ -1277,6 +1347,7 @@ body.mode-log .col-url .url{display:none}
           if (stCls) tr.classList.add(stCls);
           const tagTxt = ev.tag ? String(ev.tag) : '';
           tr.dataset.id = String(ev.id ?? '');
+          if (mU) tr.classList.add('method-'+mU);
           const actions = document.createElement('div'); actions.className='action-row';
           if(kind==='HTTP') {
             const copyBtn = document.createElement('button');
@@ -1301,12 +1372,12 @@ body.mode-log .col-url .url{display:none}
                 : (kind==='WEBSOCKET' ? ('WS'+wsIconHtml) : kind)
             }</td>`+
             `<td class="col-tag">${'$'}{escapeHtml(tagTxt)}</td>`+
-            `<td class="col-method">${'$'}{escapeHtml(ev.method || (kind==='WEBSOCKET'?'WS':''))}</td>`+
+            `<td class="col-method method-${'$'}{mU}">${'$'}{escapeHtml(ev.method || (kind==='WEBSOCKET'?'WS':''))}</td>`+
             `<td class="col-status ${'$'}{classForStatus(ev.status)}">${'$'}{ev.status ?? ''}</td>`+
             (kind==='LOG'
               ? (`<td class="col-url"><div class="url"><div class="lc">${'$'}{logcatLine(ev)}</div></div></td>`)
               : (`<td class="col-url">`
-                   + `<div class="url">${'$'}{escapeHtml(ev.url || '')}</div>`
+                   + `<div class="url method-${'$'}{mU} ${'$'}{kind==='WEBSOCKET' ? (isSend?'ws ws-send': (isRecv?'ws ws-recv':'ws')) : ''}">${'$'}{escapeHtml(ev.url || '')}</div>`
                    + (ev.summary ? `<div class="muted">${'$'}{escapeHtml(ev.summary)}</div>` : '')
                  + `</td>`)
             )
@@ -1314,6 +1385,9 @@ body.mode-log .col-url .url{display:none}
           if (ev.bodyPreview) {
             const pre = document.createElement('pre');
             pre.className = 'code mini body' + (jsonPretty?.checked ? ' json' : '');
+            if (kind === 'WEBSOCKET'){
+              pre.classList.add(isSend ? 'ws-send' : (isRecv ? 'ws-recv' : ''));
+            }
             pre.innerHTML = jsonPretty?.checked ? hlJson(ev.bodyPreview) : escapeHtml(String(ev.bodyPreview));
             const urlCell = tr.querySelector('.col-url');
             if (urlCell) urlCell.appendChild(pre);
@@ -1350,7 +1424,6 @@ body.mode-log .col-url .url{display:none}
         function setHeaders(id, map){
           const el = document.getElementById(id); if(!el) return;
           const txt = headersToLines(map);
-          el.classList.add('headers');
           el.innerHTML = hlHeaders(txt);
         }
         function activateTab(name){ tabs.forEach(b=>b.classList.toggle('active', b.dataset.tab===name)); document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('active', p.id==='tab-'+name)); }
@@ -1424,8 +1497,31 @@ body.mode-log .col-url .url{display:none}
           else setText('ov-thread', ev.thread ?? '');
           setJson('req-body', bodyFor(ev,'request'));
           setJson('resp-body', bodyFor(ev,'response'));
+          // Colorize drawer content by method
+          const mU = (ev.method ? String(ev.method).toUpperCase() : (kind==='WEBSOCKET' ? 'WS' : ''));
+          const reqPre = document.getElementById('req-body');
+          const respPre = document.getElementById('resp-body');
+          [reqPre, respPre].forEach(p=>{ if(!p) return; p.classList.remove('method-GET','method-POST','method-PUT','method-PATCH','method-DELETE','method-WS'); if(mU) p.classList.add('method-'+mU); });
+          const reqH = document.getElementById('req-headers');
+          const respH = document.getElementById('resp-headers');
+          [reqH, respH].forEach(h=>{ if(!h) return; h.classList.add('headers'); h.classList.remove('method-GET','method-POST','method-PUT','method-PATCH','method-DELETE','method-WS'); if(mU) h.classList.add('method-'+mU); });
           setHeaders('req-headers', ev.headers || {});
           setHeaders('resp-headers', ev.responseHeaders || {});
+          // --- WebSocket direction & opcode classes for drawer code/headers ---
+          const isSend = (dir === 'OUTBOUND' || dir === 'REQUEST');
+          const isRecv = (dir === 'INBOUND'  || dir === 'RESPONSE');
+          const op = (ev.op || ev.opcode || '').toString().toLowerCase(); // 'text','binary','ping','pong','close'
+          const wsClass = (kind==='WEBSOCKET') ? (op==='ping'?'ws-ping': op==='pong'?'ws-pong': op==='close'?'ws-close': (isSend?'ws-send': isRecv?'ws-recv':'')) : '';
+          [reqPre, respPre].forEach(p=>{
+            if(!p) return;
+            p.classList.remove('ws-send','ws-recv','ws-ping','ws-pong','ws-close');
+            if(wsClass) p.classList.add(wsClass);
+          });
+          [reqH, respH].forEach(h=>{
+            if(!h) return;
+            h.classList.remove('ws-send','ws-recv','ws-ping','ws-pong','ws-close');
+            if(wsClass) h.classList.add(wsClass);
+          });
           const oc = document.getElementById('ov-curl'); if(oc) oc.textContent = curlFor(ev);
           if(curlCopyBtn){ curlCopyBtn.onclick = async (e)=>{ e.preventDefault(); e.stopPropagation(); const ocEl = document.getElementById('ov-curl'); const ok = await copyText(ocEl?.textContent || ''); if(ok){ const old = curlCopyBtn.textContent; curlCopyBtn.textContent = 'Copied!'; setTimeout(()=> curlCopyBtn.textContent = old, 1200); } }; }
           const os = document.getElementById('ov-summary');

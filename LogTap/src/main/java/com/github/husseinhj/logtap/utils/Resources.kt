@@ -518,12 +518,13 @@ body.hide-col-actions #logtbl .col-actions{display:none}
 
 /* Status & kind colors */
 
+/* Fallback WS palette (overridden per scheme below) */
 :root{
-  --ws-send:#06b6d4;   /* cyan for client → server */
-  --ws-recv:#22c55e;   /* green for server → client */
-  --ws-ping:#a3e635;   /* lime */
-  --ws-pong:#f59e0b;   /* amber */
-  --ws-close:#ef4444;  /* red   */
+  --ws-send:#06b6d4;
+  --ws-recv:#22c55e;
+  --ws-ping:#a3e635;
+  --ws-pong:#f59e0b;
+  --ws-close:#ef4444;
 }
 /* Table tinting for WebSocket rows */
 .tbl tbody tr.ws-send  td.col-url .url{ color: color-mix(in srgb, var(--ws-send) 85%, currentColor); }
@@ -543,6 +544,7 @@ body.hide-col-actions #logtbl .col-actions{display:none}
 .ws-send{ color: var(--ws-send); }
 .ws-recv{ color: var(--ws-recv); }
 
+/* Fallback HTTP method palette (overridden per scheme below) */
 :root{
   --m-get:#3b82f6;   /* blue  */
   --m-post:#22c55e;  /* green */
@@ -550,6 +552,27 @@ body.hide-col-actions #logtbl .col-actions{display:none}
   --m-patch:#a855f7; /* violet*/
   --m-delete:#ef4444;/* red   */
   --m-ws:#06b6d4;    /* cyan  */
+}
+:/* === Scheme overrides for HTTP/WS palettes === */
+:root[data-scheme="android"]{
+  /* Android Studio style */
+  --m-get:#3b82f6; --m-post:#22c55e; --m-put:#f59e0b; --m-patch:#a855f7; --m-delete:#ef4444; --m-ws:#06b6d4;
+  --ws-send:#06b6d4; --ws-recv:#22c55e; --ws-ping:#a3e635; --ws-pong:#f59e0b; --ws-close:#ef4444;
+}
+:root[data-scheme="xcode"]{
+  /* Xcode / Apple palette */
+  --m-get:#0A84FF; --m-post:#34C759; --m-put:#FF9F0A; --m-patch:#AF52DE; --m-delete:#FF453A; --m-ws:#64D2FF;
+  --ws-send:#64D2FF; --ws-recv:#30D158; --ws-ping:#A3E635; --ws-pong:#FF9F0A; --ws-close:#FF453A;
+}
+:root[data-scheme="vscode"]{
+  /* VS Code palette */
+  --m-get:#4FC1FF; --m-post:#89D185; --m-put:#CCA700; --m-patch:#C586C0; --m-delete:#F14C4C; --m-ws:#2EC8DB;
+  --ws-send:#2EC8DB; --ws-recv:#89D185; --ws-ping:#A3E635; --ws-pong:#CCA700; --ws-close:#F14C4C;
+}
+:root[data-scheme="grafana"]{
+  /* Grafana palette */
+  --m-get:#60a5fa; --m-post:#22c55e; --m-put:#f59e0b; --m-patch:#d946ef; --m-delete:#ef4444; --m-ws:#06b6d4;
+  --ws-send:#06b6d4; --ws-recv:#22c55e; --ws-ping:#a3e635; --ws-pong:#f59e0b; --ws-close:#ef4444;
 }
 /* Method tints in table */
 .tbl tbody tr .col-method.method-GET   { color: var(--m-get); }

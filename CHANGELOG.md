@@ -3,6 +3,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### v0.7.0
+Refactor LogTap-Noop module and update UI resources
+
+This commit refactors the LogTap-Noop module by:
+- Moving classes to more specific subpackages (interceptor, logger, websocket, utils).
+- Adding `LogTapInterceptor` and `LoggingWebSocket` classes.
+- Introducing `newWebSocketWithLogging` extension function and `LoggingWebSocketListener`.
+- Adding UI resources (HTML, CSS, JS) for the LogTap web interface.
+- Updating `LogTap.kt` with synchronized methods and a default constructor for `Config`.
+- Adding utility functions `isDebuggable`, `logV`, `logD`, `logI`, `logW`, and `logE`.
+- Deleting old classes: `LogTapInterceptor`, `LogTapLogcatBridge`, `LogTapLogger`, `LogTapSink`, `LogTapSinkAdapter`, and `WsLogging`.
+- Updating the app's build.gradle.kts to use LogTap-Noop.
+
 ### v0.6.0
 Refactor LogTap for improved modularity and WebSocket logging
 

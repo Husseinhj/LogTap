@@ -5,11 +5,11 @@ import okhttp3.OkHttpClient
 import android.app.Application
 import okhttp3.WebSocketListener
 import com.github.husseinhj.logtap.LogTap
-import com.github.husseinhj.logtap.LogTapInterceptor
-import com.github.husseinhj.logtap.LogTapLogcatBridge
-import com.github.husseinhj.logtap.LogTapLogger
-import com.github.husseinhj.logtap.LogTapSinkAdapter
-import com.github.husseinhj.logtap.newWebSocketWithLogging
+import com.github.husseinhj.logtap.logger.LogTapLogger
+import com.github.husseinhj.logtap.logger.LogTapSinkAdapter
+import com.github.husseinhj.logtap.logger.LogTapLogcatBridge
+import com.github.husseinhj.logtap.interceptor.LogTapInterceptor
+import com.github.husseinhj.logtap.utils.newWebSocketWithLogging
 
 class LogTapApp : Application() {
     private val logSink = LogTapSinkAdapter()
@@ -33,7 +33,7 @@ class LogTapApp : Application() {
 }
 
 fun buildOkHttpWithLogTap(): OkHttpClient = OkHttpClient.Builder()
-    .addInterceptor(LogTapInterceptor()) // HTTP(S) logging
+    .addInterceptor(LogTapInterceptor())
     .build()
 
 fun openWebSocketWithLogTap(client: OkHttpClient, url: String, listener: WebSocketListener) {

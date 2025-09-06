@@ -1,9 +1,13 @@
-package com.github.husseinhj.logtap
+package com.github.husseinhj.logtap.logger
 
 import android.os.Process
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Job
 import java.io.BufferedReader
+import kotlinx.coroutines.launch
 import java.io.InputStreamReader
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.CoroutineScope
 
 /**
  * Collects this process's Logcat lines (any android.util.Log usage by your app & libs)

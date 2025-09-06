@@ -1,36 +1,28 @@
 package com.github.husseinhj.logtap
 
-import android.annotation.SuppressLint
 import android.util.Log
-import java.time.Duration
-import kotlinx.coroutines.*
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.CoroutineExceptionHandler
-import java.net.InetAddress
+import java.net.Inet4Address
 import java.net.ServerSocket
 import io.ktor.server.cio.CIO
 import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import io.ktor.server.engine.*
-import io.ktor.server.engine.applicationEngineEnvironment
-import io.ktor.websocket.Frame
-import io.ktor.http.ContentType
-import io.ktor.server.routing.*
-import io.ktor.server.websocket.*
-import android.net.wifi.WifiManager
-import io.ktor.server.application.*
-import io.ktor.server.response.respond
-import io.ktor.server.response.respondText
-import io.ktor.serialization.kotlinx.json.*
-import io.ktor.server.plugins.contentnegotiation.*
-import java.net.Inet4Address
-import kotlin.time.toKotlinDuration
-
 import java.io.RandomAccessFile
+import kotlinx.coroutines.launch
 import java.nio.channels.FileLock
+import kotlinx.coroutines.sync.Mutex
 import java.nio.channels.FileChannel
+import kotlinx.coroutines.Dispatchers
+import android.net.ConnectivityManager
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.CoroutineScope
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.engine.ApplicationEngine
+import com.github.husseinhj.logtap.log.LogStore
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineExceptionHandler
+import com.github.husseinhj.logtap.utils.isDebuggable
+import com.github.husseinhj.logtap.logger.LogTapLogger
+import com.github.husseinhj.logtap.server.provideWebServer
 
 private const val TAG = "LogTap"
 
@@ -144,7 +136,7 @@ object LogTap {
         for (p in candidates) {
             if (!canBind(p)) continue
             try {
-                val eng = buildServer(p, config)
+                val eng = buildServer(p)
                 // Start may throw BindException from CIO internal coroutine
                 eng.start(wait = false)
                 return eng
@@ -170,66 +162,7 @@ object LogTap {
         throw lastError ?: IllegalStateException("No free port found for LogTap")
     }
 
-    private fun buildServer(port: Int, config: Config): ApplicationEngine {
-        val env = applicationEngineEnvironment {
-            parentCoroutineContext = engineParentCtx
-            connector {
-                host = "0.0.0.0"
-                this.port = port
-            }
-            module {
-                install(ContentNegotiation) { json(LogTap.json) }
-                install(WebSockets) { pingPeriod = Duration.ofSeconds(30); masking = false }
-
-                routing {
-                    get("/") { call.respondText(Resources.indexHtml, ContentType.Text.Html) }
-                    get("/app.css") { call.respondText(Resources.appCss, ContentType.Text.CSS) }
-                    get("/app.js") { call.respondText(Resources.appJs, ContentType.Application.JavaScript) }
-
-                    get("/logs") {
-                        val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 200
-                        call.respond(LogTapEvents.snapshot(limit))
-                    }
-                    get("/api/logs") {
-                        val sinceId = call.request.queryParameters["sinceId"]?.toLongOrNull()
-                        val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 500
-                        call.respond(store.snapshot(sinceId, limit))
-                    }
-                    post("/api/clear") {
-                        store.clear()
-                        call.respondText("ok")
-                    }
-                    webSocket("/ws") {
-                        val session = this
-                        val collector = CoroutineScope(Dispatchers.IO).launch {
-                            store.stream.collect { ev: LogEvent ->
-                                session.send(Frame.Text(json.encodeToString(LogEvent.serializer(), ev)))
-                            }
-                        }
-                        val backlog = LogTapEvents.snapshot(200)
-                        for (ev in backlog) {
-                            send(Frame.Text(json.encodeToString(LogEvent.serializer(), ev)))
-                        }
-                        val job = launch(Dispatchers.Default) {
-                            LogTapEvents.updates().collect { ev ->
-                                try {
-                                    send(Frame.Text(json.encodeToString(LogEvent.serializer(), ev)))
-                                } catch (_: Throwable) { cancel() }
-                            }
-                        }
-                        try {
-                            for (frame in incoming) { if (frame is Frame.Close) break }
-                        } finally {
-                            job.cancel(); collector.cancel()
-                        }
-                    }
-                    get("/about") { call.respondText(Resources.aboutHtml) }
-                }
-            }
-        }
-        return embeddedServer(CIO, env)
-    }
-
+    @Suppress("unused")
     @Synchronized
     fun stop() {
         try {
@@ -246,8 +179,12 @@ object LogTap {
         }
     }
 
-    @SuppressLint("MissingPermission")
-    fun getDeviceIp(context: Context): String {
+    private fun buildServer(port: Int): ApplicationEngine {
+        val env = provideWebServer(port = port, engineParentCtx = engineParentCtx)
+        return embeddedServer(CIO, env)
+    }
+
+    private fun getDeviceIp(context: Context): String {
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val network = cm.activeNetwork ?: return "127.0.0.1"
         val props = cm.getLinkProperties(network) ?: return "127.0.0.1"

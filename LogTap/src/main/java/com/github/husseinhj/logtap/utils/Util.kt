@@ -1,4 +1,4 @@
-package com.github.husseinhj.logtap
+package com.github.husseinhj.logtap.utils
 
 import android.content.Context
 import android.content.pm.ApplicationInfo

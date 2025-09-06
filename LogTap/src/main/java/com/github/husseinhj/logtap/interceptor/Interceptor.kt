@@ -1,4 +1,4 @@
-package com.github.husseinhj.logtap
+package com.github.husseinhj.logtap.interceptor
 
 import okhttp3.*
 import okio.Buffer
@@ -8,7 +8,25 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.CoroutineScope
+import com.github.husseinhj.logtap.LogTap
+import com.github.husseinhj.logtap.log.LogEvent
+import com.github.husseinhj.logtap.log.Direction
+import com.github.husseinhj.logtap.log.EventKind
 
+/**
+ * An OkHttp interceptor that logs HTTP requests and responses to LogTap.
+ *
+ * ### Example usage:
+ * ```kotlin
+ * val client = OkHttpClient.Builder()
+ *     .addInterceptor(LogTapInterceptor())
+ *     .build()
+ * ```
+ *
+ * This interceptor captures request and response details, including headers and bodies (up to a configured limit),
+ * while redacting sensitive headers. It handles various edge cases like streaming bodies, WebSocket upgrades,
+ * and gzip-encoded responses.
+ */
 class LogTapInterceptor : Interceptor {
 
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -26,7 +44,8 @@ class LogTapInterceptor : Interceptor {
             scope.launch {
                 LogTap.store.add(
                     LogEvent(
-                        id = 0, ts = System.currentTimeMillis(), kind = EventKind.HTTP,
+                        id = 0, ts = System.currentTimeMillis(),
+                        kind = EventKind.HTTP,
                         direction = Direction.ERROR,
                         summary = "HTTP ERROR ${request.method} ${request.url} — ${e.javaClass.simpleName}: ${e.message}",
                         url = request.url.toString(), method = request.method,

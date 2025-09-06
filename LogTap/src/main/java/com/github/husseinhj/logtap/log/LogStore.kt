@@ -1,10 +1,10 @@
-package com.github.husseinhj.logtap
+package com.github.husseinhj.logtap.log
 
-import kotlinx.coroutines.flow.MutableSharedFlow
+import java.util.ArrayDeque
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import java.util.ArrayDeque
 import java.util.concurrent.atomic.AtomicLong
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 internal class LogStore(private val capacity: Int) {
     private val deque = ArrayDeque<LogEvent>(capacity)
@@ -28,7 +28,7 @@ internal class LogStore(private val capacity: Int) {
     suspend fun snapshot(sinceId: Long? = null, limit: Int = 500): List<LogEvent> {
         return mutex.withLock {
             val all = deque.toList()
-            val filtered = sinceId?.let { id -> all.filter { it.id > id } } ?: all
+            val filtered = sinceId?.let { id -> all.filter { it.id == id } } ?: all
             filtered.takeLast(limit)
         }
     }

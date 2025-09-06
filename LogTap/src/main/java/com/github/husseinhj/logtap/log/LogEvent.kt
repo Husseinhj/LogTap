@@ -1,4 +1,4 @@
-package com.github.husseinhj.logtap
+package com.github.husseinhj.logtap.log
 
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.serialization.Serializable
@@ -9,15 +9,15 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.serialization.ExperimentalSerializationApi
 
 @Serializable
-enum class EventKind { HTTP, WEBSOCKET, LOG }
+internal enum class EventKind { HTTP, WEBSOCKET, LOG }
 
 @Serializable
-enum class Direction { REQUEST, RESPONSE, OUTBOUND, INBOUND, STATE, ERROR }
+internal enum class Direction { REQUEST, RESPONSE, OUTBOUND, INBOUND, STATE, ERROR }
 
 // kind = LOG is used for application logs collected via LogTapLogger/Logcat bridge
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
-data class LogEvent(
+internal data class LogEvent(
     val id: Long,
     val ts: Long,               // epoch millis
     val kind: EventKind,
@@ -38,7 +38,7 @@ data class LogEvent(
     val tag: String? = null,     // Android log tag (caller class)
 )
 
-object LogTapEvents {
+internal object LogTapEvents {
     private val seq = java.util.concurrent.atomic.AtomicLong(1L)
     private val queue = java.util.concurrent.ConcurrentLinkedQueue<LogEvent>()
 
@@ -61,34 +61,5 @@ object LogTapEvents {
         if (limit <= 0) return emptyList()
         val all = queue.toList()
         return if (all.size <= limit) all else all.takeLast(limit)
-    }
-}
-
-/** Bridge sink that converts logcat lines -> LogTap LogEvent */
-class LogTapSinkAdapter : LogTapLogcatBridge.Sink {
-    override fun onLog(priority: Char, tag: String, message: String, threadId: Int?, time: String?) {
-        val id = LogTapEvents.nextId()
-        val now = System.currentTimeMillis()
-        val level = when (priority) {
-            'V' -> "VERBOSE"
-            'D' -> "DEBUG"
-            'I' -> "INFO"
-            'W' -> "WARN"
-            'E' -> "ERROR"
-            'A', 'F' -> "ASSERT"
-            else -> "LOG"
-        }
-        LogTapEvents.push(
-            LogEvent(
-                id = id,
-                ts = now,
-                kind = EventKind.LOG,
-                direction = Direction.STATE,
-                summary = message,
-                thread = (threadId?.toString() ?: Thread.currentThread().name),
-                level = level,
-                tag = tag
-            )
-        )
     }
 }

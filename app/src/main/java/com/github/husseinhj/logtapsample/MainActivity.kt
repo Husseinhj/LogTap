@@ -21,8 +21,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
-import com.github.husseinhj.logtap.LogTapLogger
-import com.github.husseinhj.logtap.newWebSocketWithLogging
+import com.github.husseinhj.logtap.logger.LogTapLogger
+import com.github.husseinhj.logtap.utils.logW
+import com.github.husseinhj.logtap.utils.newWebSocketWithLogging
 import com.github.husseinhj.logtapsample.ui.theme.LogTapSampleTheme
 import okhttp3.Call
 import okhttp3.Callback
@@ -42,7 +43,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             LogTapSampleTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
+                    LogTapPlaygroundScreen(
                         name = "Android",
                         modifier = Modifier.padding(innerPadding)
                     )
@@ -54,7 +55,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun LogTapPlaygroundScreen(name: String, modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())) {
         Text(text = "LogTap Playground", style = MaterialTheme.typography.headlineSmall)
         Spacer(Modifier.height(8.dp))
@@ -109,10 +110,15 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 }
 
 private fun client(): OkHttpClient = buildOkHttpWithLogTap()
+private fun webSocketClient(): OkHttpClient = buildOkHttpWithLogTap()
 
 private fun httpGet(url: String) {
-    val req = Request.Builder().url(url).build()
-    client().newCall(req).enqueue(logCallbacks("GET $url"))
+    val req = Request.Builder()
+        .url(url)
+        .build()
+    client()
+        .newCall(req)
+        .enqueue(logCallbacks("GET $url"))
 }
 
 private fun httpPostJson(url: String, body: String) {
@@ -170,24 +176,29 @@ private fun logCallbacks(label: String) = object : Callback {
 }
 
 private fun openEchoWebSocket(url: String) {
-    val ws = client().newWebSocketWithLogging(
-        Request.Builder().url(url).build(),
-        object : WebSocketListener() {
+    webSocketClient().newWebSocketWithLogging(
+        request = Request.Builder().url(url).build(),
+        listener = object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
                 LogTapLogger.i("WS open: ${response.request.url}")
 
-                val sampleJson = """{"title":"test product","price":13.5,"description":"lorem ipsum set","image":"https://i.pravatar.cc","category":"electronic"}"""
+                val sampleJson =
+                    """{"title":"test product","price":13.5,"description":"lorem ipsum set","image":"https://i.pravatar.cc","category":"electronic"}"""
                 webSocket.send(sampleJson)
             }
+
             override fun onMessage(webSocket: WebSocket, text: String) {
                 LogTapLogger.d("WS message: $text")
             }
+
             override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
                 LogTapLogger.w("WS closing: $code $reason")
             }
+
             override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
                 LogTapLogger.i("WS closed: $code $reason")
             }
+
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
                 LogTapLogger.e("WS failure: ${t.message}", t)
             }
@@ -196,17 +207,19 @@ private fun openEchoWebSocket(url: String) {
 }
 
 private fun openEchoWebSocketAndSend(url: String, payload: String) {
-    client().newWebSocketWithLogging(
-        Request.Builder().url(url).build(),
-        object : WebSocketListener() {
+    webSocketClient().newWebSocketWithLogging(
+        request = Request.Builder().url(url).build(),
+        listener = object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
                 LogTapLogger.d("WS send: $payload")
                 webSocket.send(payload)
             }
+
             override fun onMessage(webSocket: WebSocket, text: String) {
                 LogTapLogger.d("WS recv: $text")
                 webSocket.close(1000, "done")
             }
+
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
                 LogTapLogger.e("WS failure: ${t.message}", t)
             }
@@ -218,6 +231,6 @@ private fun openEchoWebSocketAndSend(url: String, payload: String) {
 @Composable
 fun GreetingPreview() {
     LogTapSampleTheme {
-        Greeting("Android")
+        LogTapPlaygroundScreen("Android")
     }
 }

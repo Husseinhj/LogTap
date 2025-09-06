@@ -1,4 +1,4 @@
-package com.github.husseinhj.logtap
+package com.github.husseinhj.logtap.logger
 
 import android.util.Log
 
@@ -13,12 +13,12 @@ object LogTapLogger {
     @Volatile private var allowReleaseLogging: Boolean = false
 
     enum class Level(val prio: Int) {
-        VERBOSE(android.util.Log.VERBOSE),
-        DEBUG(android.util.Log.DEBUG),
-        INFO(android.util.Log.INFO),
-        WARN(android.util.Log.WARN),
-        ERROR(android.util.Log.ERROR),
-        ASSERT(android.util.Log.ASSERT)
+        VERBOSE(Log.VERBOSE),
+        DEBUG(Log.DEBUG),
+        INFO(Log.INFO),
+        WARN(Log.WARN),
+        ERROR(Log.ERROR),
+        ASSERT(Log.ASSERT)
     }
 
     @Volatile private var minLevel: Level = Level.DEBUG

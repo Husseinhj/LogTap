@@ -1,4 +1,4 @@
-package com.github.husseinhj.logtap
+package com.github.husseinhj.logtap.utils
 
 internal object Resources {
     val indexHtml = """

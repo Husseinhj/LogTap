@@ -1,4 +1,4 @@
-# LogTap
+# LogTap [![](https://jitpack.io/v/husseinhj/Logtap.svg)](https://jitpack.io/#husseinhj/Logtap)
 
 > Realtime **HTTP / WebSocket / Logger** inspector for Android (OkHttp3) — with a built-in Ktor web server and a Material-style responsive web UI.  
 > Inspect your app’s network calls and logs from any browser on the same network.

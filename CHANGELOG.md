@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Refactor LogTap for improved modularity and WebSocket logging
 
 Key changes include:
+- Added Android Studio, Xcode, Visual Studio, and Grafana themes to the HTML.
 - Moving core classes like `LogStore`, `LogEvent`, `LogTapLogger`, and `LogTapLogcatBridge` into new subpackages (`log`, `logger`, `server`, `interceptor`, `websocket`, `utils`) for better organization.
 - Introducing `LoggingWebSocket` and `LoggingWebSocketListener` to provide more detailed logging for WebSocket send and receive events, including message content and direction.
 - Adding a `newWebSocketWithLogging` extension function for `OkHttpClient` to easily create WebSockets with built-in logging.

@@ -914,11 +914,85 @@ body.resizing *{ user-select:none !important; }
   font-family: ui-monospace, Menlo, monospace;
   font-size: 13px;
   line-height: 1.4;
+  color: var(--md-sys-color-on-surface);
 }
 
 /* Code blocks */
 .code{background:var(--codebg);color:var(--code);border:1px solid var(--line);border-radius:12px;padding:12px;overflow:auto;max-height:22vh;white-space:pre-wrap;word-break:break-word}
-#ov-summary{white-space:pre-wrap;word-break:break-word;width:100%;max-height:50vh;overflow:auto}
+#ov-summary{
+  white-space:pre-wrap;
+  word-break:break-word;
+  width:100%;
+  max-height:50vh;
+  overflow:auto;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--md-sys-color-surface-container-high);
+}
+/* JSON syntax colors already provided via .json .k/.s/.n/.b/.null */
+
+/* ===== Thematic colorization for <pre> blocks ===== */
+pre {
+  color: var(--md-sys-color-on-surface);
+}
+/* HTTP method context for pre blocks */
+pre.method-GET    { color: var(--m-get); }
+pre.method-POST   { color: var(--m-post); }
+pre.method-PUT    { color: var(--m-put); }
+pre.method-PATCH  { color: var(--m-patch); }
+pre.method-DELETE { color: var(--m-delete); }
+pre.method-WS     { color: var(--m-ws); }
+/* Log level context for pre blocks */
+pre.level-VERBOSE { color: var(--lv-v); }
+pre.level-DEBUG   { color: var(--lv-d); }
+pre.level-INFO    { color: var(--lv-i); }
+pre.level-WARN    { color: var(--lv-w); }
+pre.level-ERROR   { color: var(--lv-e); }
+pre.level-ASSERT  { color: var(--lv-a); }
+/* Pre blocks with .json class still get .json .k/.s/.n/.b/.null coloring for inner spans */
+
+/* Contextual tint for Summary (HTTP method) */
+#ov-summary.method-GET{ border-left:4px solid var(--m-get); }
+#ov-summary.method-POST{ border-left:4px solid var(--m-post); }
+#ov-summary.method-PUT{ border-left:4px solid var(--m-put); }
+#ov-summary.method-PATCH{ border-left:4px solid var(--m-patch); }
+#ov-summary.method-DELETE{ border-left:4px solid var(--m-delete); }
+#ov-summary.method-WS{ border-left:4px solid var(--m-ws); }
+/* WebSocket direction/opcode tints */
+#ov-summary.ws-send{ border-left:4px solid var(--ws-send); }
+#ov-summary.ws-recv{ border-left:4px solid var(--ws-recv); }
+#ov-summary.ws-ping{ border-left:4px solid var(--ws-ping); }
+#ov-summary.ws-pong{ border-left:4px solid var(--ws-pong); }
+#ov-summary.ws-close{ border-left:4px solid var(--ws-close); }
+/* Logger level tints */
+#ov-summary.level-VERBOSE{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 55%, transparent); }
+#ov-summary.level-DEBUG{   box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 55%, transparent); }
+#ov-summary.level-INFO{    box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 55%, transparent); }
+#ov-summary.level-WARN{    box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 55%, transparent); }
+#ov-summary.level-ERROR{   box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 55%, transparent); }
+#ov-summary.level-ASSERT{  box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 55%, transparent); }
+
+/* Summary text colorization by context */
+#ov-summary.method-GET    { color: var(--m-get); }
+#ov-summary.method-POST   { color: var(--m-post); }
+#ov-summary.method-PUT    { color: var(--m-put); }
+#ov-summary.method-PATCH  { color: var(--m-patch); }
+#ov-summary.method-DELETE { color: var(--m-delete); }
+#ov-summary.method-WS     { color: var(--m-ws); }
+#ov-summary.ws-send       { color: var(--ws-send); }
+#ov-summary.ws-recv       { color: var(--ws-recv); }
+#ov-summary.ws-ping       { color: var(--ws-ping); }
+#ov-summary.ws-pong       { color: var(--ws-pong); }
+#ov-summary.ws-close      { color: var(--ws-close); }
+#ov-summary.level-VERBOSE { color: var(--lv-v); }
+#ov-summary.level-DEBUG   { color: var(--lv-d); }
+#ov-summary.level-INFO    { color: var(--lv-i); }
+#ov-summary.level-WARN    { color: var(--lv-w); }
+#ov-summary.level-ERROR   { color: var(--lv-e); }
+#ov-summary.level-ASSERT  { color: var(--lv-a); }
+/* When JSON pretty-print is active, inner span highlights take precedence */
+#ov-summary.json { color: inherit; }
 .curl{display:flex;gap:8px;align-items:flex-start;width:100%}
 .curl .code{flex:1;min-height:160px}
 #ov-curl{white-space:pre-wrap;word-break:break-all;overflow:auto;max-height:70vh;width:100%}
@@ -1625,11 +1699,28 @@ body.ui{ font-size: var(--font-size); font-family: var(--font-ui); }
           setText('ov-method', ev.method || (kind==='WEBSOCKET'?'WS':'')); setText('ov-status', ev.status ?? ''); setText('ov-url', ev.url ?? '');
           setText('ov-level', (ev.level || levelOf(ev) || ''));
           setText('ov-tag', (ev.tag || ''));
-          if (jsonPretty?.checked) {
-            const el = document.getElementById('ov-summary');
-            if (el) { el.classList.add('json'); el.innerHTML = hlJson(ev.summary ?? ''); }
-          } else {
-            setText('ov-summary', ev.summary ?? '');
+          // ---- Contextual summary block with classes ----
+          const mU = (ev.method ? String(ev.method).toUpperCase() : (kind==='WEBSOCKET' ? 'WS' : ''));
+          const lvl = (kind==='LOG') ? levelOf(ev) : '';
+          const sumEl = document.getElementById('ov-summary');
+          if (sumEl){
+            sumEl.classList.remove('json','method-GET','method-POST','method-PUT','method-PATCH','method-DELETE','method-WS','ws-send','ws-recv','ws-ping','ws-pong','ws-close','level-VERBOSE','level-DEBUG','level-INFO','level-WARN','level-ERROR','level-ASSERT');
+            // content
+            if (jsonPretty?.checked){ sumEl.classList.add('json'); sumEl.innerHTML = hlJson(ev.summary ?? ''); }
+            else { sumEl.textContent = ev.summary ?? ''; }
+            // method/WS tint
+            if (kind==='HTTP'){
+              if (mU) sumEl.classList.add('method-'+mU);
+            } else if (kind==='WEBSOCKET'){
+              const isSend = (dir === 'OUTBOUND' || dir === 'REQUEST');
+              const isRecv = (dir === 'INBOUND'  || dir === 'RESPONSE');
+              const op = (ev.op || ev.opcode || '').toString().toLowerCase();
+              const wsClass = op==='ping'?'ws-ping': op==='pong'?'ws-pong': op==='close'?'ws-close': (isSend?'ws-send': isRecv?'ws-recv':'');
+              if (wsClass) sumEl.classList.add(wsClass);
+              sumEl.classList.add('method-WS');
+            } else if (kind==='LOG'){
+              if (lvl) sumEl.classList.add('level-'+lvl);
+            }
           }
           setText('ov-took', ev.tookMs? ev.tookMs+' ms' : '');
           // Show tag in thread field if present
@@ -1638,7 +1729,6 @@ body.ui{ font-size: var(--font-size); font-family: var(--font-ui); }
           setJson('req-body', bodyFor(ev,'request'));
           setJson('resp-body', bodyFor(ev,'response'));
           // Colorize drawer content by method
-          const mU = (ev.method ? String(ev.method).toUpperCase() : (kind==='WEBSOCKET' ? 'WS' : ''));
           const reqPre = document.getElementById('req-body');
           const respPre = document.getElementById('resp-body');
           [reqPre, respPre].forEach(p=>{ if(!p) return; p.classList.remove('method-GET','method-POST','method-PUT','method-PATCH','method-DELETE','method-WS'); if(mU) p.classList.add('method-'+mU); });

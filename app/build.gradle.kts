@@ -39,7 +39,7 @@ android {
 
 dependencies {
 
-    implementation(project(":LogTap-Noop"))
+    implementation(project(":LogTap"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

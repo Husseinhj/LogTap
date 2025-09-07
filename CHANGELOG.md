@@ -3,6 +3,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### v0.8.0
+Refactor LogTap UI and functionality
+
+- Update repository URL from LogTap to LogTapIOS.
+- Implement resizable and persistable table columns.
+- Change default for "Pretty JSON" to enabled.
+- Default "Actions" column to hidden.
+- Improve log message display and parsing.
+- Minor style adjustments for table padding and layout.
+- Switch sample app dependency from LogTap-Noop to LogTap.
+
 ### v0.7.0
 Refactor LogTap-Noop module and update UI resources
 

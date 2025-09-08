@@ -534,7 +534,17 @@ body.hide-col-url     #logtbl .col-url{display:none}
 body.hide-col-actions #logtbl .col-actions{display:none}
 
 /* ========================= Assist/Stat Chips (M3) ========================= */
-.stats{display:flex;gap:8px;flex-wrap:wrap;padding:10px 16px}
+.stats {
+  position: sticky;
+  top: 64px; /* height of your header */
+  z-index: 30; /* slightly below header’s z-index (40) */
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 16px;
+  background: var(--md-sys-color-surface); /* match header bg */
+  border-bottom: 1px solid var(--line);
+}
 .chip{background:var(--md-sys-color-surface-container-high);border:1px solid var(--line);padding:6px 12px;border-radius:999px;transition:background .15s,border-color .15s,color .15s,box-shadow .15s}
 
 .chip.stat{font:12px ui-monospace,Menlo,monospace}

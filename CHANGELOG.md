@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### v0.11.0
+Enable minification in LogTap and add Proguard rules for LogTap
+
+- Enable `isMinifyEnabled` for the release build type in `LogTap/build.gradle.kts`.
+- Add Proguard rules to `LogTap/proguard-rules.pro` to keep LogTap's public API, Ktor, OkHttp/Okio, Kotlin coroutines, Kotlinx serialization, and WebSocket message models.
+- 
 ### v0.10.0
 Expose LogTap server address and display in sample app
 

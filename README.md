@@ -45,8 +45,8 @@
 Add the dependency in your `build.gradle`:
 
 ```gradle
-debugImplementation 'com.github.Husseinhj.LogTap:logtap:v0.8.0'
-releaseImplementation 'com.github.Husseinhj.LogTap:logtap-noop:v0.8.0'
+debugImplementation 'com.github.Husseinhj.LogTap:logtap:v0.10.0'
+releaseImplementation 'com.github.Husseinhj.LogTap:logtap-noop:v0.10.0'
 ```
 
 > 💡 Always use the latest version from the [GitHub Releases](https://github.com/Husseinhj/LogTap/releases).

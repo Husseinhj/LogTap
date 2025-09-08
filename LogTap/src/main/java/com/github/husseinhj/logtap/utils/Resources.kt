@@ -33,6 +33,53 @@ internal object Resources {
           <span class="label">Filters</span>
           <span class="material-symbols-outlined dropdown" aria-hidden="true">arrow_drop_down</span>
         </button>
+        <button id="settingsBtn" class="btn ghost" title="Settings" aria-haspopup="true" aria-expanded="false">
+          <span class="material-symbols-outlined" aria-hidden="true">settings</span>
+          <span class="label">Settings</span>
+          <span class="material-symbols-outlined dropdown" aria-hidden="true">arrow_drop_down</span>
+        </button>
+        <!-- Settings popover (separate from Filters) -->
+        <div id="settingsPanel" class="popover hidden fp" role="dialog" aria-label="Settings">
+          <div class="fp-head">
+            <div class="fp-title">Settings</div>
+            <div class="fp-sub">Appearance &amp; behavior of the LogTap UI</div>
+          </div>
+          <div class="fp-grid">
+            <label class="fp-field">Color scheme
+              <select id="colorScheme" class="select">
+                <option value="android">Android Studio</option>
+                <option value="xcode">Xcode</option>
+                <option value="vscode">Visual Studio Code</option>
+                <option value="grafana">Grafana</option>
+              </select>
+            </label>
+            <label class="fp-checkbox">
+              <input type="checkbox" id="jsonPretty"/>
+              <span class="box"></span>
+              <span class="lbl">Pretty JSON</span>
+            </label>
+            <label class="fp-checkbox">
+              <input type="checkbox" id="autoScroll" checked/>
+              <span class="box"></span>
+              <span class="lbl">Auto‑scroll</span>
+            </label>
+            <div class="fp-cols">
+              <div class="fp-cols-title">Columns</div>
+              <label class="fp-checkbox"><input type="checkbox" id="colId" checked/><span class="box"></span><span class="lbl">ID</span></label>
+              <label class="fp-checkbox"><input type="checkbox" id="colTime" checked/><span class="box"></span><span class="lbl">Time</span></label>
+              <label class="fp-checkbox"><input type="checkbox" id="colKind" checked/><span class="box"></span><span class="lbl">Kind</span></label>
+              <label class="fp-checkbox"><input type="checkbox" id="colTag" checked/><span class="box"></span><span class="lbl">Tag</span></label>
+              <label class="fp-checkbox"><input type="checkbox" id="colMethod" checked/><span class="box"></span><span class="lbl">Method</span></label>
+              <label class="fp-checkbox"><input type="checkbox" id="colStatus" checked/><span class="box"></span><span class="lbl">Status</span></label>
+              <label class="fp-checkbox"><input type="checkbox" id="colUrl" checked/><span class="box"></span><span class="lbl">URL / Summary</span></label>
+              <label class="fp-checkbox"><input type="checkbox" id="colActions" checked/><span class="box"></span><span class="lbl">Actions</span></label>
+            </div>
+          </div>
+          <div class="fp-actions">
+            <button id="settingsReset" class="btn ghost"><span class="material-symbols-outlined" aria-hidden="true">restart_alt</span> Reset</button>
+            <button id="settingsClose" class="btn"><span class="material-symbols-outlined" aria-hidden="true">done</span> Apply</button>
+          </div>
+        </div>
         <div class="menu">
           <button id="exportBtn" class="icon" title="Export" aria-label="Export">
             <span class="material-symbols-outlined" aria-hidden="true">ios_share</span>
@@ -94,35 +141,6 @@ internal object Resources {
                 <option value="ASSERT">Assert</option>
               </select>
             </label>
-            <label class="fp-field">Colors
-              <select id="colorScheme" class="select">
-                <option value="android">Android Studio</option>
-                <option value="xcode">Xcode</option>
-                <option value="vscode">Visual Studio Code</option>
-                <option value="grafana">Grafana</option>
-              </select>
-            </label>
-            <label class="fp-checkbox">
-              <input type="checkbox" id="jsonPretty"/>
-              <span class="box"></span>
-              <span class="lbl">Pretty JSON</span>
-            </label>
-            <label class="fp-checkbox">
-              <input type="checkbox" id="autoScroll" checked/>
-              <span class="box"></span>
-              <span class="lbl">Auto‑scroll</span>
-            </label>
-            <div class="fp-cols">
-              <div class="fp-cols-title">Columns</div>
-              <label class="fp-checkbox"><input type="checkbox" id="colId" checked/><span class="box"></span><span class="lbl">ID</span></label>
-              <label class="fp-checkbox"><input type="checkbox" id="colTime" checked/><span class="box"></span><span class="lbl">Time</span></label>
-              <label class="fp-checkbox"><input type="checkbox" id="colKind" checked/><span class="box"></span><span class="lbl">Kind</span></label>
-              <label class="fp-checkbox"><input type="checkbox" id="colTag" checked/><span class="box"></span><span class="lbl">Tag</span></label>
-              <label class="fp-checkbox"><input type="checkbox" id="colMethod" checked/><span class="box"></span><span class="lbl">Method</span></label>
-              <label class="fp-checkbox"><input type="checkbox" id="colStatus" checked/><span class="box"></span><span class="lbl">Status</span></label>
-              <label class="fp-checkbox"><input type="checkbox" id="colUrl" checked/><span class="box"></span><span class="lbl">URL / Summary</span></label>
-              <label class="fp-checkbox"><input type="checkbox" id="colActions" checked/><span class="box"></span><span class="lbl">Actions</span></label>
-            </div>
           </div>
           <div class="fp-actions">
             <button id="filtersReset" class="btn ghost"><span class="material-symbols-outlined" aria-hidden="true">restart_alt</span> Reset</button>
@@ -355,14 +373,15 @@ body.ui{margin:0;background:var(--bg);color:var(--text);font:14px ui-sans-serif,
 .btn:hover::after,.icon:hover::after{opacity:var(--state-hover)}
 .btn:active::after,.icon:active::after{opacity:var(--state-pressed)}
 #filtersBtn{display:flex;align-items:center;gap:4px}
-#filtersBtn .material-symbols-outlined.dropdown{font-size:20px;opacity:.7}
-#filtersBtn .label{font-size:14px}
+#filtersBtn .material-symbols-outlined.dropdown,
+#settingsBtn .material-symbols-outlined.dropdown{font-size:20px;opacity:.7}
+#filtersBtn .label, #settingsBtn .label{font-size:14px}
 
 .icon{width:36px;height:36px;border-radius:12px;background:transparent;border:1px solid var(--line);color:var(--text);font-size:18px;line-height:1;display:grid;place-items:center;position:relative;overflow:hidden}
 .icon.solid{background:var(--surface)}
 .icon .material-symbols-outlined{font-size:20px}
 
-.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;position:relative}
 .menu{position:relative}
 
 .popover{position:absolute;top:100%;margin-top:8px;right:0;background:var(--md-sys-color-surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--elev-3);padding:10px;z-index:50;min-width:220px}
@@ -1557,8 +1576,35 @@ body.mode-log .col-url .lc{display:block}
 .muted{color:var(--muted)} .badge{border:1px solid var(--line);border-radius:6px;padding:2px 6px;background:transparent;font:12px ui-monospace,Menlo,monospace}
 .hidden{display:none !important}
 
+
 /* Material Symbols font setup */
 .material-symbols-outlined{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:20px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-feature-settings:'liga';-webkit-font-smoothing:antialiased;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24}
+
+/* Align Settings button icon + text nicely */
+#settingsBtn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  line-height:1;
+}
+
+/* Keep icon centered to the text baseline */
+#settingsBtn .material-symbols-outlined{
+  display:inline-block;
+  line-height:1;
+  font-size:20px;       /* match table icon size */
+  transform: translateY(1px); /* tiny optical nudge */
+}
+
+/* Make all .btn & .icon controls align contents consistently */
+.btn,
+.icon{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  line-height:1;
+}
 
 /* Theme toggle icon visibility (default: hide both, then show correct for theme) */
 #themeToggle .ico-sun,
@@ -1580,8 +1626,14 @@ body.ui{ font-size: var(--font-size); font-family: var(--font-ui); }
 .tbl thead th{ padding: calc(var(--row-pad) - 4px) 8px; }
 .tbl tbody td{ padding: calc(var(--row-pad) - 6px) 6px; }
 
-/* Buttons compactness varies subtly per scheme */
-.btn{ padding: calc(var(--row-pad) - 6px) 16px; }
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding: calc(var(--row-pad) - 6px) 16px;
+  line-height:1;
+}
 .btn.xs{ padding: calc(var(--row-pad) - 8px) 10px; }
 
 /* Chips reflect scheme corners */
@@ -1895,22 +1947,6 @@ body.ui{ font-size: var(--font-size); font-family: var(--font-ui); }
           if(statusCodeFilter) statusCodeFilter.value='';
           if(levelFilter) levelFilter.value='';
           if(viewMode){ viewMode.value='mix'; applyMode(); }
-
-          // Pretty JSON defaults to ON
-          if(jsonPretty){
-            jsonPretty.checked = true;
-            try{ localStorage.setItem('logtap:jsonPretty','1'); }catch{}
-          }
-
-          // Columns: show all
-          const allTrue = {id:true,time:true,kind:true,tag:true,method:true,status:true,url:true,actions:false};
-          try{ localStorage.setItem('logtap:cols', JSON.stringify(allTrue)); }catch{}
-          applyCols(allTrue);
-
-          // Clear active stat chip highlight
-          highlightChip(null);
-          // Reset column widths to defaults
-          resetColWidths();
         }
         // ==== Column Resize (persisted) ====
         const COL_W_KEY = 'logtap:colW';
@@ -2590,6 +2626,57 @@ body.ui{ font-size: var(--font-size); font-family: var(--font-ui); }
             ws.onmessage = (e)=>{ try{ const ev = JSON.parse(e.data); rows.push(ev); if(matchesFilters(ev)){ tbody.appendChild(renderRow(ev)); if(autoScroll?.checked) tbody.lastElementChild?.scrollIntoView({block:'end'}); renderStats(); } }catch(parseErr){ console.warn('[LogTap] bad WS payload', parseErr); } };
           }catch(wsErr){ console.warn('[LogTap] WS setup failed', wsErr); if(wsStatus){ wsStatus.textContent='● Disconnected'; wsStatus.classList.remove('status-on','status-connecting'); wsStatus.classList.add('status-off'); } }
         }
+        // === Settings popover wiring ===
+        const settingsBtn   = document.getElementById('settingsBtn');
+        const settingsPanel = document.getElementById('settingsPanel');
+        const settingsClose = document.getElementById('settingsClose');
+        const settingsReset = document.getElementById('settingsReset');
+
+        function toggleSettings(open) {
+          if (!settingsPanel || !settingsBtn) return;
+          const willOpen = open ?? settingsPanel.classList.contains('hidden');
+          settingsPanel.classList.toggle('hidden', !willOpen);
+          settingsBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        }
+
+        settingsBtn?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleSettings();
+        });
+
+        settingsClose?.addEventListener('click', () => toggleSettings(false));
+        // Optional hook for your reset logic:
+        settingsReset?.addEventListener('click', () => {
+           // Pretty JSON defaults to ON
+          if(jsonPretty){
+            jsonPretty.checked = true;
+            try{ localStorage.setItem('logtap:jsonPretty','1'); }catch{}
+          }
+
+          // Columns: show all
+          const allTrue = {id:true,time:true,kind:true,tag:true,method:true,status:true,url:true,actions:false};
+          try{ localStorage.setItem('logtap:cols', JSON.stringify(allTrue)); }catch{}
+          applyCols(allTrue);
+
+          // Clear active stat chip highlight
+          highlightChip(null);
+          // Reset column widths to defaults
+          resetColWidths();
+        });
+        
+        // Close when clicking outside
+        window.addEventListener('click', (e) => {
+          if (!settingsPanel || settingsPanel.classList.contains('hidden')) return;
+          if (!settingsPanel.contains(e.target) && e.target !== settingsBtn && !settingsBtn.contains(e.target)) {
+            toggleSettings(false);
+          }
+        });
+        
+        // Close on Escape
+        window.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') toggleSettings(false);
+        });
+
         // Load saved drawer width and enable drag to resize
         loadDrawerWidth();
         drawerResizer?.addEventListener('mousedown', (e)=>{ e.preventDefault(); startResize(e); });

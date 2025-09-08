@@ -15,10 +15,12 @@ import android.net.ConnectivityManager
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.asStateFlow
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.engine.ApplicationEngine
 import com.github.husseinhj.logtap.log.LogStore
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.CoroutineExceptionHandler
 import com.github.husseinhj.logtap.utils.isDebuggable
 import com.github.husseinhj.logtap.logger.LogTapLogger
@@ -34,6 +36,9 @@ object LogTap {
         val redactHeaders: Set<String> = setOf("Authorization","Cookie","Set-Cookie"),
         val enableOnRelease: Boolean = false
     )
+
+    private val _resolvedAddress: MutableStateFlow<String?> = MutableStateFlow(null)
+    val resolvedAddress = _resolvedAddress.asStateFlow()
 
     @Volatile private var server: ApplicationEngine? = null
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -112,6 +117,7 @@ object LogTap {
                     resolvedPort = port
 
                     val ip = getDeviceIp(context)
+                    _resolvedAddress.value = "http://$ip:$port/"
                     LogTapLogger.i("LogTap server ready at http://$ip:$port/")
                 } catch (ce: CancellationException) {
                     // engine/coroutine cancelled ⇒ do not crash app

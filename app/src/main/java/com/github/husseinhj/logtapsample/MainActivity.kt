@@ -21,8 +21,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.github.husseinhj.logtap.LogTap
 import com.github.husseinhj.logtap.logger.LogTapLogger
-import com.github.husseinhj.logtap.utils.logW
 import com.github.husseinhj.logtap.utils.newWebSocketWithLogging
 import com.github.husseinhj.logtapsample.ui.theme.LogTapSampleTheme
 import okhttp3.Call
@@ -56,10 +57,14 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun LogTapPlaygroundScreen(name: String, modifier: Modifier = Modifier) {
+    val resolvedAddress = LogTap.resolvedAddress.collectAsStateWithLifecycle(
+        "not started"
+    )
     Column(modifier = modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())) {
         Text(text = "LogTap Playground", style = MaterialTheme.typography.headlineSmall)
         Spacer(Modifier.height(8.dp))
         Text(text = "Hello $name! Use these to generate HTTP, WebSocket, and Logger events.", style = MaterialTheme.typography.bodyMedium)
+        Text(text = "Address: ${resolvedAddress.value}", style = MaterialTheme.typography.bodyLarge)
         Spacer(Modifier.height(16.dp))
 
         // ===== Logger Demos =====

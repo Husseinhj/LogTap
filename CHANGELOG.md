@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### v0.10.0
+Expose LogTap server address and display in sample app
+
+- Introduce `LogTap.resolvedAddress` as a `StateFlow` to observe the server address.
+- Update the sample app to display the resolved server address.
+
 ### v0.9.0
 
 - Fix GitHub links in Resources.kt to point to the correct repository

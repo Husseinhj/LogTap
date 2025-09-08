@@ -19,20 +19,3 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
-
-# Keep LogTap public API (and avoid accidental stripping of handlers)
--keep class com.github.husseinhj.logtap.** { *; }
-
-# Ktor / OkHttp / Coroutines are reflection-light but can warn
--keep class io.ktor.** { *; }
--dontwarn io.ktor.**
--dontwarn okhttp3.**
--dontwarn okio.**
-
--dontwarn kotlinx.coroutines.**
-
-# If using kotlinx-serialization anywhere in your payloads
--keepclassmembers class ** {
-    @kotlinx.serialization.SerialName *;
-}
--keepattributes *Annotation*, Signature, InnerClasses, EnclosingMethod, Exceptions, SourceFile, LineNumberTable

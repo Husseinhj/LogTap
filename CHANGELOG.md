@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add DeviceAppInfo support and update UI with dynamic app details
 - Add settings popover for UI customization options
+- Refactor settings and filters popover for improved UI and accessibility
+- 
 
 ### v0.11.2
 Make LogStore nullable and handle potential null access

@@ -39,32 +39,47 @@ internal object Resources {
           <span class="material-symbols-outlined dropdown" aria-hidden="true">arrow_drop_down</span>
         </button>
         <!-- Settings popover (separate from Filters) -->
-        <div id="settingsPanel" class="popover hidden fp" role="dialog" aria-label="Settings">
-          <div class="fp-head">
-            <div class="fp-title">Settings</div>
-            <div class="fp-sub">Appearance &amp; behavior of the LogTap UI</div>
+        <div id="settingsPanel" class="hidden">
+          <div class="sp-head">
+            <div class="sp-icon"><span class="material-symbols-outlined">tune</span></div>
+            <div class="sp-title">Settings</div>
+            <button id="settingsClose" class="icon" aria-label="Close"><span class="material-symbols-outlined">close</span></button>
           </div>
-          <div class="fp-grid">
-            <label class="fp-field">Color scheme
-              <select id="colorScheme" class="select">
-                <option value="android">Android Studio</option>
-                <option value="xcode">Xcode</option>
-                <option value="vscode">Visual Studio Code</option>
-                <option value="grafana">Grafana</option>
-              </select>
-            </label>
-            <label class="fp-checkbox">
-              <input type="checkbox" id="jsonPretty"/>
-              <span class="box"></span>
-              <span class="lbl">Pretty JSON</span>
-            </label>
-            <label class="fp-checkbox">
-              <input type="checkbox" id="autoScroll" checked/>
-              <span class="box"></span>
-              <span class="lbl">Auto‑scroll</span>
-            </label>
-            <div class="fp-cols">
-              <div class="fp-cols-title">Columns</div>
+        
+          <div class="sp-body">
+            <div class="sp-section">
+              <h4>Theme</h4>
+              <div class="sp-row">
+                <div>Logs Style</div>
+                <select id="colorScheme" class="select">
+                    <option value="android">Android Studio</option>
+                    <option value="xcode">Xcode</option>
+                    <option value="vscode">Visual Studio Code</option>
+                    <option value="grafana">Grafana</option>
+                  </select>
+              </div>
+            </div>
+        
+            <div class="sp-section">
+              <h4>Behavior</h4>
+              <div class="sp-row">
+                <div>Pretty JSON</div>
+                <label class="switch">
+                  <input type="checkbox" id="jsonPretty">
+                  <span class="track"></span><span class="thumb"></span>
+                </label>
+              </div>
+              <div class="sp-row">
+                <div>Auto scroll</div>
+                <label class="switch">
+                  <input type="checkbox" id="autoScroll">
+                  <span class="track"></span><span class="thumb"></span>
+                </label>
+              </div>
+            </div>
+        
+            <div class="sp-section">
+              <h4>Columns</h4>
               <label class="fp-checkbox"><input type="checkbox" id="colId" checked/><span class="box"></span><span class="lbl">ID</span></label>
               <label class="fp-checkbox"><input type="checkbox" id="colTime" checked/><span class="box"></span><span class="lbl">Time</span></label>
               <label class="fp-checkbox"><input type="checkbox" id="colKind" checked/><span class="box"></span><span class="lbl">Kind</span></label>
@@ -75,9 +90,12 @@ internal object Resources {
               <label class="fp-checkbox"><input type="checkbox" id="colActions" checked/><span class="box"></span><span class="lbl">Actions</span></label>
             </div>
           </div>
-          <div class="fp-actions">
-            <button id="settingsReset" class="btn ghost"><span class="material-symbols-outlined" aria-hidden="true">restart_alt</span> Reset</button>
-            <button id="settingsClose" class="btn"><span class="material-symbols-outlined" aria-hidden="true">done</span> Apply</button>
+          <div class="sp-foot">
+            <span class="hint">Preferences are saved locally</span>
+            <div>
+              <button id="settingsReset" class="btn-reset">Reset</button>
+              <button id="settingsClose2" class="btn-close">Close</button>
+            </div>
           </div>
         </div>
         <div class="menu">
@@ -98,53 +116,74 @@ internal object Resources {
         </button>
 
         <!-- Filters popover (Material 3 sheet) -->
-        <div id="filtersPanel" class="popover hidden fp" role="dialog" aria-label="Filters">
+        <div id="filtersPanel" class="fp hidden" role="dialog" aria-modal="true" aria-labelledby="filtersTitle">
           <div class="fp-head">
-            <div class="fp-title">Filters</div>
-            <div class="fp-sub">Narrow what you see in the table</div>
+            <div class="fp-icon material-symbols-outlined" aria-hidden="true">filter_list</div>
+            <div class="fp-title" id="filtersTitle">Filters</div>
+            <button id="filtersClose" class="icon" title="Close filters" aria-label="Close filters">
+              <span class="material-symbols-outlined" aria-hidden="true">close</span>
+            </button>
           </div>
-          <div class="fp-grid">
-            <label class="fp-field">View
-              <select id="viewMode" class="select">
-                <option value="mix">Mix (All)</option>
-                <option value="network">Network only</option>
-                <option value="log">Logger only</option>
-              </select>
-            </label>
-            <label class="fp-field">Method
-              <select id="methodFilter" class="select">
-                <option value="">All</option>
-                <option>GET</option><option>POST</option><option>PUT</option>
-                <option>PATCH</option><option>DELETE</option><option>WS</option>
-              </select>
-            </label>
-            <label class="fp-field">Status class
-              <select id="statusFilter" class="select">
-                <option value="">Any</option>
-                <option value="2xx">2xx</option>
-                <option value="3xx">3xx</option>
-                <option value="4xx">4xx</option>
-                <option value="5xx">5xx</option>
-              </select>
-            </label>
-            <label class="fp-field">Codes
-              <input id="statusCodeFilter" class="input" type="text" inputmode="numeric" pattern="[0-9xX,-,\s]*" placeholder="200, 2xx, 400-404"/>
-            </label>
-            <label class="fp-field">Level
-              <select id="levelFilter" class="select">
-                <option value="">Any Level</option>
-                <option value="VERBOSE">Verbose</option>
-                <option value="DEBUG">Debug</option>
-                <option value="INFO">Info</option>
-                <option value="WARN">Warn</option>
-                <option value="ERROR">Error</option>
-                <option value="ASSERT">Assert</option>
-              </select>
-            </label>
+        
+          <div class="fp-body">
+            <!-- HTTP / WS -->
+            <div class="fp-section">
+              <h4>HTTP &amp; WebSocket</h4>
+        
+              <div class="fp-row">
+                <label class="lbl" for="methodFilter">Method</label>
+                <select id="methodFilter" class="select">
+                  <option value="">Any</option>
+                  <option value="GET">GET</option>
+                  <option value="POST">POST</option>
+                  <option value="PUT">PUT</option>
+                  <option value="PATCH">PATCH</option>
+                  <option value="DELETE">DELETE</option>
+                  <option value="WS">WS</option>
+                </select>
+              </div>
+        
+              <div class="fp-row">
+                <label class="lbl" for="statusFilter">Status class</label>
+                <select id="statusFilter" class="select">
+                  <option value="">Any</option>
+                  <option value="2xx">2xx (Success)</option>
+                  <option value="3xx">3xx (Redirect)</option>
+                  <option value="4xx">4xx (Client error)</option>
+                  <option value="5xx">5xx (Server error)</option>
+                </select>
+              </div>
+        
+              <div class="fp-row">
+                <label class="lbl" for="statusCodeFilter">Status code(s)</label>
+                <input id="statusCodeFilter" class="input" placeholder="e.g. 200,404, 500-599">
+              </div>
+            </div>
+        
+            <!-- Logger -->
+            <div class="fp-section">
+              <h4>Logger</h4>
+              <div class="fp-row">
+                <label class="lbl" for="levelFilter">Level</label>
+                <select id="levelFilter" class="select">
+                  <option value="">Any</option>
+                  <option value="VERBOSE">VERBOSE</option>
+                  <option value="DEBUG">DEBUG</option>
+                  <option value="INFO">INFO</option>
+                  <option value="WARN">WARN</option>
+                  <option value="ERROR">ERROR</option>
+                  <option value="ASSERT">ASSERT</option>
+                </select>
+              </div>
+            </div>
           </div>
-          <div class="fp-actions">
-            <button id="filtersReset" class="btn ghost"><span class="material-symbols-outlined" aria-hidden="true">restart_alt</span> Reset</button>
-            <button id="filtersClose" class="btn"><span class="material-symbols-outlined" aria-hidden="true">done</span> Apply</button>
+        
+          <div class="fp-foot">
+            <span class="hint">Tip: click a stat chip to quick-filter; click it again to reset.</span>
+            <div>
+              <button id="filtersReset" class="btn-reset" type="button">Reset</button>
+              <button id="filtersCloseBottom" class="btn-close" type="button">Close</button>
+            </div>
           </div>
         </div>
       </nav>
@@ -238,6 +277,32 @@ internal object Resources {
     </main>
 
     <script src="/app.js"></script>
+    <script>
+    (function(){
+      const settingsPanel = document.getElementById('settingsPanel');
+      const filtersPanel  = document.getElementById('filtersPanel');
+      const settingsBtn   = document.getElementById('settingsBtn');
+      const filtersBtn    = document.getElementById('filtersBtn');
+      const settingsCloseTop = document.getElementById('settingsClose');
+      const settingsCloseBottom = document.getElementById('settingsClose2');
+      const filtersCloseTop = document.getElementById('filtersClose');
+      const filtersCloseBottom = document.getElementById('filtersCloseBottom');
+
+      function closePanel(panelEl, toggleBtn){
+        if (!panelEl) return;
+        panelEl.classList.add('hidden');
+        if (toggleBtn) toggleBtn.setAttribute('aria-expanded','false');
+      }
+
+      // Settings panel close (both X and footer Close)
+      settingsCloseTop?.addEventListener('click', () => closePanel(settingsPanel, settingsBtn));
+      settingsCloseBottom?.addEventListener('click', () => closePanel(settingsPanel, settingsBtn));
+
+      // Filters panel close (both X and footer Close)
+      filtersCloseTop?.addEventListener('click', () => closePanel(filtersPanel, filtersBtn));
+      filtersCloseBottom?.addEventListener('click', () => closePanel(filtersPanel, filtersBtn));
+    })();
+    </script>
    <div class="repo">
      <a href="https://github.com/Husseinhj/LogTap" target="_blank" rel="noopener">
        <svg class="gh-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.62-.17 1.29-.27 2-.27s1.38.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
@@ -1639,6 +1704,157 @@ body.ui{ font-size: var(--font-size); font-family: var(--font-ui); }
 /* Chips reflect scheme corners */
 .chip{ border-radius: var(--chip-radius); }
 
+/* ===== Panels (Settings & Filters) — unified visual ===== */
+#settingsPanel, #filtersPanel{
+  position: fixed;
+  z-index: 70;
+  right: 12px;
+  top: 64px; /* default; JS may reposition under each button */
+  width: min(520px, calc(100vw - 24px));
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.2);
+  overflow: hidden;
+  backdrop-filter: saturate(120%) blur(6px);
+}
+#settingsPanel.hidden, #filtersPanel.hidden{ display:none !important; }
+
+/* Heads */
+#settingsPanel .sp-head, #filtersPanel .fp-head{
+  display:flex; align-items:center; gap:10px;
+  padding:12px 14px; border-bottom:1px solid var(--line);
+  background: color-mix(in srgb, var(--md-sys-color-surface) 85%, transparent);
+  justify-content: space-between;
+}
+#settingsPanel .sp-head .sp-icon, #filtersPanel .fp-head .fp-icon{
+  width:28px; height:28px; border-radius:8px;
+  display:inline-flex; align-items:center; justify-content:center;
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  flex:0 0 auto;
+}
+#settingsPanel .sp-head .sp-title, #filtersPanel .fp-head .fp-title{
+  font-weight:700; font-size:14px; letter-spacing:.2px;
+}
+/* Close button pinned to the far right */
+#settingsPanel .sp-head #settingsClose{ margin-left:auto; }
+#filtersPanel .fp-head #filtersClose{ margin-left:auto; }
+
+/* Bodies */
+#settingsPanel .sp-body, #filtersPanel .fp-body{
+  padding:12px 14px;
+  display:grid; gap:14px;
+}
+#settingsPanel .sp-section, #filtersPanel .fp-section{
+  border:1px solid var(--line);
+  border-radius:12px;
+  background: var(--md-sys-color-surface-container);
+  padding:12px;
+}
+#settingsPanel .sp-section h4, #filtersPanel .fp-section h4{
+  margin:0 0 8px; font-size:13px; color: var(--md-sys-color-primary);
+}
+
+/* Columns section as responsive grid */
+#settingsPanel .sp-section.cols-grid, #filtersPanel .fp-section.cols-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap:10px 12px;
+  align-items:center;
+}
+#settingsPanel .sp-section.cols-grid h4, #filtersPanel .fp-section.cols-grid h4{
+  grid-column: 1 / -1;
+  margin-bottom: 6px;
+}
+#settingsPanel .sp-section.cols-grid .fp-checkbox,
+#filtersPanel .fp-section.cols-grid .fp-checkbox{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 10px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background: var(--md-sys-color-surface);
+  cursor:pointer;
+  user-select:none;
+  transition: background .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+#settingsPanel .sp-section.cols-grid .fp-checkbox:hover,
+#filtersPanel .fp-section.cols-grid .fp-checkbox:hover{
+  border-color: color-mix(in srgb, var(--md-sys-color-primary) 35%, var(--line));
+  box-shadow: 0 1px 6px rgba(0,0,0,.15);
+}
+#settingsPanel .sp-section.cols-grid .fp-checkbox input,
+#filtersPanel .fp-section.cols-grid .fp-checkbox input{ margin:0; }
+#settingsPanel .sp-section.cols-grid .fp-checkbox .lbl,
+#filtersPanel .fp-section.cols-grid .fp-checkbox .lbl{ line-height:1.2; }
+
+/* Row helper (label + control) */
+#settingsPanel .sp-row, #filtersPanel .fp-row{
+  display:grid; grid-template-columns: 1fr auto; align-items:center;
+  gap:8px; padding:8px 0;
+}
+#settingsPanel .sp-row + .sp-row{ border-top:1px dashed var(--line); }
+#filtersPanel  .fp-row + .fp-row{ border-top:1px dashed var(--line); }
+
+/* Segmented controls */
+#settingsPanel .seg, #filtersPanel .seg{
+  display:inline-flex; border:1px solid var(--line); border-radius:10px; overflow:hidden;
+}
+#settingsPanel .seg button, #filtersPanel .seg button{
+  background:transparent; border:0; padding:8px 10px; font-size:12px; cursor:pointer;
+  color: var(--md-sys-color-on-surface);
+}
+#settingsPanel .seg button[aria-pressed="true"],
+#filtersPanel .seg button[aria-pressed="true"]{
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+#settingsPanel .seg button + button, #filtersPanel .seg button + button{ border-left:1px solid var(--line); }
+
+/* Switches */
+#settingsPanel .switch, #filtersPanel .switch{
+  --sw-w:46px; --sw-h:26px;
+  position:relative; width:var(--sw-w); height:var(--sw-h);
+}
+#settingsPanel .switch input, #filtersPanel .switch input{ position:absolute; inset:0; opacity:0; }
+#settingsPanel .switch .track, #filtersPanel .switch .track{
+  position:absolute; inset:0; border-radius:999px;
+  background: color-mix(in srgb, var(--md-sys-color-outline-variant) 60%, transparent);
+  transition: background .15s ease;
+}
+#settingsPanel .switch .thumb, #filtersPanel .switch .thumb{
+  position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%;
+  background: var(--md-sys-color-surface);
+  box-shadow: 0 1px 2px rgba(0,0,0,.35);
+  transition: transform .15s ease;
+}
+#settingsPanel .switch input:checked + .track, #filtersPanel .switch input:checked + .track{ background: var(--md-sys-color-primary); }
+#settingsPanel .switch input:checked + .track + .thumb,
+#filtersPanel .switch input:checked + .track + .thumb{ transform: translateX(20px); }
+
+/* Footers */
+#settingsPanel .sp-foot, #filtersPanel .fp-foot{
+  display:flex; justify-content:space-between; align-items:center;
+  gap:10px; padding:10px 14px; border-top:1px solid var(--line);
+  background: color-mix(in srgb, var(--md-sys-color-surface) 90%, transparent);
+}
+#settingsPanel .sp-foot .hint, #filtersPanel .fp-foot .hint{
+  color: var(--muted); font-size:12px;
+}
+#settingsPanel .sp-foot .btn-reset, #filtersPanel .fp-foot .btn-reset{
+  background: transparent; color: var(--md-sys-color-primary);
+  border:1px dashed var(--md-sys-color-primary);
+  padding:6px 10px; border-radius:8px; cursor:pointer;
+}
+#settingsPanel .sp-foot .btn-close, #filtersPanel .fp-foot .btn-close{
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border:0; padding:8px 12px; border-radius:10px; cursor:pointer;
+}
+
 /* Responsive */
 @media (max-width:1024px){ .tbl thead th,.tbl tbody td{padding:10px} .col-actions{width:140px} }
 @media (max-width:900px){ #logtbl thead .col-id,#logtbl tbody .col-id{display:none} #logtbl thead .col-kind,#logtbl tbody .col-kind{display:none} .col-time{width:96px}.col-method{width:80px}.col-status{width:80px}.col-actions{width:120px} .panel{max-height:calc(100vh - 220px)} .kv{grid-template-columns:140px 1fr} }
@@ -1649,6 +1865,13 @@ body.ui{ font-size: var(--font-size); font-family: var(--font-ui); }
   #logtbl thead .col-status, #logtbl tbody .col-status{ display:none }
   /* Make URL/Summary breathe */
   .col-url{ width:auto }
+  #settingsPanel, #filtersPanel{
+    right: 12px; left: 12px; width:auto; top: 88px;
+  }
+  #settingsPanel .sp-section.cols-grid,
+  #filtersPanel  .fp-section.cols-grid{
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 @media (max-width:768px){
   .tbl{ font-size:13px }
@@ -1799,10 +2022,17 @@ body.ui{ font-size: var(--font-size); font-family: var(--font-ui); }
         // ---- Preferences ----
         function initPrefs(){
           try{
+            // Pretty JSON
             const v = localStorage.getItem('logtap:jsonPretty');
             if(jsonPretty){
               if(v!==null){ jsonPretty.checked = (v === '1'); }
               else { jsonPretty.checked = true; } // default enabled
+            }
+            // Auto-scroll
+            const av = localStorage.getItem('logtap:autoScroll');
+            if (autoScroll){
+              if(av!==null){ autoScroll.checked = (av === '1'); }
+              else { autoScroll.checked = true; } // default ON
             }
           }catch{}
         }
@@ -2535,6 +2765,9 @@ body.ui{ font-size: var(--font-size); font-family: var(--font-ui); }
           renderAll();
           if (currentEv) openDrawer(currentEv);
         });
+        autoScroll?.addEventListener('change', ()=>{
+          try{ localStorage.setItem('logtap:autoScroll', autoScroll.checked ? '1' : '0'); }catch{}
+        });
         colorScheme?.addEventListener('change', ()=> applyScheme(colorScheme.value));
         clearBtn?.addEventListener('click', async ()=>{ try{ await fetch('/api/clear', {method:'POST'}); }catch{} rows=[]; renderAll(); });
         drawerClose?.addEventListener('click', ()=> bodyEl.classList.remove('drawer-open'));
@@ -2635,6 +2868,17 @@ body.ui{ font-size: var(--font-size); font-family: var(--font-ui); }
         function toggleSettings(open) {
           if (!settingsPanel || !settingsBtn) return;
           const willOpen = open ?? settingsPanel.classList.contains('hidden');
+          if (willOpen) {
+            // Position the panel just under the button, keeping it in-viewport
+            const br = settingsBtn.getBoundingClientRect();
+            const vw = window.innerWidth, vh = window.innerHeight;
+            const panelW = Math.min(520, vw - 24);
+            let left = Math.max(12, Math.min(br.left, vw - panelW - 12));
+            let top  = Math.min(br.bottom + 8, vh - 100); // leave a little room at bottom
+            settingsPanel.style.left = left + 'px';
+            settingsPanel.style.right = 'auto';
+            settingsPanel.style.top = top + 'px';
+          }
           settingsPanel.classList.toggle('hidden', !willOpen);
           settingsBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
         }
@@ -2651,6 +2895,10 @@ body.ui{ font-size: var(--font-size); font-family: var(--font-ui); }
           if(jsonPretty){
             jsonPretty.checked = true;
             try{ localStorage.setItem('logtap:jsonPretty','1'); }catch{}
+          }
+          if (autoScroll){
+            autoScroll.checked = true;
+            try{ localStorage.setItem('logtap:autoScroll','1'); }catch{}
           }
 
           // Columns: show all
@@ -2676,6 +2924,19 @@ body.ui{ font-size: var(--font-size); font-family: var(--font-ui); }
         window.addEventListener('keydown', (e) => {
           if (e.key === 'Escape') toggleSettings(false);
         });
+
+        // Make the Columns section a grid without touching HTML
+        (function(){
+          try{
+            const secs = document.querySelectorAll('#settingsPanel .sp-section');
+            secs.forEach(sec => {
+              const h = sec.querySelector('h4');
+              if (h && /columns/i.test(h.textContent || '')) {
+                sec.classList.add('cols-grid');
+              }
+            });
+          }catch(e){ console.warn('Columns grid setup failed', e); }
+        })();
 
         // Load saved drawer width and enable drag to resize
         loadDrawerWidth();

@@ -179,8 +179,8 @@ You can restrict LogTap only to a specific build flavor (e.g., `dev`) by declari
 
 ```gradle
 dependencies {
-    devDebugImplementation 'com.github.Husseinhj.LogTap:logtap:v0.5.0'
-    devReleaseImplementation 'com.github.Husseinhj.LogTap:logtap-noop:v0.5.0'
+    devDebugImplementation 'com.github.Husseinhj.LogTap:logtap:v0.11.0'
+    devReleaseImplementation 'com.github.Husseinhj.LogTap:logtap-noop:v0.11.0'
 }
 ```
 
@@ -208,9 +208,9 @@ android {
 - If you want the library only in the `dev` flavor, keep:
 
 ```gradle
-devDebugImplementation 'com.github.Husseinhj.LogTap:logtap:v0.5.0'
+devDebugImplementation 'com.github.Husseinhj.LogTap:logtap:v0.11.0'
 // (Optional) If you also build devRelease, use the noop artifact there:
-devReleaseImplementation 'com.github.Husseinhj.LogTap:logtap-noop:v0.5.0'
+devReleaseImplementation 'com.github.Husseinhj.LogTap:logtap-noop:v0.11.0'
 ```
 
 - If you prefer **no dependency at all** on release variants (including prod/staging), **do not** add a release dependency. We’ll provide **stubs** instead.

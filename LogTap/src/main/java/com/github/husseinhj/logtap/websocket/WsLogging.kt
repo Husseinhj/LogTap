@@ -19,7 +19,7 @@ class LoggingWebSocketListener(
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
         scope.launch {
-            LogTap.store.add(
+            LogTap.store?.add(
                 LogEvent(
                     id = 0,
                     ts = System.currentTimeMillis(),
@@ -37,7 +37,7 @@ class LoggingWebSocketListener(
 
     override fun onMessage(webSocket: WebSocket, text: String) {
         scope.launch {
-            LogTap.store.add(
+            LogTap.store?.add(
                 LogEvent(
                     id = 0,
                     ts = System.currentTimeMillis(),
@@ -55,7 +55,7 @@ class LoggingWebSocketListener(
 
     override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
         scope.launch {
-            LogTap.store.add(
+            LogTap.store?.add(
                 LogEvent(
                     id = 0,
                     ts = System.currentTimeMillis(),
@@ -71,7 +71,7 @@ class LoggingWebSocketListener(
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
         scope.launch {
-            LogTap.store.add(
+            LogTap.store?.add(
                 LogEvent(
                     id = 0,
                     ts = System.currentTimeMillis(),
@@ -88,7 +88,7 @@ class LoggingWebSocketListener(
 
     override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
         scope.launch {
-            LogTap.store.add(
+            LogTap.store?.add(
                 LogEvent(
                     id = 0,
                     ts = System.currentTimeMillis(),
@@ -105,7 +105,7 @@ class LoggingWebSocketListener(
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
         scope.launch {
-            LogTap.store.add(
+            LogTap.store?.add(
                 LogEvent(
                     id = 0,
                     ts = System.currentTimeMillis(),

@@ -53,16 +53,20 @@ internal fun provideWebServer(port: Int, engineParentCtx: CoroutineContext) = ap
             get("/api/logs") {
                 val sinceId = call.request.queryParameters["sinceId"]?.toLongOrNull()
                 val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 500
-                call.respond(store.snapshot(sinceId, limit))
+                store?.let {
+                    call.respond(it.snapshot(sinceId, limit))
+                } ?: run {
+                    call.respond(emptyList<LogEvent>())
+                }
             }
             post("/api/clear") {
-                store.clear()
+                store?.clear()
                 call.respondText("ok")
             }
             webSocket("/ws") {
                 val session = this
                 val collector = CoroutineScope(Dispatchers.IO).launch {
-                    store.stream.collect { ev: LogEvent ->
+                    store?.stream?.collect { ev: LogEvent ->
                         session.send(Frame.Text(json.encodeToString(LogEvent.serializer(), ev)))
                     }
                 }

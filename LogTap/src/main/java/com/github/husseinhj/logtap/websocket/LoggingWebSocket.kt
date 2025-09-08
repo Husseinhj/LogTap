@@ -15,7 +15,7 @@ class LoggingWebSocket(private val real: WebSocket) : WebSocket by real {
 
     override fun send(text: String): Boolean {
         scope.launch {
-            LogTap.store.add(
+            LogTap.store?.add(
                 LogEvent(
                     id = 0,
                     ts = System.currentTimeMillis(),
@@ -31,7 +31,7 @@ class LoggingWebSocket(private val real: WebSocket) : WebSocket by real {
 
     override fun send(bytes: ByteString): Boolean {
         scope.launch {
-            LogTap.store.add(
+            LogTap.store?.add(
                 LogEvent(
                     id = 0,
                     ts = System.currentTimeMillis(),
@@ -47,7 +47,7 @@ class LoggingWebSocket(private val real: WebSocket) : WebSocket by real {
 
     override fun close(code: Int, reason: String?): Boolean {
         scope.launch {
-            LogTap.store.add(
+            LogTap.store?.add(
                 LogEvent(
                     id = 0,
                     ts = System.currentTimeMillis(),

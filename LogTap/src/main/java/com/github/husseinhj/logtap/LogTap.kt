@@ -49,8 +49,7 @@ object LogTap {
 
     @Volatile private var processLock: FileLock? = null
 
-    internal lateinit var store: LogStore
-        private set
+    internal var store: LogStore? = null
 
     internal val json = kotlinx.serialization.json.Json {
         ignoreUnknownKeys = true

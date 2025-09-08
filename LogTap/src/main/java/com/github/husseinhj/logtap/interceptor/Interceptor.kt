@@ -42,7 +42,7 @@ class LogTapInterceptor : Interceptor {
             chain.proceed(request)
         } catch (e: Exception) {
             scope.launch {
-                LogTap.store.add(
+                LogTap.store?.add(
                     LogEvent(
                         id = 0, ts = System.currentTimeMillis(),
                         kind = EventKind.HTTP,
@@ -67,7 +67,7 @@ class LogTapInterceptor : Interceptor {
         val headers = redact(req.headers)
         val (bodyStr, truncated) = safeReadRequestBody(req)
         scope.launch {
-            LogTap.store.add(
+            LogTap.store?.add(
                 LogEvent(
                     id = 0,
                     ts = System.currentTimeMillis(),
@@ -89,7 +89,7 @@ class LogTapInterceptor : Interceptor {
         val (bodyStr, truncated, byteCount) = safeReadResponseBody(resp)
 
         scope.launch {
-            LogTap.store.add(
+            LogTap.store?.add(
                 LogEvent(
                     id = 0,
                     ts = System.currentTimeMillis(),

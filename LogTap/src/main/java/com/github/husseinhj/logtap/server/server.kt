@@ -2,6 +2,7 @@ package com.github.husseinhj.logtap.server
 
 import java.time.Duration
 import io.ktor.websocket.Frame
+import android.content.Context
 import kotlin.text.toIntOrNull
 import io.ktor.http.ContentType
 import kotlin.text.toLongOrNull
@@ -22,16 +23,17 @@ import kotlin.coroutines.CoroutineContext
 import io.ktor.server.response.respondText
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
-import com.github.husseinhj.logtap.utils.Resources
 import com.github.husseinhj.logtap.LogTap.json
 import io.ktor.serialization.kotlinx.json.json
 import com.github.husseinhj.logtap.LogTap.store
 import com.github.husseinhj.logtap.log.LogEvent
+import com.github.husseinhj.logtap.utils.buildInfo
+import com.github.husseinhj.logtap.utils.Resources
 import com.github.husseinhj.logtap.log.LogTapEvents
 import io.ktor.server.engine.applicationEngineEnvironment
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 
-internal fun provideWebServer(port: Int, engineParentCtx: CoroutineContext) = applicationEngineEnvironment {
+internal fun provideWebServer(port: Int, engineParentCtx: CoroutineContext, context: Context) = applicationEngineEnvironment {
     parentCoroutineContext = engineParentCtx
     connector {
         host = "0.0.0.0"
@@ -58,6 +60,10 @@ internal fun provideWebServer(port: Int, engineParentCtx: CoroutineContext) = ap
                 } ?: run {
                     call.respond(emptyList<LogEvent>())
                 }
+            }
+            get("/api/info") {
+                val info = context.buildInfo() ?: return@get call.respondText("Unavailable", status = io.ktor.http.HttpStatusCode.InternalServerError)
+                call.respond(info)
             }
             post("/api/clear") {
                 store?.clear()

@@ -109,7 +109,7 @@ object LogTap {
             startMutex.withLock {
                 if (server != null) return@withLock
                 try {
-                    val engine = startServerWithFallback(config) // returns a STARTED engine
+                    val engine = startServerWithFallback(config, context) // returns a STARTED engine
                     server = engine
 
                     val port = engine.resolvedConnectors().first().port
@@ -129,7 +129,7 @@ object LogTap {
         }
     }
 
-    private fun startServerWithFallback(config: Config): ApplicationEngine {
+    private fun startServerWithFallback(config: Config, context: Context): ApplicationEngine {
         val candidates = mutableListOf<Int>()
         if (config.port != 0) {
             candidates += config.port
@@ -141,7 +141,7 @@ object LogTap {
         for (p in candidates) {
             if (!canBind(p)) continue
             try {
-                val eng = buildServer(p)
+                val eng = buildServer(p, context)
                 // Start may throw BindException from CIO internal coroutine
                 eng.start(wait = false)
                 return eng
@@ -184,8 +184,8 @@ object LogTap {
         }
     }
 
-    private fun buildServer(port: Int): ApplicationEngine {
-        val env = provideWebServer(port = port, engineParentCtx = engineParentCtx)
+    private fun buildServer(port: Int, context: Context): ApplicationEngine {
+        val env = provideWebServer(port = port, engineParentCtx = engineParentCtx, context)
         return embeddedServer(CIO, env)
     }
 

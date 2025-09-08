@@ -14,13 +14,12 @@ internal object Resources {
   <body class="ui">
     <!-- Header -->
     <header class="hdr blur elev">
-      <div class="brand">
-        <a class="logo gh" href="https://github.com/Husseinhj/LogTap" target="_blank" rel="noopener" title="Open GitHub repository" aria-label="Open GitHub repository">
-          <svg class="gh-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.62-.17 1.29-.27 2-.27s1.38.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
-        </a>
+      <!-- Replaced static brand with dynamic DeviceAppInfo -->
+      <div class="brand" id="deviceBrand">
+        <div class="app-icon" id="appIcon" aria-hidden="true" title="App icon"></div>
         <div class="titles">
-          <div class="title">LogTap</div>
-          <div class="sub">Inspect HTTP · WebSocket · Logs</div>
+          <div class="title" id="appName">Loading…</div>
+          <div class="sub" id="appMeta">Fetching device info…</div>
         </div>
       </div>
       <nav class="bar">
@@ -234,6 +233,18 @@ internal object Resources {
 """.trimIndent()
 
     val appCss = """
+/* DeviceAppInfo icon */
+.app-icon{
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  background-size:cover;
+  background-position:center;
+  flex-shrink:0;
+}
+
 /* ========================= Material 3 (tokens + components) ========================= */
 /* Color roles */
 :root[data-theme="light"]{
@@ -579,11 +590,9 @@ body.hide-col-actions #logtbl .col-actions{display:none}
 .tbl thead th{ position: sticky; }
 
 .tbl thead th{ position: sticky; }
-
 .tbl thead th{ position: sticky; }
 
 .tbl thead th{ position: sticky; }
-
 .tbl thead th{ position: sticky; }
 
 .tbl thead th{ position: sticky; }
@@ -851,7 +860,432 @@ body.hide-col-actions #logtbl .col-actions{display:none}
 .tbl tbody tr.level-ERROR:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 70%, transparent) }
 .tbl tbody tr.level-ASSERT:hover { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 70%, transparent) }
 
-:/* ===== Color URL/Summary & Time columns ===== */
+/* ===== Color URL/Summary & Time columns ===== */
+/* Color by LOG level (for logger rows) */
+.tbl tbody tr.level-VERBOSE .col-time,
+.tbl tbody tr.level-VERBOSE .col-url { color: var(--lv-v); }
+.tbl tbody tr.level-DEBUG   .col-time,
+.tbl tbody tr.level-DEBUG   .col-url { color: var(--lv-d); }
+.tbl tbody tr.level-INFO    .col-time,
+.tbl tbody tr.level-INFO    .col-url { color: var(--lv-i); }
+.tbl tbody tr.level-WARN    .col-time,
+.tbl tbody tr.level-WARN    .col-url { color: var(--lv-w); }
+.tbl tbody tr.level-ERROR   .col-time,
+.tbl tbody tr.level-ERROR   .col-url { color: var(--lv-e); }
+.tbl tbody tr.level-ASSERT  .col-time,
+.tbl tbody tr.level-ASSERT  .col-url { color: var(--lv-a); }
+
+/* Color by HTTP status class (for network rows) */
+.tbl tbody tr.status-2xx .col-time, .tbl tbody tr.status-2xx .col-url .url { color: var(--st-2xx); }
+.tbl tbody tr.status-3xx .col-time, .tbl tbody tr.status-3xx .col-url .url { color: var(--st-3xx); }
+.tbl tbody tr.status-4xx .col-time, .tbl tbody tr.status-4xx .col-url .url { color: var(--st-4xx); }
+.tbl tbody tr.status-5xx .col-time, .tbl tbody tr.status-5xx .col-url .url { color: var(--st-5xx); }
+
+/* ===== Make all table column values colorful by row context ===== */
+/* Logger rows: color all cells by level */
+.tbl tbody tr.level-VERBOSE td:not(.col-actions){ color: var(--lv-v); }
+.tbl tbody tr.level-DEBUG   td:not(.col-actions){ color: var(--lv-d); }
+.tbl tbody tr.level-INFO    td:not(.col-actions){ color: var(--lv-i); }
+.tbl tbody tr.level-WARN    td:not(.col-actions){ color: var(--lv-w); }
+.tbl tbody tr.level-ERROR   td:not(.col-actions){ color: var(--lv-e); }
+.tbl tbody tr.level-ASSERT  td:not(.col-actions){ color: var(--lv-a); }
+
+/* HTTP rows: color all cells by status class */
+:root{ --st-2xx:#22c55e; --st-3xx:#fbbf24; --st-4xx:#fca5a5; --st-5xx:#fb7185; }
+.tbl tbody tr.status-2xx td:not(.col-actions){ color: var(--st-2xx); }
+.tbl tbody tr.status-3xx td:not(.col-actions){ color: var(--st-3xx); }
+.tbl tbody tr.status-4xx td:not(.col-actions){ color: var(--st-4xx); }
+.tbl tbody tr.status-5xx td:not(.col-actions){ color: var(--st-5xx); }
+
+/* Keep chips, icons and code readable (don’t inherit the tint) */
+.tbl tbody tr td .muted,
+.tbl tbody tr td .badge,
+.tbl tbody tr td .material-symbols-outlined,
+.tbl tbody tr td pre.code{ color: inherit; opacity: 0.95; }
+:root{
+  /* default scheme = android */
+  --lv-v:#9E9E9E; /* VERBOSE */
+  --lv-d:#2196F3; /* DEBUG   */
+  --lv-i:#4CAF50; /* INFO    */
+  --lv-w:#FFC107; /* WARN    */
+  --lv-e:#F44336; /* ERROR   */
+  --lv-a:#9C27B0; /* ASSERT  */
+}
+:root[data-scheme="android"]{ /* Android Studio */
+  --lv-v:#9E9E9E; --lv-d:#2196F3; --lv-i:#4CAF50; --lv-w:#FFC107; --lv-e:#F44336; --lv-a:#9C27B0;
+}
+:root[data-scheme="xcode"]{ /* Xcode inspired */
+  --lv-v:#8E8E93; --lv-d:#0A84FF; --lv-i:#34C759; --lv-w:#FF9F0A; --lv-e:#FF453A; --lv-a:#BF5AF2;
+}
+:root[data-scheme="vscode"]{ /* VS Code */
+  --lv-v:#808080; --lv-d:#4FC1FF; --lv-i:#89D185; --lv-w:#CCA700; --lv-e:#F14C4C; --lv-a:#C586C0;
+}
+:root[data-scheme="grafana"]{ /* Grafana */
+  --lv-v:#6b7280; --lv-d:#60a5fa; --lv-i:#22c55e; --lv-w:#f59e0b; --lv-e:#ef4444; --lv-a:#d946ef;
+}
+/* Text color for the Kind column when row has a level */
+.tbl tbody tr.level-VERBOSE .col-kind{ color: var(--lv-v) }
+.tbl tbody tr.level-DEBUG   .col-kind{ color: var(--lv-d) }
+.tbl tbody tr.level-INFO    .col-kind{ color: var(--lv-i) }
+.tbl tbody tr.level-WARN    .col-kind{ color: var(--lv-w) }
+.tbl tbody tr.level-ERROR   .col-kind{ color: var(--lv-e) }
+.tbl tbody tr.level-ASSERT  .col-kind{ color: var(--lv-a) }
+/* Left accent bar tint using current scheme vars */
+.tbl tbody tr.level-VERBOSE{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 55%, transparent) }
+.tbl tbody tr.level-DEBUG  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 55%, transparent) }
+.tbl tbody tr.level-INFO   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 55%, transparent) }
+.tbl tbody tr.level-WARN   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 55%, transparent) }
+.tbl tbody tr.level-ERROR  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 55%, transparent) }
+.tbl tbody tr.level-ASSERT { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 55%, transparent) }
+/* Preserve accent on hover */
+.tbl tbody tr.level-VERBOSE:hover{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 70%, transparent) }
+.tbl tbody tr.level-DEBUG:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 70%, transparent) }
+.tbl tbody tr.level-INFO:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 70%, transparent) }
+.tbl tbody tr.level-WARN:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 70%, transparent) }
+.tbl tbody tr.level-ERROR:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 70%, transparent) }
+.tbl tbody tr.level-ASSERT:hover { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 70%, transparent) }
+
+/* ===== Color URL/Summary & Time columns ===== */
+/* Color by LOG level (for logger rows) */
+.tbl tbody tr.level-VERBOSE .col-time,
+.tbl tbody tr.level-VERBOSE .col-url { color: var(--lv-v); }
+.tbl tbody tr.level-DEBUG   .col-time,
+.tbl tbody tr.level-DEBUG   .col-url { color: var(--lv-d); }
+.tbl tbody tr.level-INFO    .col-time,
+.tbl tbody tr.level-INFO    .col-url { color: var(--lv-i); }
+.tbl tbody tr.level-WARN    .col-time,
+.tbl tbody tr.level-WARN    .col-url { color: var(--lv-w); }
+.tbl tbody tr.level-ERROR   .col-time,
+.tbl tbody tr.level-ERROR   .col-url { color: var(--lv-e); }
+.tbl tbody tr.level-ASSERT  .col-time,
+.tbl tbody tr.level-ASSERT  .col-url { color: var(--lv-a); }
+
+/* Color by HTTP status class (for network rows) */
+.tbl tbody tr.status-2xx .col-time, .tbl tbody tr.status-2xx .col-url .url { color: var(--st-2xx); }
+.tbl tbody tr.status-3xx .col-time, .tbl tbody tr.status-3xx .col-url .url { color: var(--st-3xx); }
+.tbl tbody tr.status-4xx .col-time, .tbl tbody tr.status-4xx .col-url .url { color: var(--st-4xx); }
+.tbl tbody tr.status-5xx .col-time, .tbl tbody tr.status-5xx .col-url .url { color: var(--st-5xx); }
+
+/* ===== Make all table column values colorful by row context ===== */
+/* Logger rows: color all cells by level */
+.tbl tbody tr.level-VERBOSE td:not(.col-actions){ color: var(--lv-v); }
+.tbl tbody tr.level-DEBUG   td:not(.col-actions){ color: var(--lv-d); }
+.tbl tbody tr.level-INFO    td:not(.col-actions){ color: var(--lv-i); }
+.tbl tbody tr.level-WARN    td:not(.col-actions){ color: var(--lv-w); }
+.tbl tbody tr.level-ERROR   td:not(.col-actions){ color: var(--lv-e); }
+.tbl tbody tr.level-ASSERT  td:not(.col-actions){ color: var(--lv-a); }
+
+/* HTTP rows: color all cells by status class */
+:root{ --st-2xx:#22c55e; --st-3xx:#fbbf24; --st-4xx:#fca5a5; --st-5xx:#fb7185; }
+.tbl tbody tr.status-2xx td:not(.col-actions){ color: var(--st-2xx); }
+.tbl tbody tr.status-3xx td:not(.col-actions){ color: var(--st-3xx); }
+.tbl tbody tr.status-4xx td:not(.col-actions){ color: var(--st-4xx); }
+.tbl tbody tr.status-5xx td:not(.col-actions){ color: var(--st-5xx); }
+
+/* Keep chips, icons and code readable (don’t inherit the tint) */
+.tbl tbody tr td .muted,
+.tbl tbody tr td .badge,
+.tbl tbody tr td .material-symbols-outlined,
+.tbl tbody tr td pre.code{ color: inherit; opacity: 0.95; }
+:root{
+  /* default scheme = android */
+  --lv-v:#9E9E9E; /* VERBOSE */
+  --lv-d:#2196F3; /* DEBUG   */
+  --lv-i:#4CAF50; /* INFO    */
+  --lv-w:#FFC107; /* WARN    */
+  --lv-e:#F44336; /* ERROR   */
+  --lv-a:#9C27B0; /* ASSERT  */
+}
+:root[data-scheme="android"]{ /* Android Studio */
+  --lv-v:#9E9E9E; --lv-d:#2196F3; --lv-i:#4CAF50; --lv-w:#FFC107; --lv-e:#F44336; --lv-a:#9C27B0;
+}
+:root[data-scheme="xcode"]{ /* Xcode inspired */
+  --lv-v:#8E8E93; --lv-d:#0A84FF; --lv-i:#34C759; --lv-w:#FF9F0A; --lv-e:#FF453A; --lv-a:#BF5AF2;
+}
+:root[data-scheme="vscode"]{ /* VS Code */
+  --lv-v:#808080; --lv-d:#4FC1FF; --lv-i:#89D185; --lv-w:#CCA700; --lv-e:#F14C4C; --lv-a:#C586C0;
+}
+:root[data-scheme="grafana"]{ /* Grafana */
+  --lv-v:#6b7280; --lv-d:#60a5fa; --lv-i:#22c55e; --lv-w:#f59e0b; --lv-e:#ef4444; --lv-a:#d946ef;
+}
+/* Text color for the Kind column when row has a level */
+.tbl tbody tr.level-VERBOSE .col-kind{ color: var(--lv-v) }
+.tbl tbody tr.level-DEBUG   .col-kind{ color: var(--lv-d) }
+.tbl tbody tr.level-INFO    .col-kind{ color: var(--lv-i) }
+.tbl tbody tr.level-WARN    .col-kind{ color: var(--lv-w) }
+.tbl tbody tr.level-ERROR   .col-kind{ color: var(--lv-e) }
+.tbl tbody tr.level-ASSERT  .col-kind{ color: var(--lv-a) }
+/* Left accent bar tint using current scheme vars */
+.tbl tbody tr.level-VERBOSE{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 55%, transparent) }
+.tbl tbody tr.level-DEBUG  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 55%, transparent) }
+.tbl tbody tr.level-INFO   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 55%, transparent) }
+.tbl tbody tr.level-WARN   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 55%, transparent) }
+.tbl tbody tr.level-ERROR  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 55%, transparent) }
+.tbl tbody tr.level-ASSERT { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 55%, transparent) }
+/* Preserve accent on hover */
+.tbl tbody tr.level-VERBOSE:hover{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 70%, transparent) }
+.tbl tbody tr.level-DEBUG:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 70%, transparent) }
+.tbl tbody tr.level-INFO:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 70%, transparent) }
+.tbl tbody tr.level-WARN:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 70%, transparent) }
+.tbl tbody tr.level-ERROR:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 70%, transparent) }
+.tbl tbody tr.level-ASSERT:hover { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 70%, transparent) }
+
+/* ===== Color URL/Summary & Time columns ===== */
+/* Color by LOG level (for logger rows) */
+.tbl tbody tr.level-VERBOSE .col-time,
+.tbl tbody tr.level-VERBOSE .col-url { color: var(--lv-v); }
+.tbl tbody tr.level-DEBUG   .col-time,
+.tbl tbody tr.level-DEBUG   .col-url { color: var(--lv-d); }
+.tbl tbody tr.level-INFO    .col-time,
+.tbl tbody tr.level-INFO    .col-url { color: var(--lv-i); }
+.tbl tbody tr.level-WARN    .col-time,
+.tbl tbody tr.level-WARN    .col-url { color: var(--lv-w); }
+.tbl tbody tr.level-ERROR   .col-time,
+.tbl tbody tr.level-ERROR   .col-url { color: var(--lv-e); }
+.tbl tbody tr.level-ASSERT  .col-time,
+.tbl tbody tr.level-ASSERT  .col-url { color: var(--lv-a); }
+
+/* Color by HTTP status class (for network rows) */
+.tbl tbody tr.status-2xx .col-time, .tbl tbody tr.status-2xx .col-url .url { color: var(--st-2xx); }
+.tbl tbody tr.status-3xx .col-time, .tbl tbody tr.status-3xx .col-url .url { color: var(--st-3xx); }
+.tbl tbody tr.status-4xx .col-time, .tbl tbody tr.status-4xx .col-url .url { color: var(--st-4xx); }
+.tbl tbody tr.status-5xx .col-time, .tbl tbody tr.status-5xx .col-url .url { color: var(--st-5xx); }
+
+/* ===== Make all table column values colorful by row context ===== */
+/* Logger rows: color all cells by level */
+.tbl tbody tr.level-VERBOSE td:not(.col-actions){ color: var(--lv-v); }
+.tbl tbody tr.level-DEBUG   td:not(.col-actions){ color: var(--lv-d); }
+.tbl tbody tr.level-INFO    td:not(.col-actions){ color: var(--lv-i); }
+.tbl tbody tr.level-WARN    td:not(.col-actions){ color: var(--lv-w); }
+.tbl tbody tr.level-ERROR   td:not(.col-actions){ color: var(--lv-e); }
+.tbl tbody tr.level-ASSERT  td:not(.col-actions){ color: var(--lv-a); }
+
+/* HTTP rows: color all cells by status class */
+:root{ --st-2xx:#22c55e; --st-3xx:#fbbf24; --st-4xx:#fca5a5; --st-5xx:#fb7185; }
+.tbl tbody tr.status-2xx td:not(.col-actions){ color: var(--st-2xx); }
+.tbl tbody tr.status-3xx td:not(.col-actions){ color: var(--st-3xx); }
+.tbl tbody tr.status-4xx td:not(.col-actions){ color: var(--st-4xx); }
+.tbl tbody tr.status-5xx td:not(.col-actions){ color: var(--st-5xx); }
+
+/* Keep chips, icons and code readable (don’t inherit the tint) */
+.tbl tbody tr td .muted,
+.tbl tbody tr td .badge,
+.tbl tbody tr td .material-symbols-outlined,
+.tbl tbody tr td pre.code{ color: inherit; opacity: 0.95; }
+:root{
+  /* default scheme = android */
+  --lv-v:#9E9E9E; /* VERBOSE */
+  --lv-d:#2196F3; /* DEBUG   */
+  --lv-i:#4CAF50; /* INFO    */
+  --lv-w:#FFC107; /* WARN    */
+  --lv-e:#F44336; /* ERROR   */
+  --lv-a:#9C27B0; /* ASSERT  */
+}
+:root[data-scheme="android"]{ /* Android Studio */
+  --lv-v:#9E9E9E; --lv-d:#2196F3; --lv-i:#4CAF50; --lv-w:#FFC107; --lv-e:#F44336; --lv-a:#9C27B0;
+}
+:root[data-scheme="xcode"]{ /* Xcode inspired */
+  --lv-v:#8E8E93; --lv-d:#0A84FF; --lv-i:#34C759; --lv-w:#FF9F0A; --lv-e:#FF453A; --lv-a:#BF5AF2;
+}
+:root[data-scheme="vscode"]{ /* VS Code */
+  --lv-v:#808080; --lv-d:#4FC1FF; --lv-i:#89D185; --lv-w:#CCA700; --lv-e:#F14C4C; --lv-a:#C586C0;
+}
+:root[data-scheme="grafana"]{ /* Grafana */
+  --lv-v:#6b7280; --lv-d:#60a5fa; --lv-i:#22c55e; --lv-w:#f59e0b; --lv-e:#ef4444; --lv-a:#d946ef;
+}
+/* Text color for the Kind column when row has a level */
+.tbl tbody tr.level-VERBOSE .col-kind{ color: var(--lv-v) }
+.tbl tbody tr.level-DEBUG   .col-kind{ color: var(--lv-d) }
+.tbl tbody tr.level-INFO    .col-kind{ color: var(--lv-i) }
+.tbl tbody tr.level-WARN    .col-kind{ color: var(--lv-w) }
+.tbl tbody tr.level-ERROR   .col-kind{ color: var(--lv-e) }
+.tbl tbody tr.level-ASSERT  .col-kind{ color: var(--lv-a) }
+/* Left accent bar tint using current scheme vars */
+.tbl tbody tr.level-VERBOSE{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 55%, transparent) }
+.tbl tbody tr.level-DEBUG  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 55%, transparent) }
+.tbl tbody tr.level-INFO   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 55%, transparent) }
+.tbl tbody tr.level-WARN   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 55%, transparent) }
+.tbl tbody tr.level-ERROR  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 55%, transparent) }
+.tbl tbody tr.level-ASSERT { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 55%, transparent) }
+/* Preserve accent on hover */
+.tbl tbody tr.level-VERBOSE:hover{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 70%, transparent) }
+.tbl tbody tr.level-DEBUG:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 70%, transparent) }
+.tbl tbody tr.level-INFO:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 70%, transparent) }
+.tbl tbody tr.level-WARN:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 70%, transparent) }
+.tbl tbody tr.level-ERROR:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 70%, transparent) }
+.tbl tbody tr.level-ASSERT:hover { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 70%, transparent) }
+
+/* ===== Color URL/Summary & Time columns ===== */
+/* Color by LOG level (for logger rows) */
+.tbl tbody tr.level-VERBOSE .col-time,
+.tbl tbody tr.level-VERBOSE .col-url { color: var(--lv-v); }
+.tbl tbody tr.level-DEBUG   .col-time,
+.tbl tbody tr.level-DEBUG   .col-url { color: var(--lv-d); }
+.tbl tbody tr.level-INFO    .col-time,
+.tbl tbody tr.level-INFO    .col-url { color: var(--lv-i); }
+.tbl tbody tr.level-WARN    .col-time,
+.tbl tbody tr.level-WARN    .col-url { color: var(--lv-w); }
+.tbl tbody tr.level-ERROR   .col-time,
+.tbl tbody tr.level-ERROR   .col-url { color: var(--lv-e); }
+.tbl tbody tr.level-ASSERT  .col-time,
+.tbl tbody tr.level-ASSERT  .col-url { color: var(--lv-a); }
+
+/* Color by HTTP status class (for network rows) */
+.tbl tbody tr.status-2xx .col-time, .tbl tbody tr.status-2xx .col-url .url { color: var(--st-2xx); }
+.tbl tbody tr.status-3xx .col-time, .tbl tbody tr.status-3xx .col-url .url { color: var(--st-3xx); }
+.tbl tbody tr.status-4xx .col-time, .tbl tbody tr.status-4xx .col-url .url { color: var(--st-4xx); }
+.tbl tbody tr.status-5xx .col-time, .tbl tbody tr.status-5xx .col-url .url { color: var(--st-5xx); }
+
+/* ===== Make all table column values colorful by row context ===== */
+/* Logger rows: color all cells by level */
+.tbl tbody tr.level-VERBOSE td:not(.col-actions){ color: var(--lv-v); }
+.tbl tbody tr.level-DEBUG   td:not(.col-actions){ color: var(--lv-d); }
+.tbl tbody tr.level-INFO    td:not(.col-actions){ color: var(--lv-i); }
+.tbl tbody tr.level-WARN    td:not(.col-actions){ color: var(--lv-w); }
+.tbl tbody tr.level-ERROR   td:not(.col-actions){ color: var(--lv-e); }
+.tbl tbody tr.level-ASSERT  td:not(.col-actions){ color: var(--lv-a); }
+
+/* HTTP rows: color all cells by status class */
+:root{ --st-2xx:#22c55e; --st-3xx:#fbbf24; --st-4xx:#fca5a5; --st-5xx:#fb7185; }
+.tbl tbody tr.status-2xx td:not(.col-actions){ color: var(--st-2xx); }
+.tbl tbody tr.status-3xx td:not(.col-actions){ color: var(--st-3xx); }
+.tbl tbody tr.status-4xx td:not(.col-actions){ color: var(--st-4xx); }
+.tbl tbody tr.status-5xx td:not(.col-actions){ color: var(--st-5xx); }
+
+/* Keep chips, icons and code readable (don’t inherit the tint) */
+.tbl tbody tr td .muted,
+.tbl tbody tr td .badge,
+.tbl tbody tr td .material-symbols-outlined,
+.tbl tbody tr td pre.code{ color: inherit; opacity: 0.95; }
+:root{
+  /* default scheme = android */
+  --lv-v:#9E9E9E; /* VERBOSE */
+  --lv-d:#2196F3; /* DEBUG   */
+  --lv-i:#4CAF50; /* INFO    */
+  --lv-w:#FFC107; /* WARN    */
+  --lv-e:#F44336; /* ERROR   */
+  --lv-a:#9C27B0; /* ASSERT  */
+}
+:root[data-scheme="android"]{ /* Android Studio */
+  --lv-v:#9E9E9E; --lv-d:#2196F3; --lv-i:#4CAF50; --lv-w:#FFC107; --lv-e:#F44336; --lv-a:#9C27B0;
+}
+:root[data-scheme="xcode"]{ /* Xcode inspired */
+  --lv-v:#8E8E93; --lv-d:#0A84FF; --lv-i:#34C759; --lv-w:#FF9F0A; --lv-e:#FF453A; --lv-a:#BF5AF2;
+}
+:root[data-scheme="vscode"]{ /* VS Code */
+  --lv-v:#808080; --lv-d:#4FC1FF; --lv-i:#89D185; --lv-w:#CCA700; --lv-e:#F14C4C; --lv-a:#C586C0;
+}
+:root[data-scheme="grafana"]{ /* Grafana */
+  --lv-v:#6b7280; --lv-d:#60a5fa; --lv-i:#22c55e; --lv-w:#f59e0b; --lv-e:#ef4444; --lv-a:#d946ef;
+}
+/* Text color for the Kind column when row has a level */
+.tbl tbody tr.level-VERBOSE .col-kind{ color: var(--lv-v) }
+.tbl tbody tr.level-DEBUG   .col-kind{ color: var(--lv-d) }
+.tbl tbody tr.level-INFO    .col-kind{ color: var(--lv-i) }
+.tbl tbody tr.level-WARN    .col-kind{ color: var(--lv-w) }
+.tbl tbody tr.level-ERROR   .col-kind{ color: var(--lv-e) }
+.tbl tbody tr.level-ASSERT  .col-kind{ color: var(--lv-a) }
+/* Left accent bar tint using current scheme vars */
+.tbl tbody tr.level-VERBOSE{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 55%, transparent) }
+.tbl tbody tr.level-DEBUG  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 55%, transparent) }
+.tbl tbody tr.level-INFO   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 55%, transparent) }
+.tbl tbody tr.level-WARN   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 55%, transparent) }
+.tbl tbody tr.level-ERROR  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 55%, transparent) }
+.tbl tbody tr.level-ASSERT { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 55%, transparent) }
+/* Preserve accent on hover */
+.tbl tbody tr.level-VERBOSE:hover{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 70%, transparent) }
+.tbl tbody tr.level-DEBUG:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 70%, transparent) }
+.tbl tbody tr.level-INFO:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 70%, transparent) }
+.tbl tbody tr.level-WARN:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 70%, transparent) }
+.tbl tbody tr.level-ERROR:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 70%, transparent) }
+.tbl tbody tr.level-ASSERT:hover { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 70%, transparent) }
+
+/* ===== Color URL/Summary & Time columns ===== */
+/* Color by LOG level (for logger rows) */
+.tbl tbody tr.level-VERBOSE .col-time,
+.tbl tbody tr.level-VERBOSE .col-url { color: var(--lv-v); }
+.tbl tbody tr.level-DEBUG   .col-time,
+.tbl tbody tr.level-DEBUG   .col-url { color: var(--lv-d); }
+.tbl tbody tr.level-INFO    .col-time,
+.tbl tbody tr.level-INFO    .col-url { color: var(--lv-i); }
+.tbl tbody tr.level-WARN    .col-time,
+.tbl tbody tr.level-WARN    .col-url { color: var(--lv-w); }
+.tbl tbody tr.level-ERROR   .col-time,
+.tbl tbody tr.level-ERROR   .col-url { color: var(--lv-e); }
+.tbl tbody tr.level-ASSERT  .col-time,
+.tbl tbody tr.level-ASSERT  .col-url { color: var(--lv-a); }
+
+/* Color by HTTP status class (for network rows) */
+.tbl tbody tr.status-2xx .col-time, .tbl tbody tr.status-2xx .col-url .url { color: var(--st-2xx); }
+.tbl tbody tr.status-3xx .col-time, .tbl tbody tr.status-3xx .col-url .url { color: var(--st-3xx); }
+.tbl tbody tr.status-4xx .col-time, .tbl tbody tr.status-4xx .col-url .url { color: var(--st-4xx); }
+.tbl tbody tr.status-5xx .col-time, .tbl tbody tr.status-5xx .col-url .url { color: var(--st-5xx); }
+
+/* ===== Make all table column values colorful by row context ===== */
+/* Logger rows: color all cells by level */
+.tbl tbody tr.level-VERBOSE td:not(.col-actions){ color: var(--lv-v); }
+.tbl tbody tr.level-DEBUG   td:not(.col-actions){ color: var(--lv-d); }
+.tbl tbody tr.level-INFO    td:not(.col-actions){ color: var(--lv-i); }
+.tbl tbody tr.level-WARN    td:not(.col-actions){ color: var(--lv-w); }
+.tbl tbody tr.level-ERROR   td:not(.col-actions){ color: var(--lv-e); }
+.tbl tbody tr.level-ASSERT  td:not(.col-actions){ color: var(--lv-a); }
+
+/* HTTP rows: color all cells by status class */
+:root{ --st-2xx:#22c55e; --st-3xx:#fbbf24; --st-4xx:#fca5a5; --st-5xx:#fb7185; }
+.tbl tbody tr.status-2xx td:not(.col-actions){ color: var(--st-2xx); }
+.tbl tbody tr.status-3xx td:not(.col-actions){ color: var(--st-3xx); }
+.tbl tbody tr.status-4xx td:not(.col-actions){ color: var(--st-4xx); }
+.tbl tbody tr.status-5xx td:not(.col-actions){ color: var(--st-5xx); }
+
+/* Keep chips, icons and code readable (don’t inherit the tint) */
+.tbl tbody tr td .muted,
+.tbl tbody tr td .badge,
+.tbl tbody tr td .material-symbols-outlined,
+.tbl tbody tr td pre.code{ color: inherit; opacity: 0.95; }
+:root{
+  /* default scheme = android */
+  --lv-v:#9E9E9E; /* VERBOSE */
+  --lv-d:#2196F3; /* DEBUG   */
+  --lv-i:#4CAF50; /* INFO    */
+  --lv-w:#FFC107; /* WARN    */
+  --lv-e:#F44336; /* ERROR   */
+  --lv-a:#9C27B0; /* ASSERT  */
+}
+:root[data-scheme="android"]{ /* Android Studio */
+  --lv-v:#9E9E9E; --lv-d:#2196F3; --lv-i:#4CAF50; --lv-w:#FFC107; --lv-e:#F44336; --lv-a:#9C27B0;
+}
+:root[data-scheme="xcode"]{ /* Xcode inspired */
+  --lv-v:#8E8E93; --lv-d:#0A84FF; --lv-i:#34C759; --lv-w:#FF9F0A; --lv-e:#FF453A; --lv-a:#BF5AF2;
+}
+:root[data-scheme="vscode"]{ /* VS Code */
+  --lv-v:#808080; --lv-d:#4FC1FF; --lv-i:#89D185; --lv-w:#CCA700; --lv-e:#F14C4C; --lv-a:#C586C0;
+}
+:root[data-scheme="grafana"]{ /* Grafana */
+  --lv-v:#6b7280; --lv-d:#60a5fa; --lv-i:#22c55e; --lv-w:#f59e0b; --lv-e:#ef4444; --lv-a:#d946ef;
+}
+/* Text color for the Kind column when row has a level */
+.tbl tbody tr.level-VERBOSE .col-kind{ color: var(--lv-v) }
+.tbl tbody tr.level-DEBUG   .col-kind{ color: var(--lv-d) }
+.tbl tbody tr.level-INFO    .col-kind{ color: var(--lv-i) }
+.tbl tbody tr.level-WARN    .col-kind{ color: var(--lv-w) }
+.tbl tbody tr.level-ERROR   .col-kind{ color: var(--lv-e) }
+.tbl tbody tr.level-ASSERT  .col-kind{ color: var(--lv-a) }
+/* Left accent bar tint using current scheme vars */
+.tbl tbody tr.level-VERBOSE{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 55%, transparent) }
+.tbl tbody tr.level-DEBUG  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 55%, transparent) }
+.tbl tbody tr.level-INFO   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 55%, transparent) }
+.tbl tbody tr.level-WARN   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 55%, transparent) }
+.tbl tbody tr.level-ERROR  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 55%, transparent) }
+.tbl tbody tr.level-ASSERT { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 55%, transparent) }
+/* Preserve accent on hover */
+.tbl tbody tr.level-VERBOSE:hover{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 70%, transparent) }
+.tbl tbody tr.level-DEBUG:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 70%, transparent) }
+.tbl tbody tr.level-INFO:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 70%, transparent) }
+.tbl tbody tr.level-WARN:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 70%, transparent) }
+.tbl tbody tr.level-ERROR:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 70%, transparent) }
+.tbl tbody tr.level-ASSERT:hover { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 70%, transparent) }
+
+/* ===== Color URL/Summary & Time columns ===== */
 /* Color by LOG level (for logger rows) */
 .tbl tbody tr.level-VERBOSE .col-time,
 .tbl tbody tr.level-VERBOSE .col-url { color: var(--lv-v); }
@@ -1469,7 +1903,7 @@ body.ui{ font-size: var(--font-size); font-family: var(--font-ui); }
           }
 
           // Columns: show all
-          const allTrue = {id:true,time:true,kind:true,tag:true,method:true,status:true,url:true,actions:true};
+          const allTrue = {id:true,time:true,kind:true,tag:true,method:true,status:true,url:true,actions:false};
           try{ localStorage.setItem('logtap:cols', JSON.stringify(allTrue)); }catch{}
           applyCols(allTrue);
 
@@ -2105,10 +2539,41 @@ body.ui{ font-size: var(--font-size); font-family: var(--font-ui); }
         themeToggle?.addEventListener('click', ()=>{ const cur = document.documentElement.getAttribute('data-theme') || 'dark'; const next = cur==='dark'?'light':'dark'; applyTheme(next); localStorage.setItem('logtap:theme', next); });
         
         // ---- Bootstrap + WS status ----
+        async function loadDeviceInfo(){
+          try{
+            const res = await fetch('/api/info');
+            if(!res.ok) return;
+            const info = await res.json();
+            const appNameEl = document.getElementById('appName');
+            const appMetaEl = document.getElementById('appMeta');
+            const appIconEl = document.getElementById('appIcon');
+        
+            if(appNameEl) appNameEl.textContent = info.appName || 'Unknown App';
+        
+            if(appMetaEl){
+              const ver = [info.versionName ? 'v'+info.versionName : null,
+                           (info.versionCode!=null) ? '('+info.versionCode+')' : null]
+                          .filter(Boolean).join(' ');
+              const device = [info.deviceManufacturer, info.deviceModel].filter(Boolean).join(' ');
+              const os = [info.osType, info.osVersion, info.apiLevel!=null?('API '+info.apiLevel):null]
+                         .filter(Boolean).join(' ');
+              // Compose meta: bundle • version • device • os
+              appMetaEl.textContent = [info.appBundle, ver, device, os].filter(Boolean).join(' • ');
+            }
+            if(appIconEl && info.appIconBase64){
+              appIconEl.style.backgroundImage = 'url(data:image/png;base64,'+info.appIconBase64+')';
+            }
+          }catch(e){
+            console.warn('[LogTap] Device info load failed', e);
+          }
+        }
+
         async function bootstrap(){
           initTheme();
           initPrefs();
           initScheme();
+          // Load DeviceAppInfo into header
+          loadDeviceInfo();
           try{ const res = await fetch('/api/logs?limit=1000'); if(!res.ok) throw new Error('HTTP '+res.status); rows = await res.json(); }
           catch(err){ console.error('[LogTap] failed to fetch /api/logs', err); rows=[]; }
           applyMode();

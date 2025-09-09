@@ -45,8 +45,8 @@
 Add the dependency in your `build.gradle`:
 
 ```gradle
-debugImplementation 'com.github.Husseinhj.LogTap:logtap:v0.11.2'
-releaseImplementation 'com.github.Husseinhj.LogTap:logtap-noop:v0.11.2'
+debugImplementation 'com.github.Husseinhj.LogTap:logtap:v0.12.0'
+releaseImplementation 'com.github.Husseinhj.LogTap:logtap-noop:v0.12.0'
 ```
 
 > 💡 Always use the latest version from the [GitHub Releases](https://github.com/Husseinhj/LogTap/releases).
@@ -179,8 +179,8 @@ You can restrict LogTap only to a specific build flavor (e.g., `dev`) by declari
 
 ```gradle
 dependencies {
-    devDebugImplementation 'com.github.Husseinhj.LogTap:logtap:v0.11.2'
-    devReleaseImplementation 'com.github.Husseinhj.LogTap:logtap-noop:v0.11.2'
+    devDebugImplementation 'com.github.Husseinhj.LogTap:logtap:v0.12.0'
+    devReleaseImplementation 'com.github.Husseinhj.LogTap:logtap-noop:v0.12.0'
 }
 ```
 
@@ -208,9 +208,9 @@ android {
 - If you want the library only in the `dev` flavor, keep:
 
 ```gradle
-devDebugImplementation 'com.github.Husseinhj.LogTap:logtap:v0.11.2'
+devDebugImplementation 'com.github.Husseinhj.LogTap:logtap:v0.12.0'
 // (Optional) If you also build devRelease, use the noop artifact there:
-devReleaseImplementation 'com.github.Husseinhj.LogTap:logtap-noop:v0.11.2'
+devReleaseImplementation 'com.github.Husseinhj.LogTap:logtap-noop:v0.12.0'
 ```
 
 - If you prefer **no dependency at all** on release variants (including prod/staging), **do not** add a release dependency. We’ll provide **stubs** instead.

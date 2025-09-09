@@ -102,9 +102,23 @@ internal object Resources {
           <button id="exportBtn" class="icon" title="Export" aria-label="Export">
             <span class="material-symbols-outlined" aria-hidden="true">ios_share</span>
           </button>
-          <div id="exportMenu" class="popover hidden" role="menu" aria-hidden="true">
-            <button id="exportJson" class="btn block" role="menuitem">Export JSON</button>
-            <button id="exportHtml" class="btn block" role="menuitem">Export Report</button>
+          <div id="exportMenu" class="fp hidden popover" role="dialog" aria-modal="true" aria-labelledby="exportTitle">
+            <div class="fp-head">
+              <div class="fp-icon material-symbols-outlined" aria-hidden="true">ios_share</div>
+              <div class="fp-title" id="exportTitle">Export</div>
+              <button id="exportClose" class="icon" title="Close export" aria-label="Close export">
+                <span class="material-symbols-outlined" aria-hidden="true">close</span>
+              </button>
+            </div>
+            <div class="fp-body">
+              <div class="fp-section">
+                <button id="exportJson" class="btn block" type="button">Export JSON</button>
+                <button id="exportHtml" class="btn block" type="button">Export Report</button>
+              </div>
+            </div>
+            <div class="fp-foot">
+              <span class="hint">Export your logs in different formats</span>
+            </div>
           </div>
         </div>
         <button id="clearBtn" class="icon" title="Clear all logs" aria-label="Clear all logs">
@@ -126,6 +140,25 @@ internal object Resources {
           </div>
         
           <div class="fp-body">
+              <!-- Quick Filter Mode -->
+              <div class="fp-section">
+                <h4>Mode</h4>
+                <div class="fp-row">
+                  <label class="fp-radio">
+                    <input type="radio" name="filterMode" value="" checked>
+                    <span class="lbl">All (Mix)</span>
+                  </label>
+                  <label class="fp-radio">
+                    <input type="radio" name="filterMode" value="network">
+                    <span class="lbl">Network</span>
+                  </label>
+                  <label class="fp-radio">
+                    <input type="radio" name="filterMode" value="log">
+                    <span class="lbl">Log</span>
+                  </label>
+                </div>
+              </div>
+          
             <!-- HTTP / WS -->
             <div class="fp-section">
               <h4>HTTP &amp; WebSocket</h4>
@@ -278,31 +311,178 @@ internal object Resources {
 
     <script src="/app.js"></script>
     <script>
-    (function(){
-      const settingsPanel = document.getElementById('settingsPanel');
-      const filtersPanel  = document.getElementById('filtersPanel');
-      const settingsBtn   = document.getElementById('settingsBtn');
-      const filtersBtn    = document.getElementById('filtersBtn');
-      const settingsCloseTop = document.getElementById('settingsClose');
-      const settingsCloseBottom = document.getElementById('settingsClose2');
-      const filtersCloseTop = document.getElementById('filtersClose');
-      const filtersCloseBottom = document.getElementById('filtersCloseBottom');
+(function(){
+  const settingsPanel = document.getElementById('settingsPanel');
+  const filtersPanel  = document.getElementById('filtersPanel');
+  const settingsBtn   = document.getElementById('settingsBtn');
+  const filtersBtn    = document.getElementById('filtersBtn');
+  const settingsCloseTop = document.getElementById('settingsClose');
+  const settingsCloseBottom = document.getElementById('settingsClose2');
+  const filtersCloseTop = document.getElementById('filtersClose');
+  const filtersCloseBottom = document.getElementById('filtersCloseBottom');
 
-      function closePanel(panelEl, toggleBtn){
-        if (!panelEl) return;
-        panelEl.classList.add('hidden');
-        if (toggleBtn) toggleBtn.setAttribute('aria-expanded','false');
-      }
+  const exportBtn = document.getElementById('exportBtn');
+  const exportMenu = document.getElementById('exportMenu');
+  const exportClose = document.getElementById('exportClose');
+  const exportCloseBottom = document.getElementById('exportCloseBottom');
 
-      // Settings panel close (both X and footer Close)
-      settingsCloseTop?.addEventListener('click', () => closePanel(settingsPanel, settingsBtn));
-      settingsCloseBottom?.addEventListener('click', () => closePanel(settingsPanel, settingsBtn));
+  // --- Robust helpers -------------------------------------------------------
+  function isInPath(target, ev){
+    const path = ev.composedPath ? ev.composedPath() : [];
+    return target && (target === ev.target || target.contains(ev.target) || path.includes(target));
+  }
+  function closePanel(panelEl, toggleBtn){
+    if (!panelEl) return;
+    panelEl.classList.add('hidden');
+    if (toggleBtn) toggleBtn.setAttribute('aria-expanded','false');
+  }
+  function closeExport(){
+    if (!exportMenu) return;
+    exportMenu.classList.add('hidden');
+    exportMenu.setAttribute('aria-hidden','true');
+  }
+  let justOpened = false;
+  function openExport(){
+    closePanel(settingsPanel, settingsBtn);
+    closePanel(filtersPanel,  filtersBtn);
+    if (!exportMenu) return;
+    justOpened = true;
+    exportMenu.classList.remove('hidden');
+    exportMenu.removeAttribute('style');
+    exportMenu.setAttribute('aria-hidden','false');
+    // ensure it can receive focus (for Esc key)
+    if (!exportMenu.hasAttribute('tabindex')) exportMenu.setAttribute('tabindex','-1');
+    exportMenu.focus({preventScroll:true});
+    // flip the guard on next tick so outside-click won't instantly close
+    requestAnimationFrame(()=>{ justOpened = false; });
+  }
+  function toggleExport(ev){
+    ev.stopPropagation();
+    if (ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+    if (exportMenu.classList.contains('hidden')) openExport(); else closeExport();
+  }
 
-      // Filters panel close (both X and footer Close)
-      filtersCloseTop?.addEventListener('click', () => closePanel(filtersPanel, filtersBtn));
-      filtersCloseBottom?.addEventListener('click', () => closePanel(filtersPanel, filtersBtn));
-    })();
-    </script>
+  // --- Wire up buttons ------------------------------------------------------
+  settingsCloseTop?.addEventListener('click', () => closePanel(settingsPanel, settingsBtn));
+  settingsCloseBottom?.addEventListener('click', () => closePanel(settingsPanel, settingsBtn));
+  filtersCloseTop?.addEventListener('click', () => closePanel(filtersPanel, filtersBtn));
+  filtersCloseBottom?.addEventListener('click', () => closePanel(filtersPanel, filtersBtn));
+
+  // Use pointer events so it works with mouse & touch, and prevent bubbling
+  ['pointerdown','click'].forEach(type=>{
+    exportBtn?.addEventListener(type, toggleExport);
+  });
+  exportClose?.addEventListener('click', closeExport);
+  exportCloseBottom?.addEventListener('click', closeExport);
+
+  // Clicking anywhere else — but not the export button or menu — closes it
+  window.addEventListener('click', (ev)=>{
+    if (justOpened) return; // skip first bubble after opening
+    if (!isInPath(exportMenu, ev) && !isInPath(exportBtn, ev)) {
+      closeExport();
+    }
+  }, true); // capture phase for reliability
+
+  // ESC closes any open panel/menu
+  window.addEventListener('keydown', (ev)=>{
+    if (ev.key === 'Escape') {
+      closeExport();
+      closePanel(settingsPanel, settingsBtn);
+      closePanel(filtersPanel,  filtersBtn);
+    }
+  });
+
+  // When opening settings or filters, ensure export menu is closed
+  settingsBtn?.addEventListener('click', ()=> closeExport());
+  filtersBtn?.addEventListener('click',  ()=> closeExport());
+})();
+</script>
+<script>
+(function(){
+  // --- Filter Mode (All / Network / Log) ------------------------------------
+  const tbody = document.querySelector('#logtbl tbody');
+  const modeRadios = document.querySelectorAll('input[name="filterMode"]');
+
+  // Persist / restore mode
+  let filterMode = localStorage.getItem('filterMode') || '';
+  modeRadios.forEach(r => { r.checked = (r.value === filterMode); });
+
+  // Helpers to classify a row
+  function hasLevelClass(tr){
+    // Any class like "level-DEBUG", "level-INFO", etc. means logger row
+    return Array.from(tr.classList).some(c => c.startsWith('level-'));
+  }
+  function textOf(sel, root){
+    const el = (root || document).querySelector(sel);
+    return (el ? (el.textContent || '') : '').trim();
+  }
+  function rowKind(tr){
+    // Prefer cached data-kind
+    if (tr.dataset.kind) return tr.dataset.kind;
+
+    // 1) If row carries a logger level class, it's a LOG row
+    if (hasLevelClass(tr)) return tr.dataset.kind = 'LOG';
+
+    // 2) Inspect "Kind" cell text if present
+    const kindText = textOf('.col-kind', tr).toUpperCase();
+    if (kindText.includes('LOG')) return tr.dataset.kind = 'LOG';
+    if (kindText.includes('HTTP') || kindText.includes('WEBSOCKET')) return tr.dataset.kind = 'NETWORK';
+
+    // 3) Heuristic: if method cell looks like an HTTP/WS method, assume NETWORK
+    const m = textOf('.col-method', tr).toUpperCase();
+    if (/(GET|POST|PUT|PATCH|DELETE|WS)/.test(m)) return tr.dataset.kind = 'NETWORK';
+
+    // 4) Fallback to LOG (better to show in "Log" than hide everything)
+    return tr.dataset.kind = 'LOG';
+  }
+
+  // Apply current filter mode to all current rows
+  function applyMode(){
+    document.body.dataset.mode = filterMode || 'all';
+    if (!tbody) return;
+    const rows = tbody.querySelectorAll('tr');
+    rows.forEach(tr => {
+      const kind = rowKind(tr); // computes and caches data-kind
+      const show =
+        (filterMode === '') ||
+        (filterMode === 'network' && kind === 'NETWORK') ||
+        (filterMode === 'log' && kind === 'LOG');
+      tr.style.display = show ? '' : 'none';
+    });
+  }
+
+  // MutationObserver: classify and filter newly added rows
+  const mo = new MutationObserver((mutations) => {
+    for (const m of mutations) {
+      m.addedNodes.forEach(node => {
+        if (!(node instanceof HTMLElement)) return;
+        if (node.tagName !== 'TR') return;
+        // classify once; value cached on dataset
+        rowKind(node);
+        if (filterMode) {
+          const show =
+            (filterMode === 'network' && node.dataset.kind === 'NETWORK') ||
+            (filterMode === 'log' && node.dataset.kind === 'LOG');
+          node.style.display = show ? '' : 'none';
+        }
+      });
+    }
+  });
+  if (tbody) mo.observe(tbody, { childList: true });
+
+  // Wire radios
+  modeRadios.forEach(r => {
+    r.addEventListener('change', (e) => {
+      filterMode = e.target.value;
+      localStorage.setItem('filterMode', filterMode);
+      applyMode();
+    });
+  });
+
+  // Initial pass
+  applyMode();
+})();
+</script>
    <div class="repo">
      <a href="https://github.com/Husseinhj/LogTap" target="_blank" rel="noopener">
        <svg class="gh-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.62-.17 1.29-.27 2-.27s1.38.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
@@ -451,9 +631,12 @@ body.ui{margin:0;background:var(--bg);color:var(--text);font:14px ui-sans-serif,
 
 .popover{position:absolute;top:100%;margin-top:8px;right:0;background:var(--md-sys-color-surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--elev-3);padding:10px;z-index:50;min-width:220px}
 .popover.hidden{display:none}
+.popover.hidden{ display:none !important; }
+.hidden{ display:none !important; }
+.fp.hidden{ display:none !important; }
 
-/* Filters popover (Material 3) */
 .fp{ padding:0; min-width: 360px; max-width: 520px; }
+#exportMenu{ position:absolute; top:100%; right:0; margin-top:8px; background:var(--md-sys-color-surface); border:1px solid var(--line); border-radius:12px; box-shadow:var(--elev-3); z-index:60; }
 .fp-head{ padding:14px 16px 8px; border-bottom:1px solid var(--line); }
 .fp-title{ font-weight:700; }
 .fp-sub{ color:var(--muted); font-size:12px; margin-top:2px; }
@@ -464,58 +647,133 @@ body.ui{margin:0;background:var(--bg);color:var(--text);font:14px ui-sans-serif,
 .fp-actions .btn{ display:inline-flex; align-items:center; gap:6px; }
 @media (max-width:520px){ .fp{ min-width: 280px; } .fp-grid{ grid-template-columns:1fr; } }
 
-# Export menu buttons styled as Material 3 list items
-#exportMenu .btn.block {
+/* Export menu buttons styled as Material 3 list items */
+/* === Export menu compact & fixed layout overrides === */
+#exportMenu.fp.popover{
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  min-width: 260px;
+  max-width: 320px;
+  padding: 0; /* container gets no padding; inner sections handle it */
+  background: var(--md-sys-color-surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--elev-3);
+  z-index: 60;
+}
+#exportMenu.hidden { display: none !important; }
+
+#exportMenu .fp-head{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+}
+#exportMenu .fp-icon{
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}
+#exportMenu .fp-title{
+  font-weight: 700;
+  font-size: 14px;
+  flex: 1;
+  min-width: 0;
+}
+#exportMenu .icon{
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+}
+
+#exportMenu .fp-body{ padding: 6px; }
+#exportMenu .fp-section{ padding: 0; margin: 0; }
+
+/* Buttons look like list items */
+#exportMenu .btn.block{
   background: transparent;
   border: 0;
-  border-radius: 12px;
-  padding: 10px 16px;
+  border-radius: 10px;
+  padding: 10px 12px;
   font-size: 14px;
   color: var(--text);
   justify-content: flex-start;
   width: 100%;
   text-align: left;
 }
-#exportMenu .btn.block:hover::after {
-  opacity: var(--state-hover);
+#exportMenu .btn.block:hover::after { opacity: var(--state-hover); }
+#exportMenu .btn.block:active::after { opacity: var(--state-pressed); }
+
+/* Footer hint and close */
+#exportMenu .fp-foot{
+  padding: 8px 12px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
-#exportMenu .btn.block:active::after {
-  opacity: var(--state-pressed);
+#exportMenu .fp-foot .hint{
+  color: var(--muted);
+  font-size: 12px;
 }
 
 /* Material 3 checkboxes inside filter panel */
-.fp-checkbox {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:6px 4px;
-  cursor:pointer;
-  user-select:none;
+/* === Material 3 Inspired Checkboxes & Radios === */
+.fp-checkbox,
+.fp-radio {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 6px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 14px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
 }
-.fp-checkbox input {
-  appearance:none;
-  -webkit-appearance:none;
-  width:18px;
-  height:18px;
-  border:2px solid var(--line);
-  border-radius:4px;
-  background:var(--surface);
-  display:grid;
-  place-items:center;
-  margin:0;
+.fp-checkbox:hover,
+.fp-radio:hover {
+  background: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
 }
-.fp-checkbox input:checked {
-  background:var(--md-sys-color-primary);
-  border-color:var(--md-sys-color-primary);
+.fp-checkbox input,
+.fp-radio input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border: 2px solid var(--line);
+  border-radius: 6px; /* default square for checkbox */
+  background: var(--surface);
+  display: grid;
+  place-items: center;
+  transition: border-color 0.2s, background 0.2s;
+}
+.fp-radio input {
+  border-radius: 50%; /* radios are round */
+}
+.fp-checkbox input:checked,
+.fp-radio input:checked {
+  background: var(--md-sys-color-primary);
+  border-color: var(--md-sys-color-primary);
 }
 .fp-checkbox input:checked::before {
-  content:"✓";
-  color:var(--md-sys-color-on-primary);
-  font-size:14px;
-  line-height:1;
+  content: "✓";
+  color: var(--md-sys-color-on-primary);
+  font-size: 14px;
 }
-.fp-checkbox .lbl {
-  font-size:14px;
+.fp-radio input:checked::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--md-sys-color-on-primary);
 }
 
 /* Filters: Columns grid */
@@ -703,12 +961,16 @@ body.hide-col-actions #logtbl .col-actions{display:none}
     z-index:5;
   }
   /* always-visible divider line */
-  .th-resizer::after{
-    content:"";
-    position:absolute; top:8px; bottom:8px; left:4px; width:2px;
-    background: color-mix(in srgb, var(--md-sys-color-outline-variant) 50%, transparent);
-    transition: background .15s, left .15s, width .15s;
-  }
+    .th-resizer::after{
+      content:"";
+      position:absolute;
+      top:8px;
+      bottom:8px;
+      left:4px;
+      width:2px;
+      background: color-mix(in srgb, var(--md-sys-color-outline-variant) 50%, transparent);
+      transition: background .15s, left .15s, width .15s;
+    }
   /* subtle grabber dots */
   .th-resizer::before{
     content:"";
@@ -741,6 +1003,41 @@ body.hide-col-actions #logtbl .col-actions{display:none}
 .col-id{width:var(--col-id-w,72px)}.col-time{width:var(--col-time-w,150px)}.col-kind{width:var(--col-kind-w,120px)}.col-tag{width:var(--col-tag-w,140px)}.col-method{width:var(--col-method-w,92px)}.col-status{width:var(--col-status-w,92px)}.col-actions{width:var(--col-actions-w,170px)}
 
 /* Status & kind colors */
+
+.fp-radio {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 4px;
+  cursor: pointer;
+  user-select: none;
+}
+.fp-radio input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  margin: 0;
+}
+.fp-radio input:checked {
+  background: var(--md-sys-color-primary);
+  border-color: var(--md-sys-color-primary);
+}
+.fp-radio input:checked::before {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--md-sys-color-on-primary);
+  margin: auto;
+}
+.fp-radio .lbl {
+  font-size: 14px;
+}
 
 /* Fallback WS palette (overridden per scheme below) */
 :root{
@@ -777,7 +1074,7 @@ body.hide-col-actions #logtbl .col-actions{display:none}
   --m-delete:#ef4444;/* red   */
   --m-ws:#06b6d4;    /* cyan  */
 }
-:/* === Scheme overrides for HTTP/WS palettes === */
+/* === Scheme overrides for HTTP/WS palettes === */
 
 :root[data-scheme="android"]{
   /* Android Studio style */

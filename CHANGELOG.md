@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add settings popover for UI customization options
 - Refactor settings and filters popover for improved UI and accessibility
 - Update stats bar styling for stickiness and visual consistency
+- Enhance export menu UI with improved accessibility and dynamic behavior
 
 ### v0.11.2
 Make LogStore nullable and handle potential null access

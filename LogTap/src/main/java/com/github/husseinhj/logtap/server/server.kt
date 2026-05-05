@@ -6,16 +6,12 @@ import android.content.Context
 import kotlin.text.toIntOrNull
 import io.ktor.http.ContentType
 import kotlin.text.toLongOrNull
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
-import kotlinx.coroutines.Dispatchers
 import io.ktor.server.application.call
 import io.ktor.server.engine.connector
 import io.ktor.server.response.respond
-import kotlinx.coroutines.CoroutineScope
 import com.github.husseinhj.logtap.LogTap
 import io.ktor.server.application.install
 import io.ktor.server.websocket.webSocket
@@ -29,7 +25,6 @@ import com.github.husseinhj.logtap.LogTap.store
 import com.github.husseinhj.logtap.log.LogEvent
 import com.github.husseinhj.logtap.utils.buildInfo
 import com.github.husseinhj.logtap.utils.Resources
-import com.github.husseinhj.logtap.log.LogTapEvents
 import io.ktor.server.engine.applicationEngineEnvironment
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 
@@ -48,18 +43,11 @@ internal fun provideWebServer(port: Int, engineParentCtx: CoroutineContext, cont
             get("/app.css") { call.respondText(Resources.appCss, ContentType.Text.CSS) }
             get("/app.js") { call.respondText(Resources.appJs, ContentType.Application.JavaScript) }
 
-            get("/logs") {
-                val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 200
-                call.respond(LogTapEvents.snapshot(limit))
-            }
             get("/api/logs") {
                 val sinceId = call.request.queryParameters["sinceId"]?.toLongOrNull()
                 val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 500
-                store?.let {
-                    call.respond(it.snapshot(sinceId, limit))
-                } ?: run {
-                    call.respond(emptyList<LogEvent>())
-                }
+                val snapshot = store?.snapshot(sinceId, limit) ?: emptyList()
+                call.respond(snapshot)
             }
             get("/api/info") {
                 val info = context.buildInfo() ?: return@get call.respondText("Unavailable", status = io.ktor.http.HttpStatusCode.InternalServerError)
@@ -70,27 +58,23 @@ internal fun provideWebServer(port: Int, engineParentCtx: CoroutineContext, cont
                 call.respondText("ok")
             }
             webSocket("/ws") {
-                val session = this
-                val collector = CoroutineScope(Dispatchers.IO).launch {
-                    store?.stream?.collect { ev: LogEvent ->
-                        session.send(Frame.Text(json.encodeToString(LogEvent.serializer(), ev)))
-                    }
-                }
-                val backlog = LogTapEvents.snapshot(200)
+                // Send backlog from the same store the live stream feeds from
+                val backlog = store?.snapshot(null, 200) ?: emptyList()
                 for (ev in backlog) {
                     send(Frame.Text(json.encodeToString(LogEvent.serializer(), ev)))
                 }
-                val job = launch(Dispatchers.Default) {
-                    LogTapEvents.updates().collect { ev ->
+                // Stream new events on this session's coroutine scope
+                val s = store
+                if (s != null) {
+                    s.stream.collect { ev ->
                         try {
                             send(Frame.Text(json.encodeToString(LogEvent.serializer(), ev)))
-                        } catch (_: Throwable) { cancel() }
+                        } catch (_: Throwable) {
+                            return@collect
+                        }
                     }
-                }
-                try {
+                } else {
                     for (frame in incoming) { if (frame is Frame.Close) break }
-                } finally {
-                    job.cancel(); collector.cancel()
                 }
             }
             get("/about") { call.respondText(Resources.aboutHtml) }

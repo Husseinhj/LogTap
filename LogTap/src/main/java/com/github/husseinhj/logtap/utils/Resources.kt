@@ -3,3256 +3,1502 @@ package com.github.husseinhj.logtap.utils
 internal object Resources {
     val indexHtml = """
 <!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>LogTap</title>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogTap - Modern Log Viewer</title>
     <link rel="stylesheet" href="/app.css"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400&display=swap" rel="stylesheet"/>
-  </head>
-  <body class="ui">
-    <!-- Header -->
-    <header class="hdr blur elev">
-      <!-- Replaced static brand with dynamic DeviceAppInfo -->
-      <div class="brand" id="deviceBrand">
-        <div class="app-icon" id="appIcon" aria-hidden="true" title="App icon"></div>
-        <div class="titles">
-          <div class="title" id="appName">Loading…</div>
-          <div class="sub" id="appMeta">Fetching device info…</div>
-        </div>
-      </div>
-      <nav class="bar">
-        <div id="wsStatus" class="chip stat">● Disconnected</div>
-        <div class="search field">
-          <svg class="ico" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5Zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14Z"/></svg>
-          <input id="search" class="input" type="search" placeholder="Search url, method, headers, body…  ⌘/Ctrl + K"/>
-        </div>
-        <button id="filtersBtn" class="btn ghost" title="Filters" aria-haspopup="true" aria-expanded="false">
-          <span class="material-symbols-outlined" aria-hidden="true">filter_list</span>
-          <span class="label">Filters</span>
-          <span class="material-symbols-outlined dropdown" aria-hidden="true">arrow_drop_down</span>
-        </button>
-        <button id="settingsBtn" class="btn ghost" title="Settings" aria-haspopup="true" aria-expanded="false">
-          <span class="material-symbols-outlined" aria-hidden="true">settings</span>
-          <span class="label">Settings</span>
-          <span class="material-symbols-outlined dropdown" aria-hidden="true">arrow_drop_down</span>
-        </button>
-        <!-- Settings popover (separate from Filters) -->
-        <div id="settingsPanel" class="hidden">
-          <div class="sp-head">
-            <div class="sp-icon"><span class="material-symbols-outlined">tune</span></div>
-            <div class="sp-title">Settings</div>
-            <button id="settingsClose" class="icon" aria-label="Close"><span class="material-symbols-outlined">close</span></button>
-          </div>
-        
-          <div class="sp-body">
-            <div class="sp-section">
-              <h4>Theme</h4>
-              <div class="sp-row">
-                <div>Logs Style</div>
-                <select id="colorScheme" class="select">
-                    <option value="android">Android Studio</option>
-                    <option value="xcode">Xcode</option>
-                    <option value="vscode">Visual Studio Code</option>
-                    <option value="grafana">Grafana</option>
-                  </select>
-              </div>
-            </div>
-        
-            <div class="sp-section">
-              <h4>Behavior</h4>
-              <div class="sp-row">
-                <div>Pretty JSON</div>
-                <label class="switch">
-                  <input type="checkbox" id="jsonPretty">
-                  <span class="track"></span><span class="thumb"></span>
-                </label>
-              </div>
-              <div class="sp-row">
-                <div>Auto scroll</div>
-                <label class="switch">
-                  <input type="checkbox" id="autoScroll">
-                  <span class="track"></span><span class="thumb"></span>
-                </label>
-              </div>
-            </div>
-        
-            <div class="sp-section">
-              <h4>Columns</h4>
-              <label class="fp-checkbox"><input type="checkbox" id="colId" checked/><span class="box"></span><span class="lbl">ID</span></label>
-              <label class="fp-checkbox"><input type="checkbox" id="colTime" checked/><span class="box"></span><span class="lbl">Time</span></label>
-              <label class="fp-checkbox"><input type="checkbox" id="colKind" checked/><span class="box"></span><span class="lbl">Kind</span></label>
-              <label class="fp-checkbox"><input type="checkbox" id="colTag" checked/><span class="box"></span><span class="lbl">Tag</span></label>
-              <label class="fp-checkbox"><input type="checkbox" id="colMethod" checked/><span class="box"></span><span class="lbl">Method</span></label>
-              <label class="fp-checkbox"><input type="checkbox" id="colStatus" checked/><span class="box"></span><span class="lbl">Status</span></label>
-              <label class="fp-checkbox"><input type="checkbox" id="colUrl" checked/><span class="box"></span><span class="lbl">URL / Summary</span></label>
-              <label class="fp-checkbox"><input type="checkbox" id="colActions" checked/><span class="box"></span><span class="lbl">Actions</span></label>
-            </div>
-          </div>
-          <div class="sp-foot">
-            <span class="hint">Preferences are saved locally</span>
-            <div>
-              <button id="settingsReset" class="btn-reset">Reset</button>
-              <button id="settingsClose2" class="btn-close">Close</button>
-            </div>
-          </div>
-        </div>
-        <div class="menu">
-          <button id="exportBtn" class="icon" title="Export" aria-label="Export">
-            <span class="material-symbols-outlined" aria-hidden="true">ios_share</span>
-          </button>
-          <div id="exportMenu" class="fp hidden popover" role="dialog" aria-modal="true" aria-labelledby="exportTitle">
-            <div class="fp-head">
-              <div class="fp-icon material-symbols-outlined" aria-hidden="true">ios_share</div>
-              <div class="fp-title" id="exportTitle">Export</div>
-              <button id="exportClose" class="icon" title="Close export" aria-label="Close export">
-                <span class="material-symbols-outlined" aria-hidden="true">close</span>
-              </button>
-            </div>
-            <div class="fp-body">
-              <div class="fp-section">
-                <button id="exportJson" class="btn block" type="button">Export JSON</button>
-                <button id="exportHtml" class="btn block" type="button">Export Report</button>
-              </div>
-            </div>
-            <div class="fp-foot">
-              <span class="hint">Export your logs in different formats</span>
-            </div>
-          </div>
-        </div>
-        <button id="clearBtn" class="icon" title="Clear all logs" aria-label="Clear all logs">
-          <span class="material-symbols-outlined" aria-hidden="true">delete_sweep</span>
-        </button>
-        <button id="themeToggle" class="icon" title="Toggle theme" aria-label="Toggle theme">
-          <span class="material-symbols-outlined ico-sun" aria-hidden="true">light_mode</span>
-          <span class="material-symbols-outlined ico-moon" aria-hidden="true">dark_mode</span>
-        </button>
-
-        <!-- Filters popover (Material 3 sheet) -->
-        <div id="filtersPanel" class="fp hidden" role="dialog" aria-modal="true" aria-labelledby="filtersTitle">
-          <div class="fp-head">
-            <div class="fp-icon material-symbols-outlined" aria-hidden="true">filter_list</div>
-            <div class="fp-title" id="filtersTitle">Filters</div>
-            <button id="filtersClose" class="icon" title="Close filters" aria-label="Close filters">
-              <span class="material-symbols-outlined" aria-hidden="true">close</span>
-            </button>
-          </div>
-        
-          <div class="fp-body">
-              <!-- Quick Filter Mode -->
-              <div class="fp-section">
-                <h4>Mode</h4>
-                <div class="fp-row">
-                  <label class="fp-radio">
-                    <input type="radio" name="filterMode" value="" checked>
-                    <span class="lbl">All (Mix)</span>
-                  </label>
-                  <label class="fp-radio">
-                    <input type="radio" name="filterMode" value="network">
-                    <span class="lbl">Network</span>
-                  </label>
-                  <label class="fp-radio">
-                    <input type="radio" name="filterMode" value="log">
-                    <span class="lbl">Log</span>
-                  </label>
-                </div>
-              </div>
-          
-            <!-- HTTP / WS -->
-            <div class="fp-section">
-              <h4>HTTP &amp; WebSocket</h4>
-        
-              <div class="fp-row">
-                <label class="lbl" for="methodFilter">Method</label>
-                <select id="methodFilter" class="select">
-                  <option value="">Any</option>
-                  <option value="GET">GET</option>
-                  <option value="POST">POST</option>
-                  <option value="PUT">PUT</option>
-                  <option value="PATCH">PATCH</option>
-                  <option value="DELETE">DELETE</option>
-                  <option value="WS">WS</option>
-                </select>
-              </div>
-        
-              <div class="fp-row">
-                <label class="lbl" for="statusFilter">Status class</label>
-                <select id="statusFilter" class="select">
-                  <option value="">Any</option>
-                  <option value="2xx">2xx (Success)</option>
-                  <option value="3xx">3xx (Redirect)</option>
-                  <option value="4xx">4xx (Client error)</option>
-                  <option value="5xx">5xx (Server error)</option>
-                </select>
-              </div>
-        
-              <div class="fp-row">
-                <label class="lbl" for="statusCodeFilter">Status code(s)</label>
-                <input id="statusCodeFilter" class="input" placeholder="e.g. 200,404, 500-599">
-              </div>
-            </div>
-        
-            <!-- Logger -->
-            <div class="fp-section">
-              <h4>Logger</h4>
-              <div class="fp-row">
-                <label class="lbl" for="levelFilter">Level</label>
-                <select id="levelFilter" class="select">
-                  <option value="">Any</option>
-                  <option value="VERBOSE">VERBOSE</option>
-                  <option value="DEBUG">DEBUG</option>
-                  <option value="INFO">INFO</option>
-                  <option value="WARN">WARN</option>
-                  <option value="ERROR">ERROR</option>
-                  <option value="ASSERT">ASSERT</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        
-          <div class="fp-foot">
-            <span class="hint">Tip: click a stat chip to quick-filter; click it again to reset.</span>
-            <div>
-              <button id="filtersReset" class="btn-reset" type="button">Reset</button>
-              <button id="filtersCloseBottom" class="btn-close" type="button">Close</button>
-            </div>
-          </div>
-        </div>
-      </nav>
-    </header>
-
-    <!-- Stat pills -->
-    <section class="stats">
-      <div class="chip" id="chipTotal">Total: 0</div>
-      <div class="chip" id="chipHttp">HTTP: 0</div>
-      <div class="chip" id="chipWs">WS: 0</div>
-      <div class="chip" id="chipLog">LOG: 0</div>
-      <div class="chip" id="chipGet">GET: 0</div>
-      <div class="chip" id="chipPost">POST: 0</div>
-    </section>
-
-    <main class="shell">
-      <div class="panel elev">
-        <table id="logtbl" class="tbl">
-          <thead>
-            <tr>
-              <th class="col-id">ID</th>
-              <th class="col-time">Time</th>
-              <th class="col-kind">Kind</th>
-              <th class="col-tag">Tag</th>
-              <th class="col-method">Method</th>
-              <th class="col-status">Status</th>
-              <th class="col-url">URL / Summary</th>
-              <th class="col-actions">Actions</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-
-      <aside id="drawer" class="drawer elev">
-        <div class="d-resize" id="drawerResizer" aria-hidden="true" title="Drag to resize"></div>
-        <header class="d-head">
-          <div>
-            <div id="drawerTitle" class="d-title">Details</div>
-            <div id="drawerSub" class="d-sub"></div>
-          </div>
-          <button id="drawerClose" class="icon" title="Close (Esc)">×</button>
-        </header>
-        <nav class="tabs">
-          <button class="tab active" data-tab="overview" id="tabBtn-overview">Overview</button>
-          <button class="tab" data-tab="request" id="tabBtn-request">Request</button>
-          <button class="tab" data-tab="response" id="tabBtn-response">Response</button>
-          <button class="tab" data-tab="headers" id="tabBtn-headers">Headers</button>
-        </nav>
-        <section class="panes">
-          <div class="pane active" id="tab-overview">
-            <dl class="kv">
-              <div><dt>ID</dt><dd id="ov-id"></dd></div>
-              <div><dt>Time</dt><dd id="ov-time"></dd></div>
-              <div><dt>Kind</dt><dd id="ov-kind"></dd></div>
-              <div><dt>Direction</dt><dd id="ov-dir"></dd></div>
-              <div id="row-method"><dt>Method</dt><dd id="ov-method"></dd></div>
-              <div id="row-status"><dt>Status</dt><dd id="ov-status"></dd></div>
-              <div id="row-url"><dt>URL</dt><dd id="ov-url"></dd></div>
-              <div id="row-level" class="hidden"><dt>Level</dt><dd id="ov-level"></dd></div>
-              <div id="row-tag" class="hidden"><dt>Tag</dt><dd id="ov-tag"></dd></div>
-              <div class="full"><dt>Summary</dt><dd><div class="sum"><button id="ov-summary-copy" class="icon" title="Copy Summary" aria-label="Copy Summary"><span class="material-symbols-outlined" aria-hidden="true">content_copy</span></button><pre class="code" id="ov-summary"></pre></div></dd></div>
-              <div id="row-took"><dt>Took</dt><dd id="ov-took"></dd></div>
-              <div><dt>Thread</dt><dd id="ov-thread"></dd></div>
-              <div class="full" id="row-curl"><dt>cURL</dt><dd><div class="curl"><button id="ov-curl-copy" class="icon" title="Copy cURL" aria-label="Copy cURL"><span class="material-symbols-outlined" aria-hidden="true">content_copy</span></button><pre class="code" id="ov-curl"></pre></div></dd></div>
-            </dl>
-          </div>
-          <div class="pane" id="tab-request">
-            <h4>Request Body</h4>
-            <pre class="code json" id="req-body"></pre>
-          </div>
-          <div class="pane" id="tab-response">
-            <h4>Response Body</h4>
-            <pre class="code json" id="resp-body"></pre>
-          </div>
-          <div class="pane" id="tab-headers">
-            <h4>Headers</h4>
-            <div class="cols">
-              <div>
-                <h5>Request</h5>
-                <pre class="code" id="req-headers"></pre>
-              </div>
-              <div>
-                <h5>Response</h5>
-                <pre class="code" id="resp-headers"></pre>
-              </div>
-            </div>
-          </div>
-        </section>
-      </aside>
-    </main>
-
+</head>
+<body>
+    <div id="root" class="theme-android"></div>
     <script src="/app.js"></script>
-    <script>
-(function(){
-  const settingsPanel = document.getElementById('settingsPanel');
-  const filtersPanel  = document.getElementById('filtersPanel');
-  const settingsBtn   = document.getElementById('settingsBtn');
-  const filtersBtn    = document.getElementById('filtersBtn');
-  const settingsCloseTop = document.getElementById('settingsClose');
-  const settingsCloseBottom = document.getElementById('settingsClose2');
-  const filtersCloseTop = document.getElementById('filtersClose');
-  const filtersCloseBottom = document.getElementById('filtersCloseBottom');
-
-  const exportBtn = document.getElementById('exportBtn');
-  const exportMenu = document.getElementById('exportMenu');
-  const exportClose = document.getElementById('exportClose');
-  const exportCloseBottom = document.getElementById('exportCloseBottom');
-
-  // --- Robust helpers -------------------------------------------------------
-  function isInPath(target, ev){
-    const path = ev.composedPath ? ev.composedPath() : [];
-    return target && (target === ev.target || target.contains(ev.target) || path.includes(target));
-  }
-  function closePanel(panelEl, toggleBtn){
-    if (!panelEl) return;
-    panelEl.classList.add('hidden');
-    if (toggleBtn) toggleBtn.setAttribute('aria-expanded','false');
-  }
-  function closeExport(){
-    if (!exportMenu) return;
-    exportMenu.classList.add('hidden');
-    exportMenu.setAttribute('aria-hidden','true');
-  }
-  let justOpened = false;
-  function openExport(){
-    closePanel(settingsPanel, settingsBtn);
-    closePanel(filtersPanel,  filtersBtn);
-    if (!exportMenu) return;
-    justOpened = true;
-    exportMenu.classList.remove('hidden');
-    exportMenu.removeAttribute('style');
-    exportMenu.setAttribute('aria-hidden','false');
-    // ensure it can receive focus (for Esc key)
-    if (!exportMenu.hasAttribute('tabindex')) exportMenu.setAttribute('tabindex','-1');
-    exportMenu.focus({preventScroll:true});
-    // flip the guard on next tick so outside-click won't instantly close
-    requestAnimationFrame(()=>{ justOpened = false; });
-  }
-  function toggleExport(ev){
-    ev.stopPropagation();
-    if (ev.stopImmediatePropagation) ev.stopImmediatePropagation();
-    if (exportMenu.classList.contains('hidden')) openExport(); else closeExport();
-  }
-
-  // --- Wire up buttons ------------------------------------------------------
-  settingsCloseTop?.addEventListener('click', () => closePanel(settingsPanel, settingsBtn));
-  settingsCloseBottom?.addEventListener('click', () => closePanel(settingsPanel, settingsBtn));
-  filtersCloseTop?.addEventListener('click', () => closePanel(filtersPanel, filtersBtn));
-  filtersCloseBottom?.addEventListener('click', () => closePanel(filtersPanel, filtersBtn));
-
-  // Use pointer events so it works with mouse & touch, and prevent bubbling
-  ['pointerdown','click'].forEach(type=>{
-    exportBtn?.addEventListener(type, toggleExport);
-  });
-  exportClose?.addEventListener('click', closeExport);
-  exportCloseBottom?.addEventListener('click', closeExport);
-
-  // Clicking anywhere else — but not the export button or menu — closes it
-  window.addEventListener('click', (ev)=>{
-    if (justOpened) return; // skip first bubble after opening
-    if (!isInPath(exportMenu, ev) && !isInPath(exportBtn, ev)) {
-      closeExport();
-    }
-  }, true); // capture phase for reliability
-
-  // ESC closes any open panel/menu
-  window.addEventListener('keydown', (ev)=>{
-    if (ev.key === 'Escape') {
-      closeExport();
-      closePanel(settingsPanel, settingsBtn);
-      closePanel(filtersPanel,  filtersBtn);
-    }
-  });
-
-  // When opening settings or filters, ensure export menu is closed
-  settingsBtn?.addEventListener('click', ()=> closeExport());
-  filtersBtn?.addEventListener('click',  ()=> closeExport());
-})();
-</script>
-<script>
-(function(){
-  // --- Filter Mode (All / Network / Log) ------------------------------------
-  const tbody = document.querySelector('#logtbl tbody');
-  const modeRadios = document.querySelectorAll('input[name="filterMode"]');
-
-  // Persist / restore mode
-  let filterMode = localStorage.getItem('filterMode') || '';
-  modeRadios.forEach(r => { r.checked = (r.value === filterMode); });
-
-  // Helpers to classify a row
-  function hasLevelClass(tr){
-    // Any class like "level-DEBUG", "level-INFO", etc. means logger row
-    return Array.from(tr.classList).some(c => c.startsWith('level-'));
-  }
-  function textOf(sel, root){
-    const el = (root || document).querySelector(sel);
-    return (el ? (el.textContent || '') : '').trim();
-  }
-  function rowKind(tr){
-    // Prefer cached data-kind
-    if (tr.dataset.kind) return tr.dataset.kind;
-
-    // 1) If row carries a logger level class, it's a LOG row
-    if (hasLevelClass(tr)) return tr.dataset.kind = 'LOG';
-
-    // 2) Inspect "Kind" cell text if present
-    const kindText = textOf('.col-kind', tr).toUpperCase();
-    if (kindText.includes('LOG')) return tr.dataset.kind = 'LOG';
-    if (kindText.includes('HTTP') || kindText.includes('WEBSOCKET')) return tr.dataset.kind = 'NETWORK';
-
-    // 3) Heuristic: if method cell looks like an HTTP/WS method, assume NETWORK
-    const m = textOf('.col-method', tr).toUpperCase();
-    if (/(GET|POST|PUT|PATCH|DELETE|WS)/.test(m)) return tr.dataset.kind = 'NETWORK';
-
-    // 4) Fallback to LOG (better to show in "Log" than hide everything)
-    return tr.dataset.kind = 'LOG';
-  }
-
-  // Apply current filter mode to all current rows
-  function applyMode(){
-    document.body.dataset.mode = filterMode || 'all';
-    if (!tbody) return;
-    const rows = tbody.querySelectorAll('tr');
-    rows.forEach(tr => {
-      const kind = rowKind(tr); // computes and caches data-kind
-      const show =
-        (filterMode === '') ||
-        (filterMode === 'network' && kind === 'NETWORK') ||
-        (filterMode === 'log' && kind === 'LOG');
-      tr.style.display = show ? '' : 'none';
-    });
-  }
-
-  // MutationObserver: classify and filter newly added rows
-  const mo = new MutationObserver((mutations) => {
-    for (const m of mutations) {
-      m.addedNodes.forEach(node => {
-        if (!(node instanceof HTMLElement)) return;
-        if (node.tagName !== 'TR') return;
-        // classify once; value cached on dataset
-        rowKind(node);
-        if (filterMode) {
-          const show =
-            (filterMode === 'network' && node.dataset.kind === 'NETWORK') ||
-            (filterMode === 'log' && node.dataset.kind === 'LOG');
-          node.style.display = show ? '' : 'none';
-        }
-      });
-    }
-  });
-  if (tbody) mo.observe(tbody, { childList: true });
-
-  // Wire radios
-  modeRadios.forEach(r => {
-    r.addEventListener('change', (e) => {
-      filterMode = e.target.value;
-      localStorage.setItem('filterMode', filterMode);
-      applyMode();
-    });
-  });
-
-  // Initial pass
-  applyMode();
-})();
-</script>
-   <div class="repo">
-     <a href="https://github.com/Husseinhj/LogTap" target="_blank" rel="noopener">
-       <svg class="gh-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.62-.17 1.29-.27 2-.27s1.38.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
-       GitHub — Husseinhj/LogTap
-     </a>
-     <div class="made">Made with ❤️ from Germany</div>
-   </div>
-
-  </body>
+</body>
 </html>
 """.trimIndent()
 
     val appCss = """
-/* DeviceAppInfo icon */
-.app-icon{
-  width:40px;
-  height:40px;
-  border-radius:12px;
-  background:var(--surface);
-  border:1px solid var(--line);
-  background-size:cover;
-  background-position:center;
-  flex-shrink:0;
-}
-
-/* ========================= Material 3 (tokens + components) ========================= */
-/* Color roles */
-:root[data-theme="light"]{
-  --md-sys-color-primary:#6750A4;         /* Indigo 500-ish */
-  --md-sys-color-on-primary:#FFFFFF;
-  --md-sys-color-primary-container:#EADDFF;
-  --md-sys-color-on-primary-container:#21005E;
-  --md-sys-color-secondary:#625B71;
-  --md-sys-color-on-secondary:#FFFFFF;
-  --md-sys-color-secondary-container:#E8DEF8;
-  --md-sys-color-on-secondary-container:#1D192B;
-  --md-sys-color-surface:#FFFBFE;
-  --md-sys-color-surface-dim:#E6E0E9;
-  --md-sys-color-surface-bright:#FEF7FF;
-  --md-sys-color-surface-container:#F3EDF7;
-  --md-sys-color-surface-container-high:#ECE6F0;
-  --md-sys-color-surface-container-highest:#E6E0E9;
-  --md-sys-color-on-surface:#1D1B20;
-  --md-sys-color-on-surface-variant:#49454F;
-  --md-sys-color-outline:#79747E;
-  --md-sys-color-outline-variant:#CAC4D0;
-  --md-sys-color-error:#B3261E;
-  --md-sys-color-on-error:#FFFFFF;
-  --md-sys-color-inverse-surface:#313033;
-  --md-sys-color-inverse-on-surface:#F4EFF4;
-  --md-sys-color-scrim:#000000;
-}
-:root[data-theme="dark"]{
-  --md-sys-color-primary:#D0BCFF;
-  --md-sys-color-on-primary:#371E73;
-  --md-sys-color-primary-container:#4F378B;
-  --md-sys-color-on-primary-container:#EADDFF;
-  --md-sys-color-secondary:#CCC2DC;
-  --md-sys-color-on-secondary:#332D41;
-  --md-sys-color-secondary-container:#4A4458;
-  --md-sys-color-on-secondary-container:#E8DEF8;
-  --md-sys-color-surface:#141218;
-  --md-sys-color-surface-dim:#141218;
-  --md-sys-color-surface-bright:#3B383E;
-  --md-sys-color-surface-container:#1D1B20;
-  --md-sys-color-surface-container-high:#2B2930;
-  --md-sys-color-surface-container-highest:#36343B;
-  --md-sys-color-on-surface:#E6E0E9;
-  --md-sys-color-on-surface-variant:#CAC4D0;
-  --md-sys-color-outline:#938F99;
-  --md-sys-color-outline-variant:#49454F;
-  --md-sys-color-error:#F2B8B5;
-  --md-sys-color-on-error:#601410;
-  --md-sys-color-inverse-surface:#E6E0E9;
-  --md-sys-color-inverse-on-surface:#313033;
-  --md-sys-color-scrim:#000000;
-}
-
-/* Semantic aliases used by existing markup (mapped to M3 roles) */
-:root{
-  --bg:var(--md-sys-color-surface);
-  --bg2:var(--md-sys-color-surface-bright);
-  --surface:var(--md-sys-color-surface-container);
-  --surface-2:var(--md-sys-color-surface-container-high);
-  --text:var(--md-sys-color-on-surface);
-  --muted:var(--md-sys-color-on-surface-variant);
-  --line:var(--md-sys-color-outline-variant);
-  --chip:var(--md-sys-color-surface-container-highest);
-  --code:var(--md-sys-color-on-surface);
-  --codebg:var(--md-sys-color-surface-dim);
-  --primary:var(--md-sys-color-primary);
-  --on-primary:var(--md-sys-color-on-primary);
-  --accent:var(--md-sys-color-primary);
-  --accent2:#22c55e; /* success (not in core M3 set) */
-  --warn:#f59e0b;    /* warning (custom) */
-  --err:var(--md-sys-color-error);
-
-  /* Elevation levels (M3 uses surface tonal overlays; we approximate with shadow) */
-  --elev-1:0 1px 2px rgba(0,0,0,.14), 0 1px 3px 1px rgba(0,0,0,.12);
-  --elev-2:0 2px 6px rgba(0,0,0,.18), 0 1px 2px rgba(0,0,0,.08);
-  --elev-3:0 6px 10px rgba(0,0,0,.20), 0 1px 3px rgba(0,0,0,.10);
-
-  /* State layer opacities */
-  --state-hover: .08;
-  --state-focus: .12;
-  --state-pressed: .12;
-  --drawer-w:560px;
-}
-
-*{box-sizing:border-box}
-html,body{height:100%}
-body.ui{margin:0;background:var(--bg);color:var(--text);font:14px ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial}
-
-/* ========================= Top App Bar (M3) ========================= */
-.hdr{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--md-sys-color-surface);border-bottom:1px solid var(--line)}
-.brand{display:flex;gap:12px;align-items:center}
-.logo{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;border:1px solid var(--line);background:var(--md-sys-color-surface-container);color:var(--accent)}
-.logo svg{width:22px;height:22px;fill:currentColor}
-.titles .title{font-weight:700;letter-spacing:.2px}
-.titles .sub{color:var(--muted);font-size:12px}
-
-/* ========================= Inputs & Buttons (M3) ========================= */
-.field{position:relative;display:flex;align-items:center}
-.field .ico{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:18px;height:18px;opacity:.7;fill:var(--muted)}
-.input{background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px 36px 10px 34px}
-.select{background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
-
-.btn{--bgc:var(--md-sys-color-primary);--fgc:var(--md-sys-color-on-primary);background:var(--bgc);color:var(--fgc);border:0;border-radius:20px;padding:8px 16px;cursor:pointer;position:relative;overflow:hidden}
-.btn.ghost{--bgc:transparent;--fgc:var(--text);border:1px solid var(--line)}
-.btn.block{display:block;width:100%;text-align:left}
-.btn.xs{padding:6px 10px;border-radius:16px}
-.btn::after,.icon::after{content:"";position:absolute;inset:0;background:currentColor;opacity:0;transition:opacity .15s}
-.btn:hover::after,.icon:hover::after{opacity:var(--state-hover)}
-.btn:active::after,.icon:active::after{opacity:var(--state-pressed)}
-#filtersBtn{display:flex;align-items:center;gap:4px}
-#filtersBtn .material-symbols-outlined.dropdown,
-#settingsBtn .material-symbols-outlined.dropdown{font-size:20px;opacity:.7}
-#filtersBtn .label, #settingsBtn .label{font-size:14px}
-
-.icon{width:36px;height:36px;border-radius:12px;background:transparent;border:1px solid var(--line);color:var(--text);font-size:18px;line-height:1;display:grid;place-items:center;position:relative;overflow:hidden}
-.icon.solid{background:var(--surface)}
-.icon .material-symbols-outlined{font-size:20px}
-
-.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;position:relative}
-.menu{position:relative}
-
-.popover{position:absolute;top:100%;margin-top:8px;right:0;background:var(--md-sys-color-surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--elev-3);padding:10px;z-index:50;min-width:220px}
-.popover.hidden{display:none}
-.popover.hidden{ display:none !important; }
-.hidden{ display:none !important; }
-.fp.hidden{ display:none !important; }
-
-.fp{ padding:0; min-width: 360px; max-width: 520px; }
-#exportMenu{ position:absolute; top:100%; right:0; margin-top:8px; background:var(--md-sys-color-surface); border:1px solid var(--line); border-radius:12px; box-shadow:var(--elev-3); z-index:60; }
-.fp-head{ padding:14px 16px 8px; border-bottom:1px solid var(--line); }
-.fp-title{ font-weight:700; }
-.fp-sub{ color:var(--muted); font-size:12px; margin-top:2px; }
-.fp-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px 12px; padding:12px 12px 4px; }
-.fp-field .input, .fp-field .select{ width:100%; }
-.fp-switch{ display:flex; align-items:center; gap:10px; padding:6px 4px; }
-.fp-actions{ display:flex; justify-content:flex-end; gap:8px; padding:10px 12px; border-top:1px solid var(--line); }
-.fp-actions .btn{ display:inline-flex; align-items:center; gap:6px; }
-@media (max-width:520px){ .fp{ min-width: 280px; } .fp-grid{ grid-template-columns:1fr; } }
-
-/* Export menu buttons styled as Material 3 list items */
-/* === Export menu compact & fixed layout overrides === */
-#exportMenu.fp.popover{
-  position: absolute;
-  top: 100%;
-  right: 0;
-  margin-top: 8px;
-  min-width: 260px;
-  max-width: 320px;
-  padding: 0; /* container gets no padding; inner sections handle it */
-  background: var(--md-sys-color-surface);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  box-shadow: var(--elev-3);
-  z-index: 60;
-}
-#exportMenu.hidden { display: none !important; }
-
-#exportMenu .fp-head{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--line);
-}
-#exportMenu .fp-icon{
-  width: 22px;
-  height: 22px;
-  display: grid;
-  place-items: center;
-  color: var(--muted);
-}
-#exportMenu .fp-title{
-  font-weight: 700;
-  font-size: 14px;
-  flex: 1;
-  min-width: 0;
-}
-#exportMenu .icon{
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-}
-
-#exportMenu .fp-body{ padding: 6px; }
-#exportMenu .fp-section{ padding: 0; margin: 0; }
-
-/* Buttons look like list items */
-#exportMenu .btn.block{
-  background: transparent;
-  border: 0;
-  border-radius: 10px;
-  padding: 10px 12px;
-  font-size: 14px;
-  color: var(--text);
-  justify-content: flex-start;
-  width: 100%;
-  text-align: left;
-}
-#exportMenu .btn.block:hover::after { opacity: var(--state-hover); }
-#exportMenu .btn.block:active::after { opacity: var(--state-pressed); }
-
-/* Footer hint and close */
-#exportMenu .fp-foot{
-  padding: 8px 12px;
-  border-top: 1px solid var(--line);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-#exportMenu .fp-foot .hint{
-  color: var(--muted);
-  font-size: 12px;
-}
-
-/* Material 3 checkboxes inside filter panel */
-/* === Material 3 Inspired Checkboxes & Radios === */
-.fp-checkbox,
-.fp-radio {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 6px;
-  cursor: pointer;
-  user-select: none;
-  font-size: 14px;
-  border-radius: 8px;
-  transition: background 0.2s ease;
-}
-.fp-checkbox:hover,
-.fp-radio:hover {
-  background: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
-}
-.fp-checkbox input,
-.fp-radio input {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 20px;
-  height: 20px;
-  margin: 0;
-  border: 2px solid var(--line);
-  border-radius: 6px; /* default square for checkbox */
-  background: var(--surface);
-  display: grid;
-  place-items: center;
-  transition: border-color 0.2s, background 0.2s;
-}
-.fp-radio input {
-  border-radius: 50%; /* radios are round */
-}
-.fp-checkbox input:checked,
-.fp-radio input:checked {
-  background: var(--md-sys-color-primary);
-  border-color: var(--md-sys-color-primary);
-}
-.fp-checkbox input:checked::before {
-  content: "✓";
-  color: var(--md-sys-color-on-primary);
-  font-size: 14px;
-}
-.fp-radio input:checked::before {
-  content: "";
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--md-sys-color-on-primary);
-}
-
-/* Filters: Columns grid */
-.fp-cols{ grid-column:1 / -1; display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:6px 12px; padding-top:4px; }
-.fp-cols-title{ grid-column:1 / -1; font-weight:600; color:var(--muted); margin:4px 0; }
-@media (max-width:520px){ .fp-cols{ grid-template-columns:1fr; } }
-
-/* Column visibility (body classes) */
-body.hide-col-id      #logtbl .col-id{display:none}
-body.hide-col-time    #logtbl .col-time{display:none}
-body.hide-col-kind    #logtbl .col-kind{display:none}
-body.hide-col-tag     #logtbl .col-tag{display:none}
-body.hide-col-method  #logtbl .col-method{display:none}
-body.hide-col-status  #logtbl .col-status{display:none}
-body.hide-col-url     #logtbl .col-url{display:none}
-body.hide-col-actions #logtbl .col-actions{display:none}
-
-/* ========================= Assist/Stat Chips (M3) ========================= */
-.stats {
-  position: sticky;
-  top: 64px; /* height of your header */
-  z-index: 30; /* slightly below header’s z-index (40) */
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  padding: 10px 16px;
-  background: var(--md-sys-color-surface); /* match header bg */
-  border-bottom: 1px solid var(--line);
-}
-.chip{background:var(--md-sys-color-surface-container-high);border:1px solid var(--line);padding:6px 12px;border-radius:999px;transition:background .15s,border-color .15s,color .15s,box-shadow .15s}
-
-.chip.stat{font:12px ui-monospace,Menlo,monospace}
-
-/* Clickable stats */
-.stats .chip{cursor:default; user-select:none}
-.stats .chip.clickable{cursor:pointer; position:relative}
-.stats .chip.clickable:hover{background:var(--md-sys-color-surface-container-highest); box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%, transparent) inset}
-.stats .chip.clickable:active{box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 32%, transparent) inset}
-/* Selected (visible even in dark): allow aria-pressed or .active */
-.stats .chip.active,
-.stats .chip[aria-pressed="true"]{
-  background:var(--md-sys-color-primary);
-  color:var(--md-sys-color-on-primary);
-  border-color:transparent;
-  box-shadow:0 0 0 2px color-mix(in srgb,var(--md-sys-color-primary) 60%, transparent), 0 1px 2px rgba(0,0,0,.25);
-  font-weight:700;
-  transform:translateY(-1px);
-}
-/* Add an obvious check dot on the left for selected state */
-.stats .chip.active::before,
-.stats .chip[aria-pressed="true"]::before{
-  content:"";
-  display:inline-block;
-  width:10px; height:10px; border-radius:50%;
-  background:var(--md-sys-color-on-primary);
-  margin-right:8px;
-  box-shadow:0 0 0 3px color-mix(in srgb,var(--md-sys-color-on-primary) 35%, transparent);
-  vertical-align:middle;
-}
-/* Keyboard focus ring for accessibility */
-.stats .chip.clickable:focus-visible{
-  outline:none;
-  box-shadow:0 0 0 3px color-mix(in srgb,var(--md-sys-color-primary) 70%, transparent);
-}
-
-/* WS colorful status (kept) */
-#wsStatus{transition:background-color .2s ease,color .2s ease,border-color .2s ease}
-#wsStatus.status-on{background:rgba(34,197,94,.15);color:#16a34a;border-color:#16a34a33}
-#wsStatus.status-off{background:rgba(244,63,94,.15);color:#ef4444;border-color:#ef444433}
-#wsStatus.status-connecting{background:rgba(245,158,11,.18);color:#d97706;border-color:#d9770633}
-
-/* ========================= Layout ========================= */
-.shell{display:flex;gap:12px;padding:12px;align-items:stretch}
-.stats{ overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:thin; }
-.panel{flex:1 1 auto;border:1px solid var(--line);border-radius:16px;background:var(--md-sys-color-surface);box-shadow:var(--elev-1);overflow:auto;overflow-x:auto;max-height:calc(100vh - 180px)}
-.repo{
-  position:sticky;
-  bottom:0;
-  z-index:20;
-  padding:12px 16px;
-  text-align:center;
-  color:var(--muted);
-  font-size:13px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:4px;
-  background:var(--md-sys-color-surface);
-  border-top:1px solid var(--line);
-  box-shadow:var(--elev-1);
-}
-.repo a{color:inherit;text-decoration:none;border-bottom:1px dashed var(--line)}
-.repo a:hover{color:var(--accent);border-bottom-color:var(--accent)}
-.repo .gh-ico{width:16px;height:16px;vertical-align:middle;margin-right:4px;fill:currentColor}
-
-/* ========================= Data Table (M3) ========================= */
-.tbl{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed}
-/* Table header sticky row */
-.tbl thead th {
-  position: sticky;
-  top: 0;
-  background: var(--md-sys-color-surface-container-high);
-  color: var(--md-sys-color-on-surface);
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: .5px;
-  padding: 14px 12px;
-  text-align: left;
-  border-bottom: 2px solid var(--md-sys-color-outline-variant);
-  z-index: 2;
-  text-transform: uppercase;
-}
-/* Column resize handle */
-.tbl thead th{ position: sticky; /* keep existing */ }
-.tbl thead th{ position: sticky; } /* ensure stickiness remains */
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-/* make header cell itself relatively positioned for handle */
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-/* real rules */
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-/* actual handle UI */
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-/* final */
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-
-.tbl thead th{ position: sticky; }
-
-.tbl thead th{ position: sticky; }
-
-.tbl thead th{ position: sticky; }
-
-.tbl thead th{ position: sticky; }
-
-/* concise actual handle rules */
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-
-.tbl thead th{ position: sticky; }
-.tbl thead th{ position: sticky; }
-
-.tbl thead th{ position: sticky; }
-
-.tbl thead th{ position: sticky; }
-
-/* real handle */
-.tbl thead th{ position: sticky; }
-  .th-resizer{
-    position:absolute;
-    top:0; right:-5px; bottom:0;
-    width:10px; /* wider hit area */
-    cursor:col-resize;
-    z-index:5;
-  }
-  /* always-visible divider line */
-    .th-resizer::after{
-      content:"";
-      position:absolute;
-      top:8px;
-      bottom:8px;
-      left:4px;
-      width:2px;
-      background: color-mix(in srgb, var(--md-sys-color-outline-variant) 50%, transparent);
-      transition: background .15s, left .15s, width .15s;
-    }
-  /* subtle grabber dots */
-  .th-resizer::before{
-    content:"";
-    position:absolute; top:50%; left:3px; width:4px; height:14px;
-    transform: translateY(-50%);
-    background:
-      radial-gradient(currentColor 2px, transparent 3px) 0 2px/4px 6px repeat-y;
-    color: color-mix(in srgb, var(--md-sys-color-outline-variant) 65%, transparent);
-    opacity:.7;
-    pointer-events:none;
-  }
-  /* hover/active emphasis */
-  .tbl thead th:hover .th-resizer::after,
-  .th-resizer:hover::after,
-  body.th-resizing .th-resizer::after{
-    background: color-mix(in srgb, var(--md-sys-color-primary) 55%, transparent);
-    left:4px; width:2px;
-  }
-  .th-resizing{ user-select:none !important; cursor:col-resize !important; }
-/* Keep first header cells readable when table scrolls */
-.tbl thead th:first-child{
-  position: sticky;
-  left: 0;
-  z-index: 3;
-  background: var(--md-sys-color-surface-container-high);
-}
-.tbl tbody tr{background:var(--md-sys-color-surface);border-bottom:1px solid var(--line)}
-.tbl tbody tr:hover{background:var(--md-sys-color-surface-container-high)}
-.tbl tbody td{padding:14px 12px;vertical-align:top}
-.col-id{width:var(--col-id-w,72px)}.col-time{width:var(--col-time-w,150px)}.col-kind{width:var(--col-kind-w,120px)}.col-tag{width:var(--col-tag-w,140px)}.col-method{width:var(--col-method-w,92px)}.col-status{width:var(--col-status-w,92px)}.col-actions{width:var(--col-actions-w,170px)}
-
-/* Status & kind colors */
-
-.fp-radio {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 4px;
-  cursor: pointer;
-  user-select: none;
-}
-.fp-radio input {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--line);
-  border-radius: 50%;
-  background: var(--surface);
-  margin: 0;
-}
-.fp-radio input:checked {
-  background: var(--md-sys-color-primary);
-  border-color: var(--md-sys-color-primary);
-}
-.fp-radio input:checked::before {
-  content: "";
-  display: block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--md-sys-color-on-primary);
-  margin: auto;
-}
-.fp-radio .lbl {
-  font-size: 14px;
-}
-
-/* Fallback WS palette (overridden per scheme below) */
-:root{
-  --ws-send:#06b6d4;
-  --ws-recv:#22c55e;
-  --ws-ping:#a3e635;
-  --ws-pong:#f59e0b;
-  --ws-close:#ef4444;
-}
-/* Table tinting for WebSocket rows */
-.tbl tbody tr.ws-send  td.col-url .url{ color: color-mix(in srgb, var(--ws-send) 85%, currentColor); }
-.tbl tbody tr.ws-recv  td.col-url .url{ color: color-mix(in srgb, var(--ws-recv) 85%, currentColor); }
-.tbl tbody tr.ws-send  td.col-method{ color: var(--ws-send); }
-.tbl tbody tr.ws-recv  td.col-method{ color: var(--ws-recv); }
-/* Mini body preview tint */
-.tbl tbody tr.ws-send  pre.code.mini{ border-left:4px solid var(--ws-send); }
-.tbl tbody tr.ws-recv  pre.code.mini{ border-left:4px solid var(--ws-recv); }
-/* Drawer tinting for WS frames */
-#tab-request pre.code.ws-send,  #tab-response pre.code.ws-send{  border-left:4px solid var(--ws-send); }
-#tab-request pre.code.ws-recv,  #tab-response pre.code.ws-recv{  border-left:4px solid var(--ws-recv); }
-#tab-request pre.code.ws-ping,  #tab-response pre.code.ws-ping{  border-left:4px solid var(--ws-ping); }
-#tab-request pre.code.ws-pong,  #tab-response pre.code.ws-pong{  border-left:4px solid var(--ws-pong); }
-#tab-request pre.code.ws-close, #tab-response pre.code.ws-close{ border-left:4px solid var(--ws-close); }
-/* WS icon colors */
-.ws-send{ color: var(--ws-send); }
-.ws-recv{ color: var(--ws-recv); }
-
-/* Fallback HTTP method palette (overridden per scheme below) */
-:root{
-  --m-get:#3b82f6;   /* blue  */
-  --m-post:#22c55e;  /* green */
-  --m-put:#f59e0b;   /* amber */
-  --m-patch:#a855f7; /* violet*/
-  --m-delete:#ef4444;/* red   */
-  --m-ws:#06b6d4;    /* cyan  */
-}
-/* === Scheme overrides for HTTP/WS palettes === */
-
-:root[data-scheme="android"]{
-  /* Android Studio style */
-  --m-get:#3b82f6; --m-post:#22c55e; --m-put:#f59e0b; --m-patch:#a855f7; --m-delete:#ef4444; --m-ws:#06b6d4;
-  --ws-send:#06b6d4; --ws-recv:#22c55e; --ws-ping:#a3e635; --ws-pong:#f59e0b; --ws-close:#ef4444;
-}
-:root[data-scheme="xcode"]{
-  /* Xcode / Apple palette */
-  --m-get:#0A84FF; --m-post:#34C759; --m-put:#FF9F0A; --m-patch:#AF52DE; --m-delete:#FF453A; --m-ws:#64D2FF;
-  --ws-send:#64D2FF; --ws-recv:#30D158; --ws-ping:#A3E635; --ws-pong:#FF9F0A; --ws-close:#FF453A;
-}
-:root[data-scheme="vscode"]{
-  /* VS Code palette */
-  --m-get:#4FC1FF; --m-post:#89D185; --m-put:#CCA700; --m-patch:#C586C0; --m-delete:#F14C4C; --m-ws:#2EC8DB;
-  --ws-send:#2EC8DB; --ws-recv:#89D185; --ws-ping:#A3E635; --ws-pong:#CCA700; --ws-close:#F14C4C;
-}
-:root[data-scheme="grafana"]{
-  /* Grafana palette */
-  --m-get:#60a5fa; --m-post:#22c55e; --m-put:#f59e0b; --m-patch:#d946ef; --m-delete:#ef4444; --m-ws:#06b6d4;
-  --ws-send:#06b6d4; --ws-recv:#22c55e; --ws-ping:#a3e635; --ws-pong:#f59e0b; --ws-close:#ef4444;
-}
-
-/* === Scheme-driven UI theming (fonts, density, radii) === */
-:root{
-  /* defaults */
-  --font-ui: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
-  --font-mono: ui-monospace, Menlo, Consolas, "Cascadia Code", monospace;
-  --font-size: 14px;
-  --radius: 12px;           /* component corner radius */
-  --radius-lg: 16px;        /* large containers */
-  --row-pad: 14px;          /* table row vertical padding */
-  --chip-radius: 999px;     /* pills */
-}
-:root[data-scheme="android"]{
-  --font-ui: Roboto, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial;
-  --font-mono: Roboto Mono, ui-monospace, Menlo, Consolas, monospace;
-  --font-size: 14px;
-  --radius: 12px; --radius-lg: 16px; --row-pad: 14px;
-}
-:root[data-scheme="xcode"]{
-  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui;
-  --font-mono: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
-  --font-size: 13px;
-  --radius: 10px; --radius-lg: 14px; --row-pad: 12px;
-}
-:root[data-scheme="vscode"]{
-  --font-ui: "Segoe UI", system-ui, Roboto, Helvetica, Arial;
-  --font-mono: "Cascadia Code", Consolas, ui-monospace, Menlo, monospace;
-  --font-size: 13.5px;
-  --radius: 8px; --radius-lg: 12px; --row-pad: 10px;
-}
-:root[data-scheme="grafana"]{
-  --font-ui: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
-  --font-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
-  --font-size: 14px;
-  --radius: 6px; --radius-lg: 10px; --row-pad: 12px;
-}
-
-/* === THEME-DRIVEN COLOR OVERRIDES (Light/Dark) ===
-   These override scheme colors so hues follow theme. */
-:root[data-theme="light"]{
-  /* HTTP methods */
-  --m-get: var(--md-sys-color-primary);
-  --m-post: var(--md-sys-color-secondary);
-  --m-put: color-mix(in srgb, var(--md-sys-color-primary) 55%, var(--md-sys-color-surface));
-  --m-patch: color-mix(in srgb, var(--md-sys-color-secondary) 55%, var(--md-sys-color-surface));
-  --m-delete: var(--md-sys-color-error);
-  --m-ws: color-mix(in srgb, var(--md-sys-color-primary) 40%, var(--md-sys-color-secondary) 60%);
-  /* WebSocket */
-  --ws-send: var(--m-ws);
-  --ws-recv: var(--m-post);
-  --ws-ping: color-mix(in srgb, var(--md-sys-color-secondary) 65%, var(--md-sys-color-surface));
-  --ws-pong: color-mix(in srgb, var(--md-sys-color-primary) 65%, var(--md-sys-color-surface));
-  --ws-close: var(--md-sys-color-error);
-  /* HTTP status classes */
-  --st-2xx: var(--m-post);
-  --st-3xx: color-mix(in srgb, var(--md-sys-color-primary) 55%, #fbbf24);
-  --st-4xx: color-mix(in srgb, var(--md-sys-color-error) 85%, var(--md-sys-color-surface));
-  --st-5xx: color-mix(in srgb, var(--md-sys-color-error) 95%, black);
-}
-:root[data-theme="dark"]{
-  /* HTTP methods */
-  --m-get: var(--md-sys-color-primary);
-  --m-post: var(--md-sys-color-secondary);
-  --m-put: color-mix(in srgb, var(--md-sys-color-primary) 65%, var(--md-sys-color-surface));
-  --m-patch: color-mix(in srgb, var(--md-sys-color-secondary) 65%, var(--md-sys-color-surface));
-  --m-delete: var(--md-sys-color-error);
-  --m-ws: color-mix(in srgb, var(--md-sys-color-primary) 50%, var(--md-sys-color-secondary) 50%);
-  /* WebSocket */
-  --ws-send: var(--m-ws);
-  --ws-recv: var(--m-post);
-  --ws-ping: color-mix(in srgb, var(--md-sys-color-secondary) 75%, var(--md-sys-color-surface));
-  --ws-pong: color-mix(in srgb, var(--md-sys-color-primary) 75%, var(--md-sys-color-surface));
-  --ws-close: var(--md-sys-color-error);
-  /* HTTP status classes */
-  --st-2xx: var(--m-post);
-  --st-3xx: color-mix(in srgb, var(--md-sys-color-primary) 70%, #f59e0b);
-  --st-4xx: color-mix(in srgb, var(--md-sys-color-error) 85%, var(--md-sys-color-surface));
-  --st-5xx: color-mix(in srgb, var(--md-sys-color-error) 92%, black);
-}
-/* Method tints in table */
-.tbl tbody tr .col-method.method-GET   { color: var(--m-get); }
-.tbl tbody tr .col-method.method-POST  { color: var(--m-post); }
-.tbl tbody tr .col-method.method-PUT   { color: var(--m-put); }
-.tbl tbody tr .col-method.method-PATCH { color: var(--m-patch); }
-.tbl tbody tr .col-method.method-DELETE{ color: var(--m-delete); }
-.tbl tbody tr .col-method.method-WS    { color: var(--m-ws); }
-/* URL primary line inherits method color slightly for quick scan */
-.tbl tbody tr .col-url .url.method-GET   { color: color-mix(in srgb, var(--m-get) 85%, currentColor); }
-.tbl tbody tr .col-url .url.method-POST  { color: color-mix(in srgb, var(--m-post) 85%, currentColor); }
-.tbl tbody tr .col-url .url.method-PUT   { color: color-mix(in srgb, var(--m-put) 85%, currentColor); }
-.tbl tbody tr .col-url .url.method-PATCH { color: color-mix(in srgb, var(--m-patch) 85%, currentColor); }
-.tbl tbody tr .col-url .url.method-DELETE{ color: color-mix(in srgb, var(--m-delete) 85%, currentColor); }
-.tbl tbody tr .col-url .url.method-WS    { color: color-mix(in srgb, var(--m-ws) 85%, currentColor); }
-/* Drawer: method/status colored borders for code blocks */
-#tab-request pre.code.method-GET,   #tab-response pre.code.method-GET   { border-left:4px solid var(--m-get); }
-#tab-request pre.code.method-POST,  #tab-response pre.code.method-POST  { border-left:4px solid var(--m-post); }
-#tab-request pre.code.method-PUT,   #tab-response pre.code.method-PUT   { border-left:4px solid var(--m-put); }
-#tab-request pre.code.method-PATCH, #tab-response pre.code.method-PATCH { border-left:4px solid var(--m-patch); }
-#tab-request pre.code.method-DELETE,#tab-response pre.code.method-DELETE{ border-left:4px solid var(--m-delete); }
-#tab-request pre.code.method-WS,    #tab-response pre.code.method-WS    { border-left:4px solid var(--m-ws); }
-/* Drawer: headers highlighted with method hue */
-#tab-headers .code.headers.method-GET   .hk{ color: var(--m-get); }
-#tab-headers .code.headers.method-POST  .hk{ color: var(--m-post); }
-#tab-headers .code.headers.method-PUT   .hk{ color: var(--m-put); }
-#tab-headers .code.headers.method-PATCH .hk{ color: var(--m-patch); }
-#tab-headers .code.headers.method-DELETE .hk{ color: var(--m-delete); }
-#tab-headers .code.headers.method-WS    .hk{ color: var(--m-ws); }
-
-.kind-HTTP{color:#8ab4ff}.kind-WEBSOCKET{color:#7af59b}.kind-LOG{color:#eab308}
-.status-2xx{color:#22c55e}.status-3xx{color:#fbbf24}.status-4xx{color:#fca5a5}.status-5xx{color:#fb7185}
-
-
-:root{
-  /* default scheme = android */
-  --lv-v:#9E9E9E; /* VERBOSE */
-  --lv-d:#2196F3; /* DEBUG   */
-  --lv-i:#4CAF50; /* INFO    */
-  --lv-w:#FFC107; /* WARN    */
-  --lv-e:#F44336; /* ERROR   */
-  --lv-a:#9C27B0; /* ASSERT  */
-}
-:root[data-scheme="android"]{ /* Android Studio */
-  --lv-v:#9E9E9E; --lv-d:#2196F3; --lv-i:#4CAF50; --lv-w:#FFC107; --lv-e:#F44336; --lv-a:#9C27B0;
-}
-:root[data-scheme="xcode"]{ /* Xcode inspired */
-  --lv-v:#8E8E93; --lv-d:#0A84FF; --lv-i:#34C759; --lv-w:#FF9F0A; --lv-e:#FF453A; --lv-a:#BF5AF2;
-}
-:root[data-scheme="vscode"]{ /* VS Code */
-  --lv-v:#808080; --lv-d:#4FC1FF; --lv-i:#89D185; --lv-w:#CCA700; --lv-e:#F14C4C; --lv-a:#C586C0;
-}
-:root[data-scheme="grafana"]{ /* Grafana */
-  --lv-v:#6b7280; --lv-d:#60a5fa; --lv-i:#22c55e; --lv-w:#f59e0b; --lv-e:#ef4444; --lv-a:#d946ef;
-}
-/* Text color for the Kind column when row has a level */
-.tbl tbody tr.level-VERBOSE .col-kind{ color: var(--lv-v) }
-.tbl tbody tr.level-DEBUG   .col-kind{ color: var(--lv-d) }
-.tbl tbody tr.level-INFO    .col-kind{ color: var(--lv-i) }
-.tbl tbody tr.level-WARN    .col-kind{ color: var(--lv-w) }
-.tbl tbody tr.level-ERROR   .col-kind{ color: var(--lv-e) }
-.tbl tbody tr.level-ASSERT  .col-kind{ color: var(--lv-a) }
-/* Left accent bar tint using current scheme vars */
-.tbl tbody tr.level-VERBOSE{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 55%, transparent) }
-.tbl tbody tr.level-DEBUG  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 55%, transparent) }
-.tbl tbody tr.level-INFO   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 55%, transparent) }
-.tbl tbody tr.level-WARN   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 55%, transparent) }
-.tbl tbody tr.level-ERROR  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 55%, transparent) }
-.tbl tbody tr.level-ASSERT { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 55%, transparent) }
-/* Preserve accent on hover */
-.tbl tbody tr.level-VERBOSE:hover{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 70%, transparent) }
-.tbl tbody tr.level-DEBUG:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 70%, transparent) }
-.tbl tbody tr.level-INFO:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 70%, transparent) }
-.tbl tbody tr.level-WARN:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 70%, transparent) }
-.tbl tbody tr.level-ERROR:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 70%, transparent) }
-.tbl tbody tr.level-ASSERT:hover { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 70%, transparent) }
-
-/* ===== Color URL/Summary & Time columns ===== */
-/* Color by LOG level (for logger rows) */
-.tbl tbody tr.level-VERBOSE .col-time,
-.tbl tbody tr.level-VERBOSE .col-url { color: var(--lv-v); }
-.tbl tbody tr.level-DEBUG   .col-time,
-.tbl tbody tr.level-DEBUG   .col-url { color: var(--lv-d); }
-.tbl tbody tr.level-INFO    .col-time,
-.tbl tbody tr.level-INFO    .col-url { color: var(--lv-i); }
-.tbl tbody tr.level-WARN    .col-time,
-.tbl tbody tr.level-WARN    .col-url { color: var(--lv-w); }
-.tbl tbody tr.level-ERROR   .col-time,
-.tbl tbody tr.level-ERROR   .col-url { color: var(--lv-e); }
-.tbl tbody tr.level-ASSERT  .col-time,
-.tbl tbody tr.level-ASSERT  .col-url { color: var(--lv-a); }
-
-/* Color by HTTP status class (for network rows) */
-.tbl tbody tr.status-2xx .col-time, .tbl tbody tr.status-2xx .col-url .url { color: var(--st-2xx); }
-.tbl tbody tr.status-3xx .col-time, .tbl tbody tr.status-3xx .col-url .url { color: var(--st-3xx); }
-.tbl tbody tr.status-4xx .col-time, .tbl tbody tr.status-4xx .col-url .url { color: var(--st-4xx); }
-.tbl tbody tr.status-5xx .col-time, .tbl tbody tr.status-5xx .col-url .url { color: var(--st-5xx); }
-
-/* ===== Make all table column values colorful by row context ===== */
-/* Logger rows: color all cells by level */
-.tbl tbody tr.level-VERBOSE td:not(.col-actions){ color: var(--lv-v); }
-.tbl tbody tr.level-DEBUG   td:not(.col-actions){ color: var(--lv-d); }
-.tbl tbody tr.level-INFO    td:not(.col-actions){ color: var(--lv-i); }
-.tbl tbody tr.level-WARN    td:not(.col-actions){ color: var(--lv-w); }
-.tbl tbody tr.level-ERROR   td:not(.col-actions){ color: var(--lv-e); }
-.tbl tbody tr.level-ASSERT  td:not(.col-actions){ color: var(--lv-a); }
-
-/* HTTP rows: color all cells by status class */
-:root{ --st-2xx:#22c55e; --st-3xx:#fbbf24; --st-4xx:#fca5a5; --st-5xx:#fb7185; }
-.tbl tbody tr.status-2xx td:not(.col-actions){ color: var(--st-2xx); }
-.tbl tbody tr.status-3xx td:not(.col-actions){ color: var(--st-3xx); }
-.tbl tbody tr.status-4xx td:not(.col-actions){ color: var(--st-4xx); }
-.tbl tbody tr.status-5xx td:not(.col-actions){ color: var(--st-5xx); }
-
-/* Keep chips, icons and code readable (don’t inherit the tint) */
-.tbl tbody tr td .muted,
-.tbl tbody tr td .badge,
-.tbl tbody tr td .material-symbols-outlined,
-.tbl tbody tr td pre.code{ color: inherit; opacity: 0.95; }
-:root{
-  /* default scheme = android */
-  --lv-v:#9E9E9E; /* VERBOSE */
-  --lv-d:#2196F3; /* DEBUG   */
-  --lv-i:#4CAF50; /* INFO    */
-  --lv-w:#FFC107; /* WARN    */
-  --lv-e:#F44336; /* ERROR   */
-  --lv-a:#9C27B0; /* ASSERT  */
-}
-:root[data-scheme="android"]{ /* Android Studio */
-  --lv-v:#9E9E9E; --lv-d:#2196F3; --lv-i:#4CAF50; --lv-w:#FFC107; --lv-e:#F44336; --lv-a:#9C27B0;
-}
-:root[data-scheme="xcode"]{ /* Xcode inspired */
-  --lv-v:#8E8E93; --lv-d:#0A84FF; --lv-i:#34C759; --lv-w:#FF9F0A; --lv-e:#FF453A; --lv-a:#BF5AF2;
-}
-:root[data-scheme="vscode"]{ /* VS Code */
-  --lv-v:#808080; --lv-d:#4FC1FF; --lv-i:#89D185; --lv-w:#CCA700; --lv-e:#F14C4C; --lv-a:#C586C0;
-}
-:root[data-scheme="grafana"]{ /* Grafana */
-  --lv-v:#6b7280; --lv-d:#60a5fa; --lv-i:#22c55e; --lv-w:#f59e0b; --lv-e:#ef4444; --lv-a:#d946ef;
-}
-/* Text color for the Kind column when row has a level */
-.tbl tbody tr.level-VERBOSE .col-kind{ color: var(--lv-v) }
-.tbl tbody tr.level-DEBUG   .col-kind{ color: var(--lv-d) }
-.tbl tbody tr.level-INFO    .col-kind{ color: var(--lv-i) }
-.tbl tbody tr.level-WARN    .col-kind{ color: var(--lv-w) }
-.tbl tbody tr.level-ERROR   .col-kind{ color: var(--lv-e) }
-.tbl tbody tr.level-ASSERT  .col-kind{ color: var(--lv-a) }
-/* Left accent bar tint using current scheme vars */
-.tbl tbody tr.level-VERBOSE{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 55%, transparent) }
-.tbl tbody tr.level-DEBUG  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 55%, transparent) }
-.tbl tbody tr.level-INFO   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 55%, transparent) }
-.tbl tbody tr.level-WARN   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 55%, transparent) }
-.tbl tbody tr.level-ERROR  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 55%, transparent) }
-.tbl tbody tr.level-ASSERT { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 55%, transparent) }
-/* Preserve accent on hover */
-.tbl tbody tr.level-VERBOSE:hover{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 70%, transparent) }
-.tbl tbody tr.level-DEBUG:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 70%, transparent) }
-.tbl tbody tr.level-INFO:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 70%, transparent) }
-.tbl tbody tr.level-WARN:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 70%, transparent) }
-.tbl tbody tr.level-ERROR:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 70%, transparent) }
-.tbl tbody tr.level-ASSERT:hover { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 70%, transparent) }
-
-/* ===== Color URL/Summary & Time columns ===== */
-/* Color by LOG level (for logger rows) */
-.tbl tbody tr.level-VERBOSE .col-time,
-.tbl tbody tr.level-VERBOSE .col-url { color: var(--lv-v); }
-.tbl tbody tr.level-DEBUG   .col-time,
-.tbl tbody tr.level-DEBUG   .col-url { color: var(--lv-d); }
-.tbl tbody tr.level-INFO    .col-time,
-.tbl tbody tr.level-INFO    .col-url { color: var(--lv-i); }
-.tbl tbody tr.level-WARN    .col-time,
-.tbl tbody tr.level-WARN    .col-url { color: var(--lv-w); }
-.tbl tbody tr.level-ERROR   .col-time,
-.tbl tbody tr.level-ERROR   .col-url { color: var(--lv-e); }
-.tbl tbody tr.level-ASSERT  .col-time,
-.tbl tbody tr.level-ASSERT  .col-url { color: var(--lv-a); }
-
-/* Color by HTTP status class (for network rows) */
-.tbl tbody tr.status-2xx .col-time, .tbl tbody tr.status-2xx .col-url .url { color: var(--st-2xx); }
-.tbl tbody tr.status-3xx .col-time, .tbl tbody tr.status-3xx .col-url .url { color: var(--st-3xx); }
-.tbl tbody tr.status-4xx .col-time, .tbl tbody tr.status-4xx .col-url .url { color: var(--st-4xx); }
-.tbl tbody tr.status-5xx .col-time, .tbl tbody tr.status-5xx .col-url .url { color: var(--st-5xx); }
-
-/* ===== Make all table column values colorful by row context ===== */
-/* Logger rows: color all cells by level */
-.tbl tbody tr.level-VERBOSE td:not(.col-actions){ color: var(--lv-v); }
-.tbl tbody tr.level-DEBUG   td:not(.col-actions){ color: var(--lv-d); }
-.tbl tbody tr.level-INFO    td:not(.col-actions){ color: var(--lv-i); }
-.tbl tbody tr.level-WARN    td:not(.col-actions){ color: var(--lv-w); }
-.tbl tbody tr.level-ERROR   td:not(.col-actions){ color: var(--lv-e); }
-.tbl tbody tr.level-ASSERT  td:not(.col-actions){ color: var(--lv-a); }
-
-/* HTTP rows: color all cells by status class */
-:root{ --st-2xx:#22c55e; --st-3xx:#fbbf24; --st-4xx:#fca5a5; --st-5xx:#fb7185; }
-.tbl tbody tr.status-2xx td:not(.col-actions){ color: var(--st-2xx); }
-.tbl tbody tr.status-3xx td:not(.col-actions){ color: var(--st-3xx); }
-.tbl tbody tr.status-4xx td:not(.col-actions){ color: var(--st-4xx); }
-.tbl tbody tr.status-5xx td:not(.col-actions){ color: var(--st-5xx); }
-
-/* Keep chips, icons and code readable (don’t inherit the tint) */
-.tbl tbody tr td .muted,
-.tbl tbody tr td .badge,
-.tbl tbody tr td .material-symbols-outlined,
-.tbl tbody tr td pre.code{ color: inherit; opacity: 0.95; }
-:root{
-  /* default scheme = android */
-  --lv-v:#9E9E9E; /* VERBOSE */
-  --lv-d:#2196F3; /* DEBUG   */
-  --lv-i:#4CAF50; /* INFO    */
-  --lv-w:#FFC107; /* WARN    */
-  --lv-e:#F44336; /* ERROR   */
-  --lv-a:#9C27B0; /* ASSERT  */
-}
-:root[data-scheme="android"]{ /* Android Studio */
-  --lv-v:#9E9E9E; --lv-d:#2196F3; --lv-i:#4CAF50; --lv-w:#FFC107; --lv-e:#F44336; --lv-a:#9C27B0;
-}
-:root[data-scheme="xcode"]{ /* Xcode inspired */
-  --lv-v:#8E8E93; --lv-d:#0A84FF; --lv-i:#34C759; --lv-w:#FF9F0A; --lv-e:#FF453A; --lv-a:#BF5AF2;
-}
-:root[data-scheme="vscode"]{ /* VS Code */
-  --lv-v:#808080; --lv-d:#4FC1FF; --lv-i:#89D185; --lv-w:#CCA700; --lv-e:#F14C4C; --lv-a:#C586C0;
-}
-:root[data-scheme="grafana"]{ /* Grafana */
-  --lv-v:#6b7280; --lv-d:#60a5fa; --lv-i:#22c55e; --lv-w:#f59e0b; --lv-e:#ef4444; --lv-a:#d946ef;
-}
-/* Text color for the Kind column when row has a level */
-.tbl tbody tr.level-VERBOSE .col-kind{ color: var(--lv-v) }
-.tbl tbody tr.level-DEBUG   .col-kind{ color: var(--lv-d) }
-.tbl tbody tr.level-INFO    .col-kind{ color: var(--lv-i) }
-.tbl tbody tr.level-WARN    .col-kind{ color: var(--lv-w) }
-.tbl tbody tr.level-ERROR   .col-kind{ color: var(--lv-e) }
-.tbl tbody tr.level-ASSERT  .col-kind{ color: var(--lv-a) }
-/* Left accent bar tint using current scheme vars */
-.tbl tbody tr.level-VERBOSE{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 55%, transparent) }
-.tbl tbody tr.level-DEBUG  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 55%, transparent) }
-.tbl tbody tr.level-INFO   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 55%, transparent) }
-.tbl tbody tr.level-WARN   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 55%, transparent) }
-.tbl tbody tr.level-ERROR  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 55%, transparent) }
-.tbl tbody tr.level-ASSERT { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 55%, transparent) }
-/* Preserve accent on hover */
-.tbl tbody tr.level-VERBOSE:hover{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 70%, transparent) }
-.tbl tbody tr.level-DEBUG:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 70%, transparent) }
-.tbl tbody tr.level-INFO:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 70%, transparent) }
-.tbl tbody tr.level-WARN:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 70%, transparent) }
-.tbl tbody tr.level-ERROR:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 70%, transparent) }
-.tbl tbody tr.level-ASSERT:hover { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 70%, transparent) }
-
-/* ===== Color URL/Summary & Time columns ===== */
-/* Color by LOG level (for logger rows) */
-.tbl tbody tr.level-VERBOSE .col-time,
-.tbl tbody tr.level-VERBOSE .col-url { color: var(--lv-v); }
-.tbl tbody tr.level-DEBUG   .col-time,
-.tbl tbody tr.level-DEBUG   .col-url { color: var(--lv-d); }
-.tbl tbody tr.level-INFO    .col-time,
-.tbl tbody tr.level-INFO    .col-url { color: var(--lv-i); }
-.tbl tbody tr.level-WARN    .col-time,
-.tbl tbody tr.level-WARN    .col-url { color: var(--lv-w); }
-.tbl tbody tr.level-ERROR   .col-time,
-.tbl tbody tr.level-ERROR   .col-url { color: var(--lv-e); }
-.tbl tbody tr.level-ASSERT  .col-time,
-.tbl tbody tr.level-ASSERT  .col-url { color: var(--lv-a); }
-
-/* Color by HTTP status class (for network rows) */
-.tbl tbody tr.status-2xx .col-time, .tbl tbody tr.status-2xx .col-url .url { color: var(--st-2xx); }
-.tbl tbody tr.status-3xx .col-time, .tbl tbody tr.status-3xx .col-url .url { color: var(--st-3xx); }
-.tbl tbody tr.status-4xx .col-time, .tbl tbody tr.status-4xx .col-url .url { color: var(--st-4xx); }
-.tbl tbody tr.status-5xx .col-time, .tbl tbody tr.status-5xx .col-url .url { color: var(--st-5xx); }
-
-/* ===== Make all table column values colorful by row context ===== */
-/* Logger rows: color all cells by level */
-.tbl tbody tr.level-VERBOSE td:not(.col-actions){ color: var(--lv-v); }
-.tbl tbody tr.level-DEBUG   td:not(.col-actions){ color: var(--lv-d); }
-.tbl tbody tr.level-INFO    td:not(.col-actions){ color: var(--lv-i); }
-.tbl tbody tr.level-WARN    td:not(.col-actions){ color: var(--lv-w); }
-.tbl tbody tr.level-ERROR   td:not(.col-actions){ color: var(--lv-e); }
-.tbl tbody tr.level-ASSERT  td:not(.col-actions){ color: var(--lv-a); }
-
-/* HTTP rows: color all cells by status class */
-:root{ --st-2xx:#22c55e; --st-3xx:#fbbf24; --st-4xx:#fca5a5; --st-5xx:#fb7185; }
-.tbl tbody tr.status-2xx td:not(.col-actions){ color: var(--st-2xx); }
-.tbl tbody tr.status-3xx td:not(.col-actions){ color: var(--st-3xx); }
-.tbl tbody tr.status-4xx td:not(.col-actions){ color: var(--st-4xx); }
-.tbl tbody tr.status-5xx td:not(.col-actions){ color: var(--st-5xx); }
-
-/* Keep chips, icons and code readable (don’t inherit the tint) */
-.tbl tbody tr td .muted,
-.tbl tbody tr td .badge,
-.tbl tbody tr td .material-symbols-outlined,
-.tbl tbody tr td pre.code{ color: inherit; opacity: 0.95; }
-:root{
-  /* default scheme = android */
-  --lv-v:#9E9E9E; /* VERBOSE */
-  --lv-d:#2196F3; /* DEBUG   */
-  --lv-i:#4CAF50; /* INFO    */
-  --lv-w:#FFC107; /* WARN    */
-  --lv-e:#F44336; /* ERROR   */
-  --lv-a:#9C27B0; /* ASSERT  */
-}
-:root[data-scheme="android"]{ /* Android Studio */
-  --lv-v:#9E9E9E; --lv-d:#2196F3; --lv-i:#4CAF50; --lv-w:#FFC107; --lv-e:#F44336; --lv-a:#9C27B0;
-}
-:root[data-scheme="xcode"]{ /* Xcode inspired */
-  --lv-v:#8E8E93; --lv-d:#0A84FF; --lv-i:#34C759; --lv-w:#FF9F0A; --lv-e:#FF453A; --lv-a:#BF5AF2;
-}
-:root[data-scheme="vscode"]{ /* VS Code */
-  --lv-v:#808080; --lv-d:#4FC1FF; --lv-i:#89D185; --lv-w:#CCA700; --lv-e:#F14C4C; --lv-a:#C586C0;
-}
-:root[data-scheme="grafana"]{ /* Grafana */
-  --lv-v:#6b7280; --lv-d:#60a5fa; --lv-i:#22c55e; --lv-w:#f59e0b; --lv-e:#ef4444; --lv-a:#d946ef;
-}
-/* Text color for the Kind column when row has a level */
-.tbl tbody tr.level-VERBOSE .col-kind{ color: var(--lv-v) }
-.tbl tbody tr.level-DEBUG   .col-kind{ color: var(--lv-d) }
-.tbl tbody tr.level-INFO    .col-kind{ color: var(--lv-i) }
-.tbl tbody tr.level-WARN    .col-kind{ color: var(--lv-w) }
-.tbl tbody tr.level-ERROR   .col-kind{ color: var(--lv-e) }
-.tbl tbody tr.level-ASSERT  .col-kind{ color: var(--lv-a) }
-/* Left accent bar tint using current scheme vars */
-.tbl tbody tr.level-VERBOSE{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 55%, transparent) }
-.tbl tbody tr.level-DEBUG  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 55%, transparent) }
-.tbl tbody tr.level-INFO   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 55%, transparent) }
-.tbl tbody tr.level-WARN   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 55%, transparent) }
-.tbl tbody tr.level-ERROR  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 55%, transparent) }
-.tbl tbody tr.level-ASSERT { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 55%, transparent) }
-/* Preserve accent on hover */
-.tbl tbody tr.level-VERBOSE:hover{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 70%, transparent) }
-.tbl tbody tr.level-DEBUG:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 70%, transparent) }
-.tbl tbody tr.level-INFO:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 70%, transparent) }
-.tbl tbody tr.level-WARN:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 70%, transparent) }
-.tbl tbody tr.level-ERROR:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 70%, transparent) }
-.tbl tbody tr.level-ASSERT:hover { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 70%, transparent) }
-
-/* ===== Color URL/Summary & Time columns ===== */
-/* Color by LOG level (for logger rows) */
-.tbl tbody tr.level-VERBOSE .col-time,
-.tbl tbody tr.level-VERBOSE .col-url { color: var(--lv-v); }
-.tbl tbody tr.level-DEBUG   .col-time,
-.tbl tbody tr.level-DEBUG   .col-url { color: var(--lv-d); }
-.tbl tbody tr.level-INFO    .col-time,
-.tbl tbody tr.level-INFO    .col-url { color: var(--lv-i); }
-.tbl tbody tr.level-WARN    .col-time,
-.tbl tbody tr.level-WARN    .col-url { color: var(--lv-w); }
-.tbl tbody tr.level-ERROR   .col-time,
-.tbl tbody tr.level-ERROR   .col-url { color: var(--lv-e); }
-.tbl tbody tr.level-ASSERT  .col-time,
-.tbl tbody tr.level-ASSERT  .col-url { color: var(--lv-a); }
-
-/* Color by HTTP status class (for network rows) */
-.tbl tbody tr.status-2xx .col-time, .tbl tbody tr.status-2xx .col-url .url { color: var(--st-2xx); }
-.tbl tbody tr.status-3xx .col-time, .tbl tbody tr.status-3xx .col-url .url { color: var(--st-3xx); }
-.tbl tbody tr.status-4xx .col-time, .tbl tbody tr.status-4xx .col-url .url { color: var(--st-4xx); }
-.tbl tbody tr.status-5xx .col-time, .tbl tbody tr.status-5xx .col-url .url { color: var(--st-5xx); }
-
-/* ===== Make all table column values colorful by row context ===== */
-/* Logger rows: color all cells by level */
-.tbl tbody tr.level-VERBOSE td:not(.col-actions){ color: var(--lv-v); }
-.tbl tbody tr.level-DEBUG   td:not(.col-actions){ color: var(--lv-d); }
-.tbl tbody tr.level-INFO    td:not(.col-actions){ color: var(--lv-i); }
-.tbl tbody tr.level-WARN    td:not(.col-actions){ color: var(--lv-w); }
-.tbl tbody tr.level-ERROR   td:not(.col-actions){ color: var(--lv-e); }
-.tbl tbody tr.level-ASSERT  td:not(.col-actions){ color: var(--lv-a); }
-
-/* HTTP rows: color all cells by status class */
-:root{ --st-2xx:#22c55e; --st-3xx:#fbbf24; --st-4xx:#fca5a5; --st-5xx:#fb7185; }
-.tbl tbody tr.status-2xx td:not(.col-actions){ color: var(--st-2xx); }
-.tbl tbody tr.status-3xx td:not(.col-actions){ color: var(--st-3xx); }
-.tbl tbody tr.status-4xx td:not(.col-actions){ color: var(--st-4xx); }
-.tbl tbody tr.status-5xx td:not(.col-actions){ color: var(--st-5xx); }
-
-/* Keep chips, icons and code readable (don’t inherit the tint) */
-.tbl tbody tr td .muted,
-.tbl tbody tr td .badge,
-.tbl tbody tr td .material-symbols-outlined,
-.tbl tbody tr td pre.code{ color: inherit; opacity: 0.95; }
-:root{
-  /* default scheme = android */
-  --lv-v:#9E9E9E; /* VERBOSE */
-  --lv-d:#2196F3; /* DEBUG   */
-  --lv-i:#4CAF50; /* INFO    */
-  --lv-w:#FFC107; /* WARN    */
-  --lv-e:#F44336; /* ERROR   */
-  --lv-a:#9C27B0; /* ASSERT  */
-}
-:root[data-scheme="android"]{ /* Android Studio */
-  --lv-v:#9E9E9E; --lv-d:#2196F3; --lv-i:#4CAF50; --lv-w:#FFC107; --lv-e:#F44336; --lv-a:#9C27B0;
-}
-:root[data-scheme="xcode"]{ /* Xcode inspired */
-  --lv-v:#8E8E93; --lv-d:#0A84FF; --lv-i:#34C759; --lv-w:#FF9F0A; --lv-e:#FF453A; --lv-a:#BF5AF2;
-}
-:root[data-scheme="vscode"]{ /* VS Code */
-  --lv-v:#808080; --lv-d:#4FC1FF; --lv-i:#89D185; --lv-w:#CCA700; --lv-e:#F14C4C; --lv-a:#C586C0;
-}
-:root[data-scheme="grafana"]{ /* Grafana */
-  --lv-v:#6b7280; --lv-d:#60a5fa; --lv-i:#22c55e; --lv-w:#f59e0b; --lv-e:#ef4444; --lv-a:#d946ef;
-}
-/* Text color for the Kind column when row has a level */
-.tbl tbody tr.level-VERBOSE .col-kind{ color: var(--lv-v) }
-.tbl tbody tr.level-DEBUG   .col-kind{ color: var(--lv-d) }
-.tbl tbody tr.level-INFO    .col-kind{ color: var(--lv-i) }
-.tbl tbody tr.level-WARN    .col-kind{ color: var(--lv-w) }
-.tbl tbody tr.level-ERROR   .col-kind{ color: var(--lv-e) }
-.tbl tbody tr.level-ASSERT  .col-kind{ color: var(--lv-a) }
-/* Left accent bar tint using current scheme vars */
-.tbl tbody tr.level-VERBOSE{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 55%, transparent) }
-.tbl tbody tr.level-DEBUG  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 55%, transparent) }
-.tbl tbody tr.level-INFO   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 55%, transparent) }
-.tbl tbody tr.level-WARN   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 55%, transparent) }
-.tbl tbody tr.level-ERROR  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 55%, transparent) }
-.tbl tbody tr.level-ASSERT { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 55%, transparent) }
-/* Preserve accent on hover */
-.tbl tbody tr.level-VERBOSE:hover{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 70%, transparent) }
-.tbl tbody tr.level-DEBUG:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 70%, transparent) }
-.tbl tbody tr.level-INFO:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 70%, transparent) }
-.tbl tbody tr.level-WARN:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 70%, transparent) }
-.tbl tbody tr.level-ERROR:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 70%, transparent) }
-.tbl tbody tr.level-ASSERT:hover { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 70%, transparent) }
-
-/* ===== Color URL/Summary & Time columns ===== */
-/* Color by LOG level (for logger rows) */
-.tbl tbody tr.level-VERBOSE .col-time,
-.tbl tbody tr.level-VERBOSE .col-url { color: var(--lv-v); }
-.tbl tbody tr.level-DEBUG   .col-time,
-.tbl tbody tr.level-DEBUG   .col-url { color: var(--lv-d); }
-.tbl tbody tr.level-INFO    .col-time,
-.tbl tbody tr.level-INFO    .col-url { color: var(--lv-i); }
-.tbl tbody tr.level-WARN    .col-time,
-.tbl tbody tr.level-WARN    .col-url { color: var(--lv-w); }
-.tbl tbody tr.level-ERROR   .col-time,
-.tbl tbody tr.level-ERROR   .col-url { color: var(--lv-e); }
-.tbl tbody tr.level-ASSERT  .col-time,
-.tbl tbody tr.level-ASSERT  .col-url { color: var(--lv-a); }
-
-/* Color by HTTP status class (for network rows) */
-.tbl tbody tr.status-2xx .col-time, .tbl tbody tr.status-2xx .col-url .url { color: var(--st-2xx); }
-.tbl tbody tr.status-3xx .col-time, .tbl tbody tr.status-3xx .col-url .url { color: var(--st-3xx); }
-.tbl tbody tr.status-4xx .col-time, .tbl tbody tr.status-4xx .col-url .url { color: var(--st-4xx); }
-.tbl tbody tr.status-5xx .col-time, .tbl tbody tr.status-5xx .col-url .url { color: var(--st-5xx); }
-
-/* ===== Make all table column values colorful by row context ===== */
-/* Logger rows: color all cells by level */
-.tbl tbody tr.level-VERBOSE td:not(.col-actions){ color: var(--lv-v); }
-.tbl tbody tr.level-DEBUG   td:not(.col-actions){ color: var(--lv-d); }
-.tbl tbody tr.level-INFO    td:not(.col-actions){ color: var(--lv-i); }
-.tbl tbody tr.level-WARN    td:not(.col-actions){ color: var(--lv-w); }
-.tbl tbody tr.level-ERROR   td:not(.col-actions){ color: var(--lv-e); }
-.tbl tbody tr.level-ASSERT  td:not(.col-actions){ color: var(--lv-a); }
-
-/* HTTP rows: color all cells by status class */
-:root{ --st-2xx:#22c55e; --st-3xx:#fbbf24; --st-4xx:#fca5a5; --st-5xx:#fb7185; }
-.tbl tbody tr.status-2xx td:not(.col-actions){ color: var(--st-2xx); }
-.tbl tbody tr.status-3xx td:not(.col-actions){ color: var(--st-3xx); }
-.tbl tbody tr.status-4xx td:not(.col-actions){ color: var(--st-4xx); }
-.tbl tbody tr.status-5xx td:not(.col-actions){ color: var(--st-5xx); }
-
-/* Keep chips, icons and code readable (don’t inherit the tint) */
-.tbl tbody tr td .muted,
-.tbl tbody tr td .badge,
-.tbl tbody tr td .material-symbols-outlined,
-.tbl tbody tr td pre.code{ color: inherit; opacity: 0.95; }
-:root{
-  /* default scheme = android */
-  --lv-v:#9E9E9E; /* VERBOSE */
-  --lv-d:#2196F3; /* DEBUG   */
-  --lv-i:#4CAF50; /* INFO    */
-  --lv-w:#FFC107; /* WARN    */
-  --lv-e:#F44336; /* ERROR   */
-  --lv-a:#9C27B0; /* ASSERT  */
-}
-:root[data-scheme="android"]{ /* Android Studio */
-  --lv-v:#9E9E9E; --lv-d:#2196F3; --lv-i:#4CAF50; --lv-w:#FFC107; --lv-e:#F44336; --lv-a:#9C27B0;
-}
-:root[data-scheme="xcode"]{ /* Xcode inspired */
-  --lv-v:#8E8E93; --lv-d:#0A84FF; --lv-i:#34C759; --lv-w:#FF9F0A; --lv-e:#FF453A; --lv-a:#BF5AF2;
-}
-:root[data-scheme="vscode"]{ /* VS Code */
-  --lv-v:#808080; --lv-d:#4FC1FF; --lv-i:#89D185; --lv-w:#CCA700; --lv-e:#F14C4C; --lv-a:#C586C0;
-}
-:root[data-scheme="grafana"]{ /* Grafana */
-  --lv-v:#6b7280; --lv-d:#60a5fa; --lv-i:#22c55e; --lv-w:#f59e0b; --lv-e:#ef4444; --lv-a:#d946ef;
-}
-/* Text color for the Kind column when row has a level */
-.tbl tbody tr.level-VERBOSE .col-kind{ color: var(--lv-v) }
-.tbl tbody tr.level-DEBUG   .col-kind{ color: var(--lv-d) }
-.tbl tbody tr.level-INFO    .col-kind{ color: var(--lv-i) }
-.tbl tbody tr.level-WARN    .col-kind{ color: var(--lv-w) }
-.tbl tbody tr.level-ERROR   .col-kind{ color: var(--lv-e) }
-.tbl tbody tr.level-ASSERT  .col-kind{ color: var(--lv-a) }
-/* Left accent bar tint using current scheme vars */
-.tbl tbody tr.level-VERBOSE{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 55%, transparent) }
-.tbl tbody tr.level-DEBUG  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 55%, transparent) }
-.tbl tbody tr.level-INFO   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 55%, transparent) }
-.tbl tbody tr.level-WARN   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 55%, transparent) }
-.tbl tbody tr.level-ERROR  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 55%, transparent) }
-.tbl tbody tr.level-ASSERT { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 55%, transparent) }
-/* Preserve accent on hover */
-.tbl tbody tr.level-VERBOSE:hover{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 70%, transparent) }
-.tbl tbody tr.level-DEBUG:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 70%, transparent) }
-.tbl tbody tr.level-INFO:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 70%, transparent) }
-.tbl tbody tr.level-WARN:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 70%, transparent) }
-.tbl tbody tr.level-ERROR:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 70%, transparent) }
-.tbl tbody tr.level-ASSERT:hover { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 70%, transparent) }
-
-/* ===== Color URL/Summary & Time columns ===== */
-/* Color by LOG level (for logger rows) */
-.tbl tbody tr.level-VERBOSE .col-time,
-.tbl tbody tr.level-VERBOSE .col-url { color: var(--lv-v); }
-.tbl tbody tr.level-DEBUG   .col-time,
-.tbl tbody tr.level-DEBUG   .col-url { color: var(--lv-d); }
-.tbl tbody tr.level-INFO    .col-time,
-.tbl tbody tr.level-INFO    .col-url { color: var(--lv-i); }
-.tbl tbody tr.level-WARN    .col-time,
-.tbl tbody tr.level-WARN    .col-url { color: var(--lv-w); }
-.tbl tbody tr.level-ERROR   .col-time,
-.tbl tbody tr.level-ERROR   .col-url { color: var(--lv-e); }
-.tbl tbody tr.level-ASSERT  .col-time,
-.tbl tbody tr.level-ASSERT  .col-url { color: var(--lv-a); }
-
-/* Color by HTTP status class (for network rows) */
-.tbl tbody tr.status-2xx .col-time, .tbl tbody tr.status-2xx .col-url .url { color: var(--st-2xx); }
-.tbl tbody tr.status-3xx .col-time, .tbl tbody tr.status-3xx .col-url .url { color: var(--st-3xx); }
-.tbl tbody tr.status-4xx .col-time, .tbl tbody tr.status-4xx .col-url .url { color: var(--st-4xx); }
-.tbl tbody tr.status-5xx .col-time, .tbl tbody tr.status-5xx .col-url .url { color: var(--st-5xx); }
-
-/* ===== Make all table column values colorful by row context ===== */
-/* Logger rows: color all cells by level */
-.tbl tbody tr.level-VERBOSE td:not(.col-actions){ color: var(--lv-v); }
-.tbl tbody tr.level-DEBUG   td:not(.col-actions){ color: var(--lv-d); }
-.tbl tbody tr.level-INFO    td:not(.col-actions){ color: var(--lv-i); }
-.tbl tbody tr.level-WARN    td:not(.col-actions){ color: var(--lv-w); }
-.tbl tbody tr.level-ERROR   td:not(.col-actions){ color: var(--lv-e); }
-.tbl tbody tr.level-ASSERT  td:not(.col-actions){ color: var(--lv-a); }
-
-/* HTTP rows: color all cells by status class */
-:root{ --st-2xx:#22c55e; --st-3xx:#fbbf24; --st-4xx:#fca5a5; --st-5xx:#fb7185; }
-.tbl tbody tr.status-2xx td:not(.col-actions){ color: var(--st-2xx); }
-.tbl tbody tr.status-3xx td:not(.col-actions){ color: var(--st-3xx); }
-.tbl tbody tr.status-4xx td:not(.col-actions){ color: var(--st-4xx); }
-.tbl tbody tr.status-5xx td:not(.col-actions){ color: var(--st-5xx); }
-
-/* Keep chips, icons and code readable (don’t inherit the tint) */
-.tbl tbody tr td .muted,
-.tbl tbody tr td .badge,
-.tbl tbody tr td .material-symbols-outlined,
-.tbl tbody tr td pre.code{ color: inherit; opacity: 0.95; }
-:root{
-  /* default scheme = android */
-  --lv-v:#9E9E9E; /* VERBOSE */
-  --lv-d:#2196F3; /* DEBUG   */
-  --lv-i:#4CAF50; /* INFO    */
-  --lv-w:#FFC107; /* WARN    */
-  --lv-e:#F44336; /* ERROR   */
-  --lv-a:#9C27B0; /* ASSERT  */
-}
-:root[data-scheme="android"]{ /* Android Studio */
-  --lv-v:#9E9E9E; --lv-d:#2196F3; --lv-i:#4CAF50; --lv-w:#FFC107; --lv-e:#F44336; --lv-a:#9C27B0;
-}
-:root[data-scheme="xcode"]{ /* Xcode inspired */
-  --lv-v:#8E8E93; --lv-d:#0A84FF; --lv-i:#34C759; --lv-w:#FF9F0A; --lv-e:#FF453A; --lv-a:#BF5AF2;
-}
-:root[data-scheme="vscode"]{ /* VS Code */
-  --lv-v:#808080; --lv-d:#4FC1FF; --lv-i:#89D185; --lv-w:#CCA700; --lv-e:#F14C4C; --lv-a:#C586C0;
-}
-:root[data-scheme="grafana"]{ /* Grafana */
-  --lv-v:#6b7280; --lv-d:#60a5fa; --lv-i:#22c55e; --lv-w:#f59e0b; --lv-e:#ef4444; --lv-a:#d946ef;
-}
-/* Text color for the Kind column when row has a level */
-.tbl tbody tr.level-VERBOSE .col-kind{ color: var(--lv-v) }
-.tbl tbody tr.level-DEBUG   .col-kind{ color: var(--lv-d) }
-.tbl tbody tr.level-INFO    .col-kind{ color: var(--lv-i) }
-.tbl tbody tr.level-WARN    .col-kind{ color: var(--lv-w) }
-.tbl tbody tr.level-ERROR   .col-kind{ color: var(--lv-e) }
-.tbl tbody tr.level-ASSERT  .col-kind{ color: var(--lv-a) }
-/* Left accent bar tint using current scheme vars */
-.tbl tbody tr.level-VERBOSE{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 55%, transparent) }
-.tbl tbody tr.level-DEBUG  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 55%, transparent) }
-.tbl tbody tr.level-INFO   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 55%, transparent) }
-.tbl tbody tr.level-WARN   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 55%, transparent) }
-.tbl tbody tr.level-ERROR  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 55%, transparent) }
-.tbl tbody tr.level-ASSERT { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 55%, transparent) }
-/* Preserve accent on hover */
-.tbl tbody tr.level-VERBOSE:hover{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 70%, transparent) }
-.tbl tbody tr.level-DEBUG:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 70%, transparent) }
-.tbl tbody tr.level-INFO:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 70%, transparent) }
-.tbl tbody tr.level-WARN:hover   { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 70%, transparent) }
-.tbl tbody tr.level-ERROR:hover  { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 70%, transparent) }
-.tbl tbody tr.level-ASSERT:hover { box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 70%, transparent) }
-
-/* Drawer styles (hidden by default) */
-.drawer{
-  position:relative;
-  border:1px solid var(--line);
-  border-radius:16px;
-  height:calc(100vh - 180px);
-  overflow:auto;
-  flex:0 0 0;
-  width:0;
-  opacity:0;
-  pointer-events:none;
-  transition:flex-basis .2s ease,width .2s ease,opacity .2s ease,border-color .2s ease;
-  background:var(--md-sys-color-surface);
-  box-shadow:var(--elev-2);
-}
-body.drawer-open .drawer{ flex-basis:var(--drawer-w); width:var(--drawer-w); opacity:1; pointer-events:auto }
-
-/* Drawer resizer */
-.d-resize{ position:absolute; left:-6px; top:0; bottom:0; width:12px; cursor:col-resize; z-index:2; }
-.d-resize::after{ content:""; position:absolute; inset:0; background:transparent; }
-.d-resize:hover::after{ background:color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent); }
-body.resizing{ cursor:col-resize !important; }
-body.resizing *{ user-select:none !important; }
-.d-head{display:flex;justify-content:space-between;align-items:center;padding:16px 16px;border-bottom:1px solid var(--line)}
-.d-title{font-weight:700}.d-sub{color:var(--muted);font-size:12px;margin-top:4px}
-.tabs{display:flex;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line)}
-.tab{background:transparent;color:var(--text);border:1px solid var(--line);border-radius:999px;padding:6px 12px}
-.tab.active{background:var(--surface)}
-.panes{padding:12px}
-.pane{display:none}
-.pane.active{display:block}
-.kv{display:grid;grid-template-columns:160px 1fr;gap:12px 16px}
-.kv dt{color:var(--muted)} .kv dd{margin:0}
-.kv .full{grid-column:1 / -1}
-
-.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-
-/* Colorful drawer content */
-#drawer .d-title{ color: var(--md-sys-color-primary); }
-#drawer .d-sub{ color: var(--md-sys-color-secondary); }
-#drawer .kv dt{ color: var(--md-sys-color-on-surface-variant); font-weight:600; }
-#drawer .kv dd{ color: var(--md-sys-color-on-surface); }
-#drawer .badge{ background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); border:none; }
-#drawer pre.code{ background: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface); }
-
-/* Colorful panes */
-.panes h4{ color: var(--md-sys-color-primary); margin: 6px 0 8px; }
-.panes h5{ color: var(--md-sys-color-secondary); margin: 4px 0 6px; }
-#tab-request pre.code,
-#tab-response pre.code,
-#tab-headers pre.code{ background: var(--md-sys-color-surface-container-high); border-color: var(--md-sys-color-outline-variant); }
-
-/* Extra color accents inside panes */
-.panes a{ color: var(--md-sys-color-primary); text-decoration: none; }
-.panes a:hover{ text-decoration: underline; }
-.panes .badge{ background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); border: none; }
-.panes pre.code{ border-left: 3px solid var(--md-sys-color-primary); }
-.panes .muted{ color: var(--md-sys-color-on-surface-variant); }
-.panes .callout{ border:1px solid var(--md-sys-color-outline-variant); background: var(--md-sys-color-surface-container); border-radius: 12px; padding: 10px 12px; }
-
-/* Headers highlighting inside code blocks */
-.code.headers { background: var(--md-sys-color-surface-container-high); }
-.code.headers .hk{ color: var(--md-sys-color-primary); font-weight:600; }
-.code.headers .hv{ color: var(--md-sys-color-on-surface); }
-
-/* Colorful JSON syntax highlighting (applies in drawer + table) */
-.json .k { color:#d19a66; }   /* keys - orange */
-.json .s { color:#98c379; }   /* strings - green */
-.json .n { color:#61afef; }   /* numbers - blue */
-.json .b { color:#c678dd; }   /* booleans - purple */
-.json .null { color:#e06c75; } /* null - red */
-
-/* Colorful summary block container */
-#drawer .sum {
-  padding: 8px;
-}
-#drawer .sum pre.code {
-  background: transparent;
-  font-family: ui-monospace, Menlo, monospace;
-  font-size: 13px;
-  line-height: 1.4;
-  color: var(--md-sys-color-on-surface);
-}
-
-/* Code blocks */
-.code{background:var(--codebg);color:var(--code);border:1px solid var(--line);border-radius:12px;padding:12px;overflow:auto;max-height:22vh;white-space:pre-wrap;word-break:break-word}
-#ov-summary{
-  white-space:pre-wrap;
-  word-break:break-word;
-  width:100%;
-  max-height:50vh;
-  overflow:auto;
-  padding:10px 12px;
-  border:1px solid var(--line);
-  border-radius:12px;
-  background:var(--md-sys-color-surface-container-high);
-}
-/* JSON syntax colors already provided via .json .k/.s/.n/.b/.null */
-
-/* ===== Thematic colorization for <pre> blocks ===== */
-pre {
-  color: var(--md-sys-color-on-surface);
-}
-/* HTTP method context for pre blocks */
-pre.method-GET    { color: var(--m-get); }
-pre.method-POST   { color: var(--m-post); }
-pre.method-PUT    { color: var(--m-put); }
-pre.method-PATCH  { color: var(--m-patch); }
-pre.method-DELETE { color: var(--m-delete); }
-pre.method-WS     { color: var(--m-ws); }
-/* Log level context for pre blocks */
-pre.level-VERBOSE { color: var(--lv-v); }
-pre.level-DEBUG   { color: var(--lv-d); }
-pre.level-INFO    { color: var(--lv-i); }
-pre.level-WARN    { color: var(--lv-w); }
-pre.level-ERROR   { color: var(--lv-e); }
-pre.level-ASSERT  { color: var(--lv-a); }
-/* Pre blocks with .json class still get .json .k/.s/.n/.b/.null coloring for inner spans */
-
-/* Contextual tint for Summary (HTTP method) */
-#ov-summary.method-GET{ border-left:4px solid var(--m-get); }
-#ov-summary.method-POST{ border-left:4px solid var(--m-post); }
-#ov-summary.method-PUT{ border-left:4px solid var(--m-put); }
-#ov-summary.method-PATCH{ border-left:4px solid var(--m-patch); }
-#ov-summary.method-DELETE{ border-left:4px solid var(--m-delete); }
-#ov-summary.method-WS{ border-left:4px solid var(--m-ws); }
-/* WebSocket direction/opcode tints */
-#ov-summary.ws-send{ border-left:4px solid var(--ws-send); }
-#ov-summary.ws-recv{ border-left:4px solid var(--ws-recv); }
-#ov-summary.ws-ping{ border-left:4px solid var(--ws-ping); }
-#ov-summary.ws-pong{ border-left:4px solid var(--ws-pong); }
-#ov-summary.ws-close{ border-left:4px solid var(--ws-close); }
-/* Logger level tints */
-#ov-summary.level-VERBOSE{ box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-v) 55%, transparent); }
-#ov-summary.level-DEBUG{   box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-d) 55%, transparent); }
-#ov-summary.level-INFO{    box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-i) 55%, transparent); }
-#ov-summary.level-WARN{    box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-w) 55%, transparent); }
-#ov-summary.level-ERROR{   box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-e) 55%, transparent); }
-#ov-summary.level-ASSERT{  box-shadow: inset 4px 0 0 color-mix(in srgb, var(--lv-a) 55%, transparent); }
-
-/* Summary text colorization by context */
-#ov-summary.method-GET    { color: var(--m-get); }
-#ov-summary.method-POST   { color: var(--m-post); }
-#ov-summary.method-PUT    { color: var(--m-put); }
-#ov-summary.method-PATCH  { color: var(--m-patch); }
-#ov-summary.method-DELETE { color: var(--m-delete); }
-#ov-summary.method-WS     { color: var(--m-ws); }
-#ov-summary.ws-send       { color: var(--ws-send); }
-#ov-summary.ws-recv       { color: var(--ws-recv); }
-#ov-summary.ws-ping       { color: var(--ws-ping); }
-#ov-summary.ws-pong       { color: var(--ws-pong); }
-#ov-summary.ws-close      { color: var(--ws-close); }
-#ov-summary.level-VERBOSE { color: var(--lv-v); }
-#ov-summary.level-DEBUG   { color: var(--lv-d); }
-#ov-summary.level-INFO    { color: var(--lv-i); }
-#ov-summary.level-WARN    { color: var(--lv-w); }
-#ov-summary.level-ERROR   { color: var(--lv-e); }
-#ov-summary.level-ASSERT  { color: var(--lv-a); }
-/* When JSON pretty-print is active, inner span highlights take precedence */
-#ov-summary.json { color: inherit; }
-.curl{display:flex;gap:8px;align-items:flex-start;width:100%}
-.curl .code{flex:1;min-height:160px}
-#ov-curl{white-space:pre-wrap;word-break:break-all;overflow:auto;max-height:70vh;width:100%}
-
-/* WebSocket direction glyphs */
-.ws-ico{margin-left:6px;font:12px ui-monospace,Menlo,monospace;vertical-align:middle}
-.ws-send{ color: var(--ws-send); }
-.ws-recv{ color: var(--ws-recv); }
-
-/* Logcat line styling */
-.lc{font:12px ui-monospace,Menlo,monospace; white-space:pre-wrap; word-break:break-word}
-.lc-ts{color:var(--muted)}
-.lc-prio{font-weight:700}
-.lc-tag{color:#00bcd4}
-
-/* Modes */
-body.mode-network .col-tag{display:none}
-body.mode-log .col-method,body.mode-log .col-status,body.mode-log .col-actions{display:none}
-/* In log mode, hide network URL line but keep logger message */
-body.mode-log tr:not(.level-VERBOSE):not(.level-DEBUG):not(.level-INFO):not(.level-WARN):not(.level-ERROR):not(.level-ASSERT) .col-url .url{display:none}
-/* Ensure logger message (lc) remains visible */
-body.mode-log .col-url .lc{display:block}
-
-/* Helpers */
-.muted{color:var(--muted)} .badge{border:1px solid var(--line);border-radius:6px;padding:2px 6px;background:transparent;font:12px ui-monospace,Menlo,monospace}
-.hidden{display:none !important}
-
-
-/* Material Symbols font setup */
-.material-symbols-outlined{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:20px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-feature-settings:'liga';-webkit-font-smoothing:antialiased;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24}
-
-/* Align Settings button icon + text nicely */
-#settingsBtn{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  line-height:1;
-}
-
-/* Keep icon centered to the text baseline */
-#settingsBtn .material-symbols-outlined{
-  display:inline-block;
-  line-height:1;
-  font-size:20px;       /* match table icon size */
-  transform: translateY(1px); /* tiny optical nudge */
-}
-
-/* Make all .btn & .icon controls align contents consistently */
-.btn,
-.icon{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-  line-height:1;
-}
-
-/* Theme toggle icon visibility (default: hide both, then show correct for theme) */
-#themeToggle .ico-sun,
-#themeToggle .ico-moon { display:none }
-:root[data-theme="light"] #themeToggle .ico-sun{ display:block }
-:root[data-theme="light"] #themeToggle .ico-moon{ display:none }
-:root[data-theme="dark"] #themeToggle .ico-sun{ display:none }
-:root[data-theme="dark"] #themeToggle .ico-moon{ display:block }
-
-/* === Apply scheme UI variables globally === */
-body.ui{ font-size: var(--font-size); font-family: var(--font-ui); }
-.code, pre, kbd, samp, .lc{ font-family: var(--font-mono); }
-
-/* Corners follow scheme */
-.input, .select, .btn, .icon, .panel, .popover, .tbl thead th, .drawer, .badge, .chip{  }
-.drawer{ border-radius: var(--radius-lg); }
-
-/* Density: table paddings by scheme */
-.tbl thead th{ padding: calc(var(--row-pad) - 4px) 8px; }
-.tbl tbody td{ padding: calc(var(--row-pad) - 6px) 6px; }
-
-.btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-  padding: calc(var(--row-pad) - 6px) 16px;
-  line-height:1;
-}
-.btn.xs{ padding: calc(var(--row-pad) - 8px) 10px; }
-
-/* Chips reflect scheme corners */
-.chip{ border-radius: var(--chip-radius); }
-
-/* ===== Panels (Settings & Filters) — unified visual ===== */
-#settingsPanel, #filtersPanel{
-  position: fixed;
-  z-index: 70;
-  right: 12px;
-  top: 64px; /* default; JS may reposition under each button */
-  width: min(520px, calc(100vw - 24px));
-  background: var(--md-sys-color-surface);
-  color: var(--md-sys-color-on-surface);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.2);
-  overflow: hidden;
-  backdrop-filter: saturate(120%) blur(6px);
-}
-#settingsPanel.hidden, #filtersPanel.hidden{ display:none !important; }
-
-/* Heads */
-#settingsPanel .sp-head, #filtersPanel .fp-head{
-  display:flex; align-items:center; gap:10px;
-  padding:12px 14px; border-bottom:1px solid var(--line);
-  background: color-mix(in srgb, var(--md-sys-color-surface) 85%, transparent);
-  justify-content: space-between;
-}
-#settingsPanel .sp-head .sp-icon, #filtersPanel .fp-head .fp-icon{
-  width:28px; height:28px; border-radius:8px;
-  display:inline-flex; align-items:center; justify-content:center;
-  background: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-on-primary-container);
-  flex:0 0 auto;
-}
-#settingsPanel .sp-head .sp-title, #filtersPanel .fp-head .fp-title{
-  font-weight:700; font-size:14px; letter-spacing:.2px;
-}
-/* Close button pinned to the far right */
-#settingsPanel .sp-head #settingsClose{ margin-left:auto; }
-#filtersPanel .fp-head #filtersClose{ margin-left:auto; }
-
-/* Bodies */
-#settingsPanel .sp-body, #filtersPanel .fp-body{
-  padding:12px 14px;
-  display:grid; gap:14px;
-}
-#settingsPanel .sp-section, #filtersPanel .fp-section{
-  border:1px solid var(--line);
-  border-radius:12px;
-  background: var(--md-sys-color-surface-container);
-  padding:12px;
-}
-#settingsPanel .sp-section h4, #filtersPanel .fp-section h4{
-  margin:0 0 8px; font-size:13px; color: var(--md-sys-color-primary);
-}
-
-/* Columns section as responsive grid */
-#settingsPanel .sp-section.cols-grid, #filtersPanel .fp-section.cols-grid{
-  display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap:10px 12px;
-  align-items:center;
-}
-#settingsPanel .sp-section.cols-grid h4, #filtersPanel .fp-section.cols-grid h4{
-  grid-column: 1 / -1;
-  margin-bottom: 6px;
-}
-#settingsPanel .sp-section.cols-grid .fp-checkbox,
-#filtersPanel .fp-section.cols-grid .fp-checkbox{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  padding:8px 10px;
-  border:1px solid var(--line);
-  border-radius:10px;
-  background: var(--md-sys-color-surface);
-  cursor:pointer;
-  user-select:none;
-  transition: background .15s ease, border-color .15s ease, box-shadow .15s ease;
-}
-#settingsPanel .sp-section.cols-grid .fp-checkbox:hover,
-#filtersPanel .fp-section.cols-grid .fp-checkbox:hover{
-  border-color: color-mix(in srgb, var(--md-sys-color-primary) 35%, var(--line));
-  box-shadow: 0 1px 6px rgba(0,0,0,.15);
-}
-#settingsPanel .sp-section.cols-grid .fp-checkbox input,
-#filtersPanel .fp-section.cols-grid .fp-checkbox input{ margin:0; }
-#settingsPanel .sp-section.cols-grid .fp-checkbox .lbl,
-#filtersPanel .fp-section.cols-grid .fp-checkbox .lbl{ line-height:1.2; }
-
-/* Row helper (label + control) */
-#settingsPanel .sp-row, #filtersPanel .fp-row{
-  display:grid; grid-template-columns: 1fr auto; align-items:center;
-  gap:8px; padding:8px 0;
-}
-#settingsPanel .sp-row + .sp-row{ border-top:1px dashed var(--line); }
-#filtersPanel  .fp-row + .fp-row{ border-top:1px dashed var(--line); }
-
-/* Segmented controls */
-#settingsPanel .seg, #filtersPanel .seg{
-  display:inline-flex; border:1px solid var(--line); border-radius:10px; overflow:hidden;
-}
-#settingsPanel .seg button, #filtersPanel .seg button{
-  background:transparent; border:0; padding:8px 10px; font-size:12px; cursor:pointer;
-  color: var(--md-sys-color-on-surface);
-}
-#settingsPanel .seg button[aria-pressed="true"],
-#filtersPanel .seg button[aria-pressed="true"]{
-  background: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-on-primary-container);
-}
-#settingsPanel .seg button + button, #filtersPanel .seg button + button{ border-left:1px solid var(--line); }
-
-/* Switches */
-#settingsPanel .switch, #filtersPanel .switch{
-  --sw-w:46px; --sw-h:26px;
-  position:relative; width:var(--sw-w); height:var(--sw-h);
-}
-#settingsPanel .switch input, #filtersPanel .switch input{ position:absolute; inset:0; opacity:0; }
-#settingsPanel .switch .track, #filtersPanel .switch .track{
-  position:absolute; inset:0; border-radius:999px;
-  background: color-mix(in srgb, var(--md-sys-color-outline-variant) 60%, transparent);
-  transition: background .15s ease;
-}
-#settingsPanel .switch .thumb, #filtersPanel .switch .thumb{
-  position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%;
-  background: var(--md-sys-color-surface);
-  box-shadow: 0 1px 2px rgba(0,0,0,.35);
-  transition: transform .15s ease;
-}
-#settingsPanel .switch input:checked + .track, #filtersPanel .switch input:checked + .track{ background: var(--md-sys-color-primary); }
-#settingsPanel .switch input:checked + .track + .thumb,
-#filtersPanel .switch input:checked + .track + .thumb{ transform: translateX(20px); }
-
-/* Footers */
-#settingsPanel .sp-foot, #filtersPanel .fp-foot{
-  display:flex; justify-content:space-between; align-items:center;
-  gap:10px; padding:10px 14px; border-top:1px solid var(--line);
-  background: color-mix(in srgb, var(--md-sys-color-surface) 90%, transparent);
-}
-#settingsPanel .sp-foot .hint, #filtersPanel .fp-foot .hint{
-  color: var(--muted); font-size:12px;
-}
-#settingsPanel .sp-foot .btn-reset, #filtersPanel .fp-foot .btn-reset{
-  background: transparent; color: var(--md-sys-color-primary);
-  border:1px dashed var(--md-sys-color-primary);
-  padding:6px 10px; border-radius:8px; cursor:pointer;
-}
-#settingsPanel .sp-foot .btn-close, #filtersPanel .fp-foot .btn-close{
-  background: var(--md-sys-color-primary);
-  color: var(--md-sys-color-on-primary);
-  border:0; padding:8px 12px; border-radius:10px; cursor:pointer;
-}
-
-/* Responsive */
-@media (max-width:1024px){ .tbl thead th,.tbl tbody td{padding:10px} .col-actions{width:140px} }
-@media (max-width:900px){ #logtbl thead .col-id,#logtbl tbody .col-id{display:none} #logtbl thead .col-kind,#logtbl tbody .col-kind{display:none} .col-time{width:96px}.col-method{width:80px}.col-status{width:80px}.col-actions{width:120px} .panel{max-height:calc(100vh - 220px)} .kv{grid-template-columns:140px 1fr} }
-@media (max-width:700px){
-  .shell{ flex-direction:column; }
-  /* Hide less critical columns by default on narrow viewports */
-  #logtbl thead .col-method, #logtbl tbody .col-method{ display:none }
-  #logtbl thead .col-status, #logtbl tbody .col-status{ display:none }
-  /* Make URL/Summary breathe */
-  .col-url{ width:auto }
-  #settingsPanel, #filtersPanel{
-    right: 12px; left: 12px; width:auto; top: 88px;
-  }
-  #settingsPanel .sp-section.cols-grid,
-  #filtersPanel  .fp-section.cols-grid{
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (max-width:768px){
-  .tbl{ font-size:13px }
-  .hdr{padding:10px} .bar>*{flex:1 1 100%} .field{width:100%} .input,.select{width:100%} .stats{padding:8px 10px} .shell{padding:8px} .kv{grid-template-columns:1fr} .kv .full{grid-column:1 / -1} .cols{grid-template-columns:1fr} #ov-curl{max-height:50vh} #ov-summary{max-height:40vh}
-}
-@media (max-width:600px){
-  .drawer{
-    position:fixed;
-    left:0; right:0;
-    top:96px; /* below header + stats */
-    bottom:0;
-    z-index:60;
-    width:auto; flex:0 0 auto;
-    opacity:0; pointer-events:none;
-    max-width:none;
-    border-radius:16px 16px 0 0;
-    height:auto;
-  }
-  body.drawer-open .drawer{ opacity:1; pointer-events:auto; }
-  .d-head{position:sticky;top:0;background:var(--md-sys-color-surface);z-index:5}
-  .tabs{position:sticky;top:48px;background:var(--md-sys-color-surface);z-index:4}
-  .panel{max-height:calc(100vh - 260px)}
-  .tbl thead th,.tbl tbody td{padding:9px}
-  .col-actions{display:none}
-  /* Compact table on phones */
-  #logtbl thead .col-tag, #logtbl tbody .col-tag{ display:none }
-  .tbl thead th, .tbl tbody td{ padding:8px }
-  .hdr{ flex-wrap:wrap }
-  .bar{ gap:6px }
-  .stats{ padding:6px 8px }
-  /* Popovers snap to left for small screens to avoid clipping */
-  .popover{ left:0; right:auto; }
-  .fp{ width: calc(100vw - 24px); max-width:none; }
-}
-@media (max-width:420px){
-  .titles{display:none} .chip{font-size:12px} .btn{padding:7px 10px} .icon{width:32px;height:32px}
-  #logtbl thead .col-time, #logtbl tbody .col-time{ display:none }
-  .tbl thead th, .tbl tbody td{ padding:7px }
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'SF Pro Text', sans-serif;
+    background: #0a0a0a;
+    color: #e4e4e4;
+    overflow: hidden;
+}
+#root { width: 100vw; height: 100vh; display: flex; flex-direction: column; background: var(--bg-primary); color: var(--text-primary); }
+
+/* Text selection — force readable contrast across themes/modes */
+::selection { background: var(--accent); color: #ffffff; text-shadow: none; }
+::-moz-selection { background: var(--accent); color: #ffffff; text-shadow: none; }
+
+/* THEMES (dark by default) */
+.theme-android {
+    --bg-primary: #1e1e1e; --bg-secondary: #252526; --bg-tertiary: #2d2d30;
+    --text-primary: #cccccc; --text-secondary: #858585;
+    --accent: #3794ff;
+    --verbose: #bbbbbb; --debug: #569cd6; --info: #4ec9b0;
+    --warn: #dcdcaa; --error: #f48771; --assert: #f48771;
+    --border: #3f3f46; --hover: rgba(255,255,255,0.05);
+}
+.theme-android.light-mode {
+    --bg-primary: #ffffff; --bg-secondary: #f5f5f5; --bg-tertiary: #eeeeee;
+    --text-primary: #1e1e1e; --text-secondary: #666666;
+    --accent: #0066cc;
+    --verbose: #666666; --debug: #0066cc; --info: #00a67e;
+    --warn: #cc8800; --error: #d32f2f; --assert: #d32f2f;
+    --border: #d0d0d0; --hover: rgba(0,0,0,0.05);
+}
+.theme-xcode {
+    --bg-primary: #292a30; --bg-secondary: #1f1f24; --bg-tertiary: #36373c;
+    --text-primary: #ffffff; --text-secondary: #8b8b8b;
+    --accent: #0a84ff;
+    --verbose: #8b8b8b; --debug: #6699ff; --info: #00cca3;
+    --warn: #ffcc00; --error: #ff453a; --assert: #ff453a;
+    --border: #3a3a3f; --hover: rgba(255,255,255,0.07);
+}
+.theme-xcode.light-mode {
+    --bg-primary: #ffffff; --bg-secondary: #f7f7f7; --bg-tertiary: #efefef;
+    --text-primary: #000000; --text-secondary: #6e6e6e;
+    --accent: #007aff;
+    --verbose: #6e6e6e; --debug: #0066cc; --info: #00a896;
+    --warn: #f5a623; --error: #d70015; --assert: #d70015;
+    --border: #d1d1d6; --hover: rgba(0,0,0,0.06);
+}
+.theme-grafana {
+    --bg-primary: #0b0c0e; --bg-secondary: #111217; --bg-tertiary: #181b1f;
+    --text-primary: #d4d4d8; --text-secondary: #9ca0ab;
+    --accent: #ff5722;
+    --verbose: #9ca0ab; --debug: #33b5e5; --info: #52c41a;
+    --warn: #faad14; --error: #ff4d4f; --assert: #ff4d4f;
+    --border: #26282e; --hover: rgba(255,255,255,0.06);
+}
+.theme-grafana.light-mode {
+    --bg-primary: #f7f8fa; --bg-secondary: #ffffff; --bg-tertiary: #e9ecef;
+    --text-primary: #212529; --text-secondary: #6c757d;
+    --accent: #e53935;
+    --verbose: #6c757d; --debug: #1e88e5; --info: #43a047;
+    --warn: #fb8c00; --error: #e53935; --assert: #e53935;
+    --border: #dee2e6; --hover: rgba(0,0,0,0.05);
+}
+.theme-modern {
+    --bg-primary: #0f0f0f; --bg-secondary: #1a1a1a; --bg-tertiary: #242424;
+    --text-primary: #f0f0f0; --text-secondary: #a0a0a0;
+    --accent: #00d9ff;
+    --verbose: #808080; --debug: #6366f1; --info: #14b8a6;
+    --warn: #f59e0b; --error: #ef4444; --assert: #ef4444;
+    --border: #2a2a2a; --hover: rgba(255,255,255,0.08);
+}
+.theme-modern.light-mode {
+    --bg-primary: #fafafa; --bg-secondary: #ffffff; --bg-tertiary: #f0f0f0;
+    --text-primary: #0f0f0f; --text-secondary: #6b7280;
+    --accent: #0891b2;
+    --verbose: #9ca3af; --debug: #4f46e5; --info: #059669;
+    --warn: #d97706; --error: #dc2626; --assert: #dc2626;
+    --border: #e5e7eb; --hover: rgba(0,0,0,0.04);
+}
+
+/* TOOLBAR */
+.tb { background: var(--bg-secondary); border-bottom: 1px solid var(--border); padding: 12px 16px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; position: relative; }
+.brand { display: flex; align-items: center; gap: 12px; margin-right: 12px; min-width: 0; }
+.brand-icon { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); display: flex; align-items: center; justify-content: center; font-size: 13px; color: white; font-weight: bold; overflow: hidden; flex-shrink: 0; }
+.brand-icon img { width: 100%; height: 100%; object-fit: cover; }
+.brand-text { min-width: 0; }
+.brand-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+.brand-meta { font-size: 11px; color: var(--text-secondary); font-weight: 400; }
+
+.search-wrap { position: relative; flex: 1 1 300px; min-width: 200px; }
+.search-input { width: 100%; padding: 8px 36px 8px 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); font-size: 14px; outline: none; }
+.search-input:focus { border-color: var(--accent); }
+.star-btn { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--accent); cursor: pointer; font-size: 16px; padding: 4px; opacity: 0.7; transition: opacity 0.15s; }
+.star-btn:hover { opacity: 1; }
+
+.suggest { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); z-index: 1000; max-height: 300px; overflow-y: auto; }
+.suggest-hdr { padding: 6px 12px; font-size: 11px; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 600; }
+.suggest-item { padding: 10px 12px; cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.1s; }
+.suggest-item:last-child { border-bottom: none; }
+.suggest-item.sel { background: var(--hover); }
+.suggest-cmd { font-family: monospace; font-size: 13px; color: var(--accent); margin-bottom: 2px; }
+.suggest-cmd .ph { color: var(--text-secondary); font-style: italic; }
+.suggest-desc { font-size: 12px; color: var(--text-secondary); }
+.suggest-ex { font-size: 11px; color: var(--text-secondary); margin-top: 2px; opacity: 0.7; }
+
+.icon-btn { padding: 8px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); cursor: pointer; font-size: 18px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; position: relative; transition: background 0.1s; line-height: 1; }
+.icon-btn:hover { background: var(--hover); }
+.icon-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.icon-btn.danger { color: var(--error); }
+.icon-btn.accent { color: var(--accent); }
+.toolbar-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+
+.badge { position: absolute; top: -4px; right: -4px; background: var(--error); color: white; border-radius: 10px; font-size: 10px; font-weight: bold; padding: 2px 5px; min-width: 16px; text-align: center; line-height: 1; }
+
+.popover { position: absolute; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); z-index: 1000; padding: 12px; }
+.popover-section { padding: 8px 4px; font-size: 11px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; }
+.popover select, .popover input[type=text] { width: 100%; padding: 8px 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); font-size: 13px; cursor: pointer; outline: none; }
+.popover select:focus, .popover input:focus { border-color: var(--accent); }
+
+.saved-list { max-height: 300px; overflow: auto; }
+.saved-empty { padding: 24px; text-align: center; color: var(--text-secondary); font-size: 13px; }
+.saved-row { padding: 12px; background: var(--bg-tertiary); border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.saved-row .body { flex: 1; min-width: 0; cursor: pointer; }
+.saved-row .body:hover { color: var(--accent); }
+.saved-q { font-size: 12px; font-family: monospace; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.saved-ts { font-size: 10px; color: var(--text-secondary); margin-top: 4px; }
+.del-btn { padding: 6px 10px; background: transparent; border: 1px solid var(--border); border-radius: 4px; color: var(--error); cursor: pointer; font-size: 12px; }
+
+/* FILTER PANEL */
+.filter-panel { width: 100%; padding: 16px; background: var(--bg-tertiary); border-radius: 8px; border: 1px solid var(--border); display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.filter-panel label { font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 4px; }
+.filter-panel select, .filter-panel input { width: 100%; padding: 6px 8px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 4px; color: var(--text-primary); font-size: 14px; outline: none; }
+.exclude-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.exclude-row select { flex: 0 0 140px; }
+.exclude-row input { flex: 1; }
+.exclude-row button { padding: 6px 12px; background: var(--accent); border: none; border-radius: 4px; color: white; cursor: pointer; font-size: 14px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { padding: 4px 8px; background: var(--bg-secondary); border-radius: 12px; font-size: 12px; display: flex; align-items: center; gap: 4px; }
+.chip button { background: none; border: none; color: var(--error); cursor: pointer; font-size: 14px; padding: 0 4px; line-height: 1; }
+
+/* METRICS BAR */
+.metrics { background: var(--bg-secondary); border-bottom: 1px solid var(--border); padding: 12px 16px; display: flex; gap: 24px; font-size: 13px; flex-wrap: wrap; }
+.metric { display: flex; align-items: center; gap: 8px; }
+.metric .l { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; }
+.metric .v { font-size: 16px; font-weight: 600; }
+
+/* MAIN AREA */
+.main { flex: 1; display: flex; overflow: hidden; min-height: 0; }
+
+/* LOGCAT VIEW */
+.logcat { flex: 1; overflow: auto; padding: 8px 0; font-family: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; line-height: 1.5; background: var(--bg-primary); }
+.logcat-row { padding: 1px 16px; white-space: pre-wrap; cursor: default; word-break: break-all; }
+.logcat-row:hover { background: var(--hover); }
+.logcat-time { color: var(--text-secondary); }
+.logcat-tid { color: var(--text-secondary); }
+.logcat-tag { font-weight: 600; }
+.lvl-V { color: var(--verbose); }
+.lvl-D { color: var(--debug); }
+.lvl-I { color: var(--info); }
+.lvl-W { color: var(--warn); }
+.lvl-E { color: var(--error); }
+.lvl-A { color: var(--assert); }
+.logcat-net-line { color: var(--text-secondary); padding-left: 140px; white-space: pre-wrap; word-break: break-all; }
+.logcat-net-line .k { color: var(--accent); }
+.logcat-net-line .req { color: var(--warn); }
+.logcat-net-line .res-ok { color: var(--info); }
+.logcat-net-line .res-err { color: var(--error); }
+
+/* TABLE VIEW */
+.tbl-wrap { flex: 1; overflow: auto; min-height: 0; }
+.tbl-head { display: grid; gap: 12px; padding: 10px 16px; background: var(--bg-secondary); border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; position: sticky; top: 0; z-index: 1; min-width: fit-content; }
+.tbl-head .col { display: flex; align-items: center; position: relative; user-select: none; }
+.col-resize { position: absolute; right: -6px; top: -10px; bottom: -10px; width: 12px; cursor: col-resize; z-index: 10; }
+.col-resize::after { content: ''; display: block; width: 1px; height: 100%; margin: 0 auto; background: var(--border); }
+.col-resize:hover::after, .col-resize.dragging::after { background: var(--accent); width: 2px; }
+.tbl-body { min-width: fit-content; }
+.tbl-row { display: grid; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--border); font-size: 13px; cursor: pointer; transition: background 0.1s; align-items: start; }
+.tbl-row:hover { background: var(--hover); }
+.tbl-row.selected { background: var(--hover); border-left: 3px solid var(--accent); padding-left: 13px; }
+.tbl-row.compact { padding: 4px 16px; }
+.tbl-row.spacious { padding: 16px; }
+.tbl-cell { overflow: hidden; word-break: break-word; }
+.tbl-cell .tt-id { color: var(--text-secondary); font-family: monospace; font-size: 11px; }
+.tbl-cell .tt-time { color: var(--text-secondary); font-family: monospace; font-size: 11px; white-space: nowrap; }
+.type-pill { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; text-transform: uppercase; }
+.type-http { background: rgba(20,184,166,0.15); color: var(--info); }
+.type-log { background: rgba(86,156,214,0.15); color: var(--debug); }
+.type-ws { background: rgba(168,85,247,0.15); color: #a855f7; }
+.method-tag { font-family: monospace; font-weight: 600; font-size: 11px; }
+.status-pill { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+.status-2 { background: rgba(20,184,166,0.15); color: var(--info); }
+.status-3 { background: rgba(86,156,214,0.15); color: var(--debug); }
+.status-4 { background: rgba(245,158,11,0.15); color: var(--warn); }
+.status-5 { background: rgba(239,68,68,0.15); color: var(--error); }
+.url-cell { word-break: break-all; }
+.url-body { font-size: 11px; color: var(--text-secondary); margin-top: 4px; font-family: monospace; max-height: 5em; overflow: hidden; text-overflow: ellipsis; white-space: pre-wrap; word-break: break-word; }
+.resp-cell { font-family: monospace; font-size: 11px; max-height: 5em; overflow: hidden; word-break: break-all; white-space: pre-wrap; }
+.resp-ok { color: var(--info); }
+.resp-err { color: var(--error); }
+.tbl-row .expand-area { grid-column: 1/-1; padding: 12px; background: var(--bg-tertiary); border-radius: 6px; margin-top: 8px; }
+.exp-section { margin-bottom: 12px; }
+.exp-section:last-child { margin-bottom: 0; }
+.exp-label { font-size: 11px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
+.exp-content { font-family: monospace; font-size: 12px; padding: 8px; background: var(--bg-secondary); border-radius: 4px; white-space: pre-wrap; word-break: break-all; max-height: 240px; overflow: auto; }
+.headers-grid { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; font-family: monospace; font-size: 12px; padding: 8px; background: var(--bg-secondary); border-radius: 4px; }
+.headers-grid .hk { color: var(--accent); }
+.headers-grid .hv { color: var(--text-primary); word-break: break-all; }
+
+/* DETAIL PANEL */
+.detail { flex: 0 0 40%; min-width: 320px; background: var(--bg-secondary); border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+.detail-hdr { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.detail-title { font-size: 14px; font-weight: 600; }
+.detail-tabs { display: flex; gap: 4px; padding: 8px 16px; border-bottom: 1px solid var(--border); }
+.detail-tab { padding: 6px 12px; background: transparent; border: 1px solid var(--border); border-radius: 4px; color: var(--text-secondary); cursor: pointer; font-size: 12px; }
+.detail-tab.active { background: var(--accent); color: white; border-color: var(--accent); }
+.detail-body { flex: 1; overflow: auto; padding: 16px; }
+
+/* CONTEXT MENU */
+.ctx-menu { position: fixed; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); z-index: 10000; padding: 6px; min-width: 200px; backdrop-filter: blur(8px); }
+.ctx-item { padding: 8px 12px; font-size: 13px; cursor: pointer; border-radius: 4px; display: flex; align-items: center; gap: 8px; }
+.ctx-item:hover { background: var(--hover); }
+.ctx-sep { height: 1px; background: var(--border); margin: 4px 0; }
+
+/* STATUS BAR */
+.status-bar { background: var(--bg-secondary); border-top: 1px solid var(--border); padding: 6px 16px; display: flex; gap: 16px; align-items: center; font-size: 12px; color: var(--text-secondary); }
+.status-bar .right { margin-left: auto; display: flex; gap: 12px; align-items: center; }
+.conn-dot { width: 8px; height: 8px; border-radius: 50%; }
+.conn-connecting { background: var(--warn); animation: pulse 1.2s ease-in-out infinite; }
+.conn-connected { background: var(--info); }
+.conn-disconnected { background: var(--error); }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* AUTOSCROLL TOAST */
+.toast { position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%); background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; font-size: 12px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 100; }
+.toast:hover { background: var(--accent); color: white; }
+
+/* MISC */
+.hidden { display: none !important; }
+.muted { color: var(--text-secondary); }
+button { font-family: inherit; }
 """.trimIndent()
 
     val appJs = """
-        // ========================= LogTap Viewer (fixed runtime JS) =========================
-        // Changes:
-        // - Fixed cURL builder (no nested template literal confusions)
-        // - Removed fragile ${'$'}{JSON.stringify(...)} nesting inside Kotlin
-        // - Stronger error logging so JS errors don't silently stop rendering
-        const colorScheme = document.querySelector('#colorScheme');
+(function(){
+  'use strict';
+  var ${'$'} = function(sel){ return document.querySelector(sel); };
+  var ${'$'}${'$'} = function(sel){ return Array.prototype.slice.call(document.querySelectorAll(sel)); };
+  var root = ${'$'}('#root');
 
-        function applyScheme(s){
-          const scheme = (s||'').toLowerCase();
-          const valid = ['android','xcode','vscode','grafana'];
-          const pick = valid.includes(scheme) ? scheme : 'android';
-          document.documentElement.setAttribute('data-scheme', pick);
-          if(colorScheme) colorScheme.value = pick;
-          try{ localStorage.setItem('logtap:scheme', pick); }catch{}
-        }
-        function initScheme(){
-          let s = 'android';
-          try{ s = localStorage.getItem('logtap:scheme') || 'android'; }catch{}
-          applyScheme(s);
-        }
-        // ---- DOM ----
-        const tbody = document.querySelector('#logtbl tbody');
-        const search = document.querySelector('#search');
-        const autoScroll = document.querySelector('#autoScroll');
-        const clearBtn = document.querySelector('#clearBtn');
-        const methodFilter = document.querySelector('#methodFilter');
-        const viewMode = document.querySelector('#viewMode');
-        const bodyEl = document.body;
-        const statusFilter = document.querySelector('#statusFilter');
-        const statusCodeFilter = document.querySelector('#statusCodeFilter');
-        const wsStatus = document.querySelector('#wsStatus');
-        const levelFilter = document.querySelector('#levelFilter');
-        const exportJsonBtn = document.querySelector('#exportJson');
-        const exportHtmlBtn = document.querySelector('#exportHtml');
-        const filtersBtn = document.querySelector('#filtersBtn');
-        const filtersPanel = document.querySelector('#filtersPanel');
-        const exportBtn = document.querySelector('#exportBtn');
-        const exportMenu = document.querySelector('#exportMenu');
-        const themeToggle = document.querySelector('#themeToggle');
-        const jsonPretty = document.querySelector('#jsonPretty');
-        
-        const chipTotal = document.querySelector('#chipTotal');
-        const chipHttp  = document.querySelector('#chipHttp');
-        const chipWs    = document.querySelector('#chipWs');
-        const chipLog   = document.querySelector('#chipLog');
-        const chipGet   = document.querySelector('#chipGet');
-        const chipPost  = document.querySelector('#chipPost');
+  // ---------- STATE ----------
+  var state = {
+    logs: [],          // unified rows
+    httpPending: {},   // requestId -> row index for pairing response
+    nextLocalId: 1,
+    selectedId: null,
+    expandedIds: {},
+    theme: localStorage.getItem('logtap-theme') || 'android',
+    darkMode: JSON.parse(localStorage.getItem('logtap-dark-mode') || 'true'),
+    viewMode: localStorage.getItem('logtap-view-mode') || 'logcat',
+    density: localStorage.getItem('logtap-density') || 'comfortable',
+    searchQuery: '',
+    autoScroll: true,
+    connectionStatus: 'connecting',
+    appInfo: null,
+    filters: {
+      type: 'all', method: 'all', status: 'all', level: 'all',
+      excludePackages: [], excludeMessages: []
+    },
+    savedFilters: JSON.parse(localStorage.getItem('logtap-saved-filters') || '[]'),
+    showFilters: false,
+    showSavedFilters: false,
+    showSettings: false,
+    showSuggestions: false,
+    suggestions: [],
+    suggestSel: 0,
+    excludeInput: '',
+    excludeType: 'package',
+    columnWidths: (function(){
+      var def = [60,110,110,80,150,120,80,450,400];
+      try {
+        var saved = JSON.parse(localStorage.getItem('logtap-cols') || 'null');
+        if (Array.isArray(saved) && saved.length === def.length) return saved;
+      } catch(e){}
+      return def;
+    })(),
+    contextMenu: null
+  };
 
-        // Column toggles
-        const colId = document.querySelector('#colId');
-        const colTime = document.querySelector('#colTime');
-        const colKind = document.querySelector('#colKind');
-        const colTag = document.querySelector('#colTag');
-        const colMethod = document.querySelector('#colMethod');
-        const colStatus = document.querySelector('#colStatus');
-        const colUrl = document.querySelector('#colUrl');
-        const colActions = document.querySelector('#colActions');
-        
-        const drawer = document.querySelector('#drawer');
-        const drawerClose = document.querySelector('#drawerClose');
-        const tabs = Array.from(document.querySelectorAll('.tab'));
-        const drawerResizer = document.querySelector('#drawerResizer');
-        const DRAWER_MIN = 360, DRAWER_MAX = 1000;
-        // ---- Drawer width persistence & drag-resize ----
-        function loadDrawerWidth(){
-          try{
-            const v = Number(localStorage.getItem('logtap:drawerW')||'');
-            if(v && !Number.isNaN(v)) document.documentElement.style.setProperty('--drawer-w', v+'px');
-          }catch{}
-        }
-        function saveDrawerWidth(px){ try{ localStorage.setItem('logtap:drawerW', String(px)); }catch{} }
-        let dragStartX=0, dragStartW=0, dragging=false;
-        function startResize(e){ if(!drawer) return; dragging=true; document.body.classList.add('resizing'); const r=drawer.getBoundingClientRect(); dragStartW=r.width; dragStartX=e.clientX; window.addEventListener('mousemove', onResizeMove); window.addEventListener('mouseup', endResize); }
-        function onResizeMove(e){ if(!dragging) return; const dx = dragStartX - e.clientX; let nw = Math.round(dragStartW + dx); nw = Math.max(DRAWER_MIN, Math.min(DRAWER_MAX, nw)); document.documentElement.style.setProperty('--drawer-w', nw+'px'); }
-        function endResize(){ if(!dragging) return; dragging=false; document.body.classList.remove('resizing'); const cur = getComputedStyle(document.documentElement).getPropertyValue('--drawer-w').trim(); const px = Number(cur.replace('px',''))||0; if(px>0) saveDrawerWidth(px); window.removeEventListener('mousemove', onResizeMove); window.removeEventListener('mouseup', endResize); }
-        // wire tab clicks
-        tabs.forEach(b => b.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          const name = b.dataset.tab;
-          if (!name) return;
-          activateTab(name);
-        }));
-        const curlCopyBtn = document.querySelector('#ov-curl-copy');
-        const summaryCopyBtn = document.querySelector('#ov-summary-copy');
-        
-        // ---- State ----
-        let rows = [];
-        let filtered = [];
-        let filterText = '';
-        let selectedIdx = -1;
-        let currentEv = null;
-        
-        // ---- Theme ----
-        function applyTheme(t){
-          const theme = (t === 'light' || t === 'dark') ? t : 'dark';
-          document.documentElement.setAttribute('data-theme', theme);
-          if (themeToggle) { const next = (theme==='dark'?'light':'dark'); themeToggle.setAttribute('title', 'Switch to '+next+' mode'); themeToggle.setAttribute('aria-label', 'Switch to '+next+' mode'); }
-        }
-        function initTheme(){
-          let t = localStorage.getItem('logtap:theme');
-          if (!t) t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
-          applyTheme(t);
-        }
+  function pidTid(log){
+    var pid = (log.pid != null) ? String(log.pid) : '';
+    var tid = (log.tid != null) ? String(log.tid) : (log.thread || '');
+    if (!pid && !tid) return '';
+    if (!pid) return tid;
+    if (!tid) return pid;
+    return pid + '-' + tid;
+  }
 
-        // ---- Preferences ----
-        function initPrefs(){
-          try{
-            // Pretty JSON
-            const v = localStorage.getItem('logtap:jsonPretty');
-            if(jsonPretty){
-              if(v!==null){ jsonPretty.checked = (v === '1'); }
-              else { jsonPretty.checked = true; } // default enabled
-            }
-            // Auto-scroll
-            const av = localStorage.getItem('logtap:autoScroll');
-            if (autoScroll){
-              if(av!==null){ autoScroll.checked = (av === '1'); }
-              else { autoScroll.checked = true; } // default ON
-            }
-          }catch{}
-        }
+  // ---------- THEME APPLY ----------
+  function applyTheme(){
+    root.className = 'theme-' + state.theme + (state.darkMode ? '' : ' light-mode');
+  }
 
-        // ---- Column visibility persistence ----
-        function loadCols(){
-          try{ return JSON.parse(localStorage.getItem('logtap:cols')||'{}') }catch{ return {} }
-        }
-        function saveCols(cfg){ try{ localStorage.setItem('logtap:cols', JSON.stringify(cfg||{})) }catch{}
-        }
-        function applyCols(cfg){
-          const m = Object.assign({
-            id:true,time:true,kind:true,tag:true,method:true,status:true,url:true,actions:false
-          }, cfg||{});
-          // set checkbox states
-          if(colId) colId.checked = !!m.id;
-          if(colTime) colTime.checked = !!m.time;
-          if(colKind) colKind.checked = !!m.kind;
-          if(colTag) colTag.checked = !!m.tag;
-          if(colMethod) colMethod.checked = !!m.method;
-          if(colStatus) colStatus.checked = !!m.status;
-          if(colUrl) colUrl.checked = !!m.url;
-          if(colActions) colActions.checked = !!m.actions;
-          // toggle body classes
-          bodyEl.classList.toggle('hide-col-id',      !m.id);
-          bodyEl.classList.toggle('hide-col-time',    !m.time);
-          bodyEl.classList.toggle('hide-col-kind',    !m.kind);
-          bodyEl.classList.toggle('hide-col-tag',     !m.tag);
-          bodyEl.classList.toggle('hide-col-method',  !m.method);
-          bodyEl.classList.toggle('hide-col-status',  !m.status);
-          bodyEl.classList.toggle('hide-col-url',     !m.url);
-          bodyEl.classList.toggle('hide-col-actions', !m.actions);
-        }
-        let colCfg = loadCols();
-        if(Object.keys(colCfg).length===0){
-          colCfg = {id:true,time:true,kind:true,tag:true,method:true,status:true,url:true,actions:false};
-        }
-
-        // ---- Utils ----
-        function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
-        function fmtTime(ts){
-          try{
-            const d = new Date(ts);
-            const hh = String(d.getHours()).padStart(2,'0');
-            const mm = String(d.getMinutes()).padStart(2,'0');
-            const ss = String(d.getSeconds()).padStart(2,'0');
-            const ms = String(d.getMilliseconds()).padStart(3,'0');
-            return `${'$'}{hh}:${'$'}{mm}:${'$'}{ss}.${'$'}{ms}`;
-          } catch { return String(ts ?? ''); }
-        }
-        function fmtDateTime(ts){
-          try{
-            const d = new Date(ts);
-            const yyyy = d.getFullYear();
-            const mon = String(d.getMonth()+1).padStart(2,'0');
-            const day = String(d.getDate()).padStart(2,'0');
-            const hh = String(d.getHours()).padStart(2,'0');
-            const mm = String(d.getMinutes()).padStart(2,'0');
-            const ss = String(d.getSeconds()).padStart(2,'0');
-            const ms = String(d.getMilliseconds()).padStart(3,'0');
-            return `${'$'}{yyyy}-${'$'}{mon}-${'$'}{day} ${'$'}{hh}:${'$'}{mm}:${'$'}{ss}.${'$'}{ms}`;
-          } catch { return String(ts ?? ''); }
-        }
-        function classForStatus(code){ if(!code) return ''; const x=Math.floor(code/100); return x===2?'status-2xx':x===3?'status-3xx':x===4?'status-4xx':x===5?'status-5xx':''; }
-        function hlJson(raw){
-          try { const obj=typeof raw==='string'?JSON.parse(raw):raw; const json=JSON.stringify(obj,null,2);
-            return json.replace(/"(\w+)":|"(.*?)"|\b(true|false)\b|\b(-?\d+(?:\.\d+)?)\b|null/g,(m,k,s,b,n)=>{
-              if(k) return '<span class="k">"'+escapeHtml(k)+'"</span>:';
-              if(s!==undefined) return '<span class="s">"'+escapeHtml(s)+'"</span>';
-              if(b) return '<span class="b">'+b+'</span>';
-              if(n) return '<span class="n">'+n+'</span>';
-              return '<span class="null">null</span>'; });
-          } catch { return escapeHtml(String(raw ?? '')); }
-        }
-        function toFile(name, mime, text){ const blob=new Blob([text],{type:mime}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); URL.revokeObjectURL(a.href); }
-
-        // ---- Normalization helpers ----
-        function kindOf(ev){
-         const k = ev?.kind;
-         if (typeof k === 'string') return k.toUpperCase();
-         if (k && typeof k === 'object' && 'name' in k) return String(k.name).toUpperCase();
-         return String(k ?? '').toUpperCase();
-       }
-       function dirOf(ev){
-         const d = ev?.direction;
-         if (typeof d === 'string') return d.toUpperCase();
-         if (d && typeof d === 'object' && 'name' in d) return String(d.name).toUpperCase();
-         return String(d ?? '').toUpperCase();
-       }
-       function levelOf(ev){
-          let l = (ev?.level || ev?.logLevel || ev?.priority || '').toString().toUpperCase();
-          if(!l && typeof ev?.summary === 'string'){
-            const m = ev.summary.match(/^\s*\[(VERBOSE|DEBUG|INFO|WARN|ERROR|ASSERT|LOG)\]/i);
-            if(m) l = m[1].toUpperCase();
-          }
-          return l;
-       }
-
-       function logcatLine(ev){
-          // Return only the message content for table summary; strip duplicates like ts/level/tag/pid
-          let msg = (ev.summary!=null && ev.summary!=='') ? String(ev.summary) : (ev.message || '');
-          if (!msg) return '';
-          try{
-            // Strip leading timestamp like "MM-DD HH:mm:ss.SSS" or "YYYY-MM-DD HH:mm:ss.SSS"
-            msg = msg.replace(/^\s*(\d{2}|\d{4})-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?\s*/,'');
-            // Strip classic logcat prefix: "E/Tag(123): " or "D/Tag:" etc.
-            msg = msg.replace(/^\s*[VDIWEA]\s*\/\s*[^:()]+(?:\([^)]*\))?\s*:\s*/,'');
-            // If we know the level or tag, strip them if they appear at the start like "[INFO] Tag:"
-            const lvl = (levelOf(ev)||'').toUpperCase();
-            if(lvl) msg = msg.replace(new RegExp('^\\s*\\['+lvl+'\\]\\s*:?\\s*',''),'');
-            const tag = (ev.tag||'');
-            if(tag) msg = msg.replace(new RegExp('^\\s*'+tag.replace(/[.*+?^${'$'}}()|[\\]\\\\]/g,'\\${'$'}&')+'\\s*:?\\s*'),'');
-          }catch{}
-          return msg.trim();
-       }
-       function logMessage(ev){
-         // Prefer a cleaned log line. Fallback to message/body/summary if present.
-         const cleaned = logcatLine(ev);
-         if (cleaned && cleaned.trim() !== '') return cleaned;
-         const raw = ev && (ev.message || ev.bodyPreview || ev.summary);
-         return raw ? String(raw) : '';
-       }
-
-       function applyMode(){
-          const m = viewMode?.value || 'mix';
-          bodyEl.classList.remove('mode-mix','mode-network','mode-log');
-          bodyEl.classList.add('mode-'+m);
-       }
-
-        // ---- Stat chip filtering (toggleable) ----
-        const allChips = [];
-        let activeChip = null; // currently selected chip element or null
-        function highlightChip(el){
-          allChips.forEach(c=>c?.classList.remove('active'));
-          if(el){ el.classList.add('active'); activeChip = el; } else { activeChip = null; }
-        }
-        function resetFilters(){
-          // Text & selects
-          if(search){ search.value=''; filterText=''; }
-          if(methodFilter) methodFilter.value='';
-          if(statusFilter) statusFilter.value='';
-          if(statusCodeFilter) statusCodeFilter.value='';
-          if(levelFilter) levelFilter.value='';
-          if(viewMode){ viewMode.value='mix'; applyMode(); }
-        }
-        // ==== Column Resize (persisted) ====
-        const COL_W_KEY = 'logtap:colW';
-        const rootStyle = document.documentElement.style;
-        const headerRow = document.querySelector('#logtbl thead tr');
-
-        function loadColWidths(){
-          try{ return JSON.parse(localStorage.getItem(COL_W_KEY)||'{}'); }catch{ return {}; }
-        }
-        function saveColWidths(map){
-          try{ localStorage.setItem(COL_W_KEY, JSON.stringify(map||{})); }catch{}
-        }
-        function applyColWidths(map){
-          if(!map) return;
-          for(const [k,v] of Object.entries(map)){
-            if(typeof v === 'number' || (typeof v === 'string' && v.endsWith('px'))){
-              const px = typeof v === 'number' ? v+"px" : v;
-              rootStyle.setProperty(`--col-${'$'}{k}-w`, px);
-            }
-          }
-        }
-
-        let colWMap = loadColWidths();
-        applyColWidths(colWMap);
-
-        function installColumnResizers(){
-          if(!headerRow) return;
-          const ths = Array.from(headerRow.querySelectorAll('th'));
-          ths.forEach(th => {
-            const cls = Array.from(th.classList).find(c => c.startsWith('col-'));
-            if(!cls) return; // skip if no recognizable column key
-            const key = cls.replace('col-','');
-            // ensure handle exists once
-            if(th.querySelector('.th-resizer')) return;
-            th.style.position = 'sticky'; // keep sticky; our handle is absolutely placed inside
-            const handle = document.createElement('div');
-            handle.className = 'th-resizer';
-            // Accessibility and hint attributes
-            handle.title = 'Drag to resize column';
-            handle.setAttribute('role','separator');
-            handle.setAttribute('aria-orientation','vertical');
-            handle.tabIndex = 0; // allow keyboard focus
-            th.appendChild(handle);
-
-            let startX=0, startW=0, dragging=false;
-            function onMove(e){
-              if(!dragging) return;
-              const dx = (e.clientX || (e.touches && e.touches[0]?.clientX) || 0) - startX;
-              let w = Math.max(60, Math.min(600, startW + dx));
-              rootStyle.setProperty(`--col-${'$'}{key}-w`, w+'px');
-            }
-            function onUp(){
-              if(!dragging) return;
-              dragging=false;
-              document.body.classList.remove('th-resizing');
-              const cur = getComputedStyle(document.documentElement).getPropertyValue(`--col-${'$'}{key}-w`).trim();
-              if(cur){
-                const num = Number(cur.replace('px','')) || 0;
-                if(num>0){ colWMap[key] = num; saveColWidths(colWMap); }
-              }
-              window.removeEventListener('mousemove', onMove);
-              window.removeEventListener('mouseup', onUp);
-              window.removeEventListener('touchmove', onMove);
-              window.removeEventListener('touchend', onUp);
-            }
-            function onDown(e){
-              e.preventDefault(); e.stopPropagation();
-              const rect = th.getBoundingClientRect();
-              startX = (e.clientX || (e.touches && e.touches[0]?.clientX) || 0);
-              const cur = getComputedStyle(document.documentElement).getPropertyValue(`--col-${'$'}{key}-w`).trim();
-              const fallback = rect.width;
-              startW = cur ? Number(cur.replace('px','')) || fallback : fallback;
-              dragging=true;
-              document.body.classList.add('th-resizing');
-              window.addEventListener('mousemove', onMove);
-              window.addEventListener('mouseup', onUp);
-              window.addEventListener('touchmove', onMove, {passive:false});
-              window.addEventListener('touchend', onUp);
-            }
-            handle.addEventListener('mousedown', onDown);
-            handle.addEventListener('touchstart', onDown, {passive:false});
-
-            // Keyboard support for nudging width
-            function nudge(delta){
-              const cur = getComputedStyle(document.documentElement).getPropertyValue(`--col-${'$'}{key}-w`).trim();
-              const base = cur ? Number(cur.replace('px','')) : th.getBoundingClientRect().width;
-              const w = Math.max(60, Math.min(600, base + delta));
-              rootStyle.setProperty(`--col-${'$'}{key}-w`, w+'px');
-              colWMap[key] = w; saveColWidths(colWMap);
-            }
-            handle.addEventListener('keydown', (e)=>{
-              if(e.key==='ArrowLeft'){ e.preventDefault(); nudge(-10); }
-              else if(e.key==='ArrowRight'){ e.preventDefault(); nudge(+10); }
-            });
+  // ---------- EVENT NORMALIZATION ----------
+  // Server LogEvent -> UI row
+  // Pair HTTP REQUEST + RESPONSE into single row keyed by url+method+thread within ~60s
+  function ingest(ev){
+    if (ev.kind === 'HTTP') {
+      if (ev.direction === 'REQUEST') {
+        var row = {
+          uid: 'http-' + ev.id,
+          serverId: ev.id,
+          ts: ev.ts,
+          type: 'http',
+          method: ev.method || 'GET',
+          url: ev.url || '',
+          status: null,
+          duration: null,
+          requestHeaders: ev.headers || null,
+          requestBody: ev.bodyPreview || null,
+          responseHeaders: null,
+          responseBody: null,
+          tag: 'HTTP',
+          level: 'INFO',
+          message: (ev.method || 'GET') + ' ' + (ev.url || ''),
+          thread: ev.thread,
+          summary: ev.summary,
+          completed: false
+        };
+        var key = (ev.method||'') + '|' + (ev.url||'') + '|' + ev.thread;
+        state.httpPending[key] = state.logs.length;
+        state.logs.push(row);
+      } else if (ev.direction === 'RESPONSE') {
+        var key = (ev.method||'') + '|' + (ev.url||'') + '|' + ev.thread;
+        var idx = state.httpPending[key];
+        var derivedLevel = (ev.status >= 500) ? 'ERROR' : (ev.status >= 400) ? 'WARN' : 'INFO';
+        if (idx !== undefined && state.logs[idx] && !state.logs[idx].completed) {
+          var r = state.logs[idx];
+          r.status = ev.status;
+          r.duration = ev.tookMs;
+          r.responseHeaders = ev.headers;
+          r.responseBody = ev.bodyPreview;
+          r.level = derivedLevel;
+          r.completed = true;
+          delete state.httpPending[key];
+        } else {
+          // Orphan response
+          state.logs.push({
+            uid: 'http-' + ev.id, serverId: ev.id, ts: ev.ts, type: 'http',
+            method: ev.method||'', url: ev.url||'', status: ev.status,
+            duration: ev.tookMs, responseHeaders: ev.headers, responseBody: ev.bodyPreview,
+            tag: 'HTTP', level: derivedLevel, message: ev.summary, thread: ev.thread, completed: true
           });
         }
-        
-        function resetColWidths(){
-          colWMap = {}; saveColWidths(colWMap);
-          // remove custom vars to fall back to defaults
-          ['id','time','kind','tag','method','status','url','actions'].forEach(k=>{
-            rootStyle.removeProperty(`--col-${'$'}{k}-w`);
-          });
-        }
-        function applyStatFilter(kind, toggledOff){
-          if (toggledOff) {
-            // clear any visual/aria selection on chips
-            allChips.forEach(ch=>{ ch?.setAttribute('aria-pressed','false'); ch?.classList.remove('active'); });
-            highlightChip(null); // also sets activeChip = null
-            // force view back to Mix and clear method/level/status filters
-            if(viewMode) viewMode.value = 'mix';
-            if(methodFilter) methodFilter.value = '';
-            if(levelFilter) levelFilter.value = '';
-            if(statusFilter) statusFilter.value = '';
-            if(statusCodeFilter) statusCodeFilter.value = '';
-            applyMode();
-            // user clicked the active chip again -> clear selection and reset filters
-            resetFilters();
-            renderAll();
-            return;
-          }
-          switch(kind){
-            case 'TOTAL':
-              resetFilters();
-              if(viewMode) viewMode.value='mix';
-              applyMode();
-              break;
-            case 'HTTP':
-              resetFilters();
-              if(viewMode) viewMode.value='network';
-              if(methodFilter) methodFilter.value='';
-              applyMode();
-              break;
-            case 'WS':
-              resetFilters();
-              if(viewMode) viewMode.value='network';
-              if(methodFilter) methodFilter.value='WS';
-              applyMode();
-              break;
-            case 'LOG':
-              resetFilters();
-              if(viewMode) viewMode.value='log';
-              applyMode();
-              break;
-            case 'GET':
-              resetFilters();
-              if(viewMode) viewMode.value='network';
-              if(methodFilter) methodFilter.value='GET';
-              applyMode();
-              break;
-            case 'POST':
-              resetFilters();
-              if(viewMode) viewMode.value='network';
-              if(methodFilter) methodFilter.value='POST';
-              applyMode();
-              break;
-          }
-          renderAll();
-        }
+      } else if (ev.direction === 'ERROR') {
+        state.logs.push({
+          uid: 'http-' + ev.id, serverId: ev.id, ts: ev.ts, type: 'http',
+          method: ev.method||'', url: ev.url||'', status: null, duration: null,
+          tag: 'HTTP', level: 'ERROR', message: ev.summary, thread: ev.thread, completed: true,
+          error: ev.reason
+        });
+      }
+    } else if (ev.kind === 'WEBSOCKET') {
+      state.logs.push({
+        uid: 'ws-' + ev.id, serverId: ev.id, ts: ev.ts, type: 'ws',
+        method: ev.method || 'WS', url: ev.url || '', status: ev.code,
+        direction: ev.direction, tag: 'WebSocket',
+        level: ev.direction === 'ERROR' ? 'ERROR' : 'INFO',
+        message: ev.summary, thread: ev.thread,
+        responseBody: ev.bodyPreview, completed: true
+      });
+    } else { // LOG
+      state.logs.push({
+        uid: 'log-' + ev.id, serverId: ev.id, ts: ev.ts, type: 'log',
+        level: (ev.level || 'INFO').toUpperCase(),
+        tag: ev.tag || 'Log',
+        message: ev.summary || '',
+        thread: ev.thread,
+        completed: true
+      });
+    }
+  }
 
-        // ---- Status code filter helpers ----
-        function statusMatches(code, query){
-          if(!query) return true;
-          if(!code) return false;
-          const s = String(query).trim().replace(/\s+/g,'');
-          if(!s) return true;
-          const tokens = s.split(',').filter(Boolean);
-          const c = Number(code);
-          for(const t of tokens){
-            // class like 2xx / 4XX
-            if(/^[0-9][xX]{2}${'$'}/.test(t)){
-              const k = Number(t[0]);
-              if(Math.floor(c/100) === k) return true;
-              continue;
-            }
-            // exact 3-digit
-            if(/^\d{3}${'$'}/.test(t)){
-              if(c === Number(t)) return true;
-              continue;
-            }
-            // range 3xx-3xx or 000-999
-            const m = t.match(/^(\d{3})-(\d{3})${'$'}/);
-            if(m){
-              const a = Number(m[1]), b = Number(m[2]);
-              if(c >= Math.min(a,b) && c <= Math.max(a,b)) return true;
-              continue;
-            }
+  // ---------- COMMAND PARSER ----------
+  function parseSearchCommands(query){
+    var cmds = { exclude: { tags: [], messages: [], methods: [], statuses: [] },
+                 include: { tags: [], messages: [], methods: [], statuses: [], levels: [] },
+                 plain: '' };
+    var parts = query.match(/(?:[^\s"]+|"[^"]*")+/g) || [];
+    var plainParts = [];
+    parts.forEach(function(p){
+      var clean = function(v){ return (v||'').replace(/"/g,''); };
+      if (p.indexOf('exclude:') === 0) {
+        var rest = p.substring(8);
+        var i = rest.indexOf(':');
+        if (i > 0) {
+          var t = rest.substring(0, i), v = clean(rest.substring(i+1));
+          if (t === 'tag' && v) cmds.exclude.tags.push(v);
+          else if (t === 'message' && v) cmds.exclude.messages.push(v);
+          else if (t === 'method' && v) cmds.exclude.methods.push(v.toUpperCase());
+          else if (t === 'status' && v) cmds.exclude.statuses.push(v);
+        }
+      } else if (p.indexOf('include:') === 0 || p.indexOf('level:') === 0 || p.indexOf('method:') === 0 || p.indexOf('status:') === 0) {
+        var ci = p.indexOf(':');
+        var pref = p.substring(0, ci), val = clean(p.substring(ci+1));
+        if (pref === 'level' && val) cmds.include.levels.push(val.toUpperCase());
+        else if ((pref === 'method' || pref === 'include') && val) cmds.include.methods.push(val.toUpperCase());
+        else if ((pref === 'status' || pref === 'include') && val) cmds.include.statuses.push(val);
+      } else {
+        plainParts.push(clean(p));
+      }
+    });
+    cmds.plain = plainParts.join(' ');
+    return cmds;
+  }
+
+  // ---------- FILTER ----------
+  function ciContains(field, q){
+    if (field == null || q == null || q === '') return false;
+    return String(field).toLowerCase().indexOf(String(q).toLowerCase()) !== -1;
+  }
+  function fullText(log){
+    return (log.type === 'http')
+      ? [(log.method||''), (log.url||''), (log.status==null?'':String(log.status)), (log.message||''), (log.requestBody||''), (log.responseBody||''), (log.tag||''), (log.level||''), (log.error||'')].join(' ')
+      : [(log.tag||''), (log.level||''), (log.message||''), (log.url||''), (log.responseBody||''), (log.method||''), (log.direction||'')].join(' ');
+  }
+  function getFiltered(){
+    var cmds = parseSearchCommands(state.searchQuery);
+    var f = state.filters;
+    return state.logs.filter(function(log){
+      var lvl = (log.level||'').toUpperCase();
+      var meth = (log.method||'').toUpperCase();
+      var statStr = (log.status==null) ? '' : String(log.status);
+
+      // ---- Panel filters ----
+      if (f.type !== 'all' && log.type !== f.type) return false;
+      if (f.method !== 'all' && (log.type !== 'http' || meth !== f.method.toUpperCase())) return false;
+      if (f.status !== 'all') {
+        if (log.type !== 'http' || log.status == null) return false;
+        if (f.status === '2xx' && (log.status < 200 || log.status >= 300)) return false;
+        if (f.status === '4xx' && (log.status < 400 || log.status >= 500)) return false;
+        if (f.status === '5xx' && log.status < 500) return false;
+      }
+      if (f.level !== 'all' && lvl !== f.level.toUpperCase()) return false;
+
+      // ---- Panel exclusions (substring, case-insensitive) ----
+      if (f.excludePackages.some(function(p){ return ciContains(log.tag, p); })) return false;
+      if (f.excludeMessages.some(function(m){ return ciContains(fullText(log), m); })) return false;
+
+      // ---- Command exclusions ----
+      // exclude:tag:X    → drop if log.tag contains X
+      if (cmds.exclude.tags.some(function(t){ return ciContains(log.tag, t); })) return false;
+      // exclude:message:X → drop if any visible field contains X
+      if (cmds.exclude.messages.some(function(m){ return ciContains(fullText(log), m); })) return false;
+      // exclude:method:X → drop only HTTP rows whose method matches
+      if (cmds.exclude.methods.length > 0 && log.type === 'http') {
+        if (cmds.exclude.methods.some(function(m){ return meth === m.toUpperCase(); })) return false;
+      }
+      // exclude:status:X → drop only HTTP rows whose status matches
+      if (cmds.exclude.statuses.length > 0 && log.type === 'http') {
+        if (cmds.exclude.statuses.some(function(s){
+          if (statStr === s) return true;
+          // Allow class shorthand: 4xx, 5xx
+          if (/^[1-5]xx${'$'}/i.test(s) && log.status != null) {
+            var cls = parseInt(s.charAt(0), 10);
+            return log.status >= cls*100 && log.status < (cls+1)*100;
           }
           return false;
-        }
-        
-        // ---- Copy helper with fallback for non-secure contexts ----
-        async function copyText(text){
-          try{
-            if (navigator.clipboard && window.isSecureContext) {
-              await navigator.clipboard.writeText(text);
-              return true;
-            }
-          }catch(e){ /* fall back */ }
-          try{
-            const ta = document.createElement('textarea');
-            ta.value = text;
-            ta.style.position = 'fixed';
-            ta.style.top = '-9999px';
-            document.body.appendChild(ta);
-            ta.focus(); ta.select();
-            const ok = document.execCommand('copy');
-            document.body.removeChild(ta);
-            return ok;
-          }catch(e){ console.warn('copy fallback failed', e); return false; }
-        }
-        
-        // ---- Filters & Stats ----
-        function matchesFilters(ev){
-          if(filterText){ const hay = JSON.stringify(ev).toLowerCase(); if(!hay.includes(filterText)) return false; }
-          const kind = kindOf(ev);
-          const mode = viewMode?.value || 'mix';
-          if (mode === 'network' && !(kind === 'HTTP' || kind === 'WEBSOCKET')) return false;
-          if (mode === 'log' && kind !== 'LOG') return false;
-          const m = methodFilter?.value || '';
-          if(m){
-            if(m==='WS') { if(kind !== 'WEBSOCKET') return false; }
-            else { if(kind !== 'HTTP') return false; if((ev.method||'').toUpperCase() !== m) return false; }
+        })) return false;
+      }
+
+      // ---- Command inclusions (positive filters) ----
+      // level:X applies to ALL types (http rows have derived level too)
+      if (cmds.include.levels.length > 0) {
+        if (cmds.include.levels.indexOf(lvl) === -1) return false;
+      }
+      // method:X only matches HTTP rows
+      if (cmds.include.methods.length > 0) {
+        if (log.type !== 'http') return false;
+        if (cmds.include.methods.indexOf(meth) === -1) return false;
+      }
+      // status:X only matches HTTP rows; supports class shorthand 2xx/4xx/5xx
+      if (cmds.include.statuses.length > 0) {
+        if (log.type !== 'http' || log.status == null) return false;
+        var ok = cmds.include.statuses.some(function(s){
+          if (statStr === s) return true;
+          if (/^[1-5]xx${'$'}/i.test(s)) {
+            var cls = parseInt(s.charAt(0), 10);
+            return log.status >= cls*100 && log.status < (cls+1)*100;
           }
-          const s = statusFilter?.value || '';
-          if(s && ev.status){ const x = Math.floor(ev.status/100)+'xx'; if(x!==s) return false; }
-          if (statusCodeFilter && statusCodeFilter.value && !statusMatches(ev.status, statusCodeFilter.value)) return false;
-          const lf = (levelFilter?.value || '').toUpperCase();
-          if(lf && kind==='LOG'){
-            const evLevel = levelOf(ev);
-            if(!evLevel || evLevel !== lf) return false;
-          }
-          return true;
+          return false;
+        });
+        if (!ok) return false;
+      }
+
+      // ---- Plain text search across all visible fields ----
+      if (cmds.plain) {
+        if (!ciContains(fullText(log), cmds.plain)) return false;
+      }
+
+      return true;
+    });
+  }
+
+  // ---------- METRICS ----------
+  function computeMetrics(){
+    var total = state.logs.length;
+    var network = 0, logCount = 0, errors = 0, durSum = 0, durN = 0;
+    var oneMinAgo = Date.now() - 60000;
+    var perMin = 0;
+    state.logs.forEach(function(l){
+      if (l.type === 'http') {
+        network++;
+        if (l.status && l.status >= 400) errors++;
+        if (typeof l.duration === 'number') { durSum += l.duration; durN++; }
+      } else if (l.type === 'log') {
+        logCount++;
+        if (l.level === 'ERROR' || l.level === 'ASSERT') errors++;
+      }
+      if (l.ts >= oneMinAgo) perMin++;
+    });
+    return {
+      total: total, network: network, logs: logCount,
+      errors: errors, perMin: perMin,
+      avgResponseTime: durN > 0 ? Math.round(durSum / durN) : 0
+    };
+  }
+
+  // ---------- HELPERS ----------
+  function fmtTime(ts){
+    var d = new Date(ts);
+    var pad = function(n,w){ var s = String(n); while (s.length < w) s = '0' + s; return s; };
+    return pad(d.getHours(),2) + ':' + pad(d.getMinutes(),2) + ':' + pad(d.getSeconds(),2) + '.' + pad(d.getMilliseconds(),3);
+  }
+  function escHtml(s){
+    if (s == null) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function levelChar(l){
+    if (!l) return ' ';
+    return l.charAt(0);
+  }
+  function statusClass(s){
+    if (s == null) return '';
+    if (s >= 200 && s < 300) return 'status-2';
+    if (s >= 300 && s < 400) return 'status-3';
+    if (s >= 400 && s < 500) return 'status-4';
+    return 'status-5';
+  }
+  function copyText(t){
+    try { navigator.clipboard.writeText(t); } catch(e) {
+      var ta = document.createElement('textarea');
+      ta.value = t; document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); } catch(e2){}
+      document.body.removeChild(ta);
+    }
+  }
+  function asCurl(log){
+    if (log.type !== 'http') return '';
+    var s = "curl -X " + (log.method||'GET') + " '" + (log.url||'') + "'";
+    if (log.requestHeaders) {
+      Object.keys(log.requestHeaders).forEach(function(k){
+        var vals = log.requestHeaders[k] || [];
+        vals.forEach(function(v){ s += " -H '" + k + ": " + v + "'"; });
+      });
+    }
+    if (log.requestBody) s += " --data '" + log.requestBody.replace(/'/g, "'\\''") + "'";
+    return s;
+  }
+  function debounce(fn, ms){
+    var t; return function(){ var args = arguments; clearTimeout(t); t = setTimeout(function(){ fn.apply(null, args); }, ms); };
+  }
+
+  // ---------- SUGGESTIONS ----------
+  var ALL_SUGGESTIONS = [
+    { cmd: 'exclude:tag:', desc: 'Hide logs from a tag/package', example: 'exclude:tag:MainActivity' },
+    { cmd: 'exclude:message:', desc: 'Hide logs containing text', example: 'exclude:message:timeout' },
+    { cmd: 'exclude:method:', desc: 'Hide HTTP method', example: 'exclude:method:GET' },
+    { cmd: 'exclude:status:', desc: 'Hide HTTP status', example: 'exclude:status:404' },
+    { cmd: 'level:', desc: 'Show only this log level', example: 'level:ERROR' },
+    { cmd: 'method:', desc: 'Show only this HTTP method', example: 'method:POST' },
+    { cmd: 'status:', desc: 'Show only this status code', example: 'status:200' },
+    { cmd: 'level:ERROR', desc: 'Show only errors', example: '' },
+    { cmd: 'level:WARN', desc: 'Show only warnings', example: '' },
+    { cmd: 'level:INFO', desc: 'Show only info logs', example: '' },
+    { cmd: 'level:DEBUG', desc: 'Show only debug logs', example: '' },
+    { cmd: 'level:VERBOSE', desc: 'Show only verbose logs', example: '' },
+    { cmd: 'method:GET', desc: 'Show only GET requests', example: '' },
+    { cmd: 'method:POST', desc: 'Show only POST requests', example: '' },
+    { cmd: 'method:PUT', desc: 'Show only PUT requests', example: '' },
+    { cmd: 'method:DELETE', desc: 'Show only DELETE requests', example: '' },
+    { cmd: 'status:200', desc: 'Show only 200 OK', example: '' },
+    { cmd: 'status:404', desc: 'Show only 404', example: '' },
+    { cmd: 'status:500', desc: 'Show only 500', example: '' },
+    { cmd: 'status:2xx', desc: 'Show only 2xx success', example: '' },
+    { cmd: 'status:4xx', desc: 'Show only 4xx client errors', example: '' },
+    { cmd: 'status:5xx', desc: 'Show only 5xx server errors', example: '' }
+  ];
+  function updateSuggestions(){
+    var inp = ${'$'}('#search-input');
+    if (!inp) return;
+    var pos = inp.selectionStart || inp.value.length;
+    var before = inp.value.substring(0, pos);
+    var lastWord = before.split(' ').pop();
+    if (!lastWord) { state.showSuggestions = false; state.suggestions = []; return; }
+    state.suggestions = ALL_SUGGESTIONS.filter(function(s){
+      return s.cmd.toLowerCase().indexOf(lastWord.toLowerCase()) === 0;
+    });
+    state.suggestSel = 0;
+    state.showSuggestions = state.suggestions.length > 0;
+  }
+  function applySuggestion(cmd){
+    var inp = ${'$'}('#search-input');
+    if (!inp) return;
+    var pos = inp.selectionStart || inp.value.length;
+    var before = state.searchQuery.substring(0, pos);
+    var after = state.searchQuery.substring(pos);
+    var words = before.split(' ');
+    words[words.length - 1] = cmd;
+    var nv, np;
+    if (cmd.charAt(cmd.length-1) === ':') {
+      nv = words.join(' ') + after;
+      np = words.join(' ').length;
+    } else {
+      nv = words.join(' ') + ' ' + after;
+      np = words.join(' ').length + 1;
+    }
+    state.searchQuery = nv;
+    state.showSuggestions = false;
+    inp.value = nv;
+    inp.focus();
+    try { inp.setSelectionRange(np, np); } catch(e){}
+    updateSearchUI();
+  }
+
+  // Targeted DOM updates that DO NOT touch the search input element
+  // Used during typing/autocomplete so focus and cursor position are preserved.
+  function refreshSuggestPanel(){
+    var sw = ${'$'}('.search-wrap');
+    if (!sw) return;
+    var old = sw.querySelector('.suggest');
+    if (old) old.remove();
+    if (state.showSuggestions && state.suggestions.length > 0) {
+      sw.appendChild(buildSuggestPanel());
+    }
+  }
+  function refreshStarBtn(){
+    var sw = ${'$'}('.search-wrap');
+    if (!sw) return;
+    var oldStar = sw.querySelector('.star-btn');
+    if (oldStar) oldStar.remove();
+    if (state.searchQuery.trim()) {
+      var saved = isCurrentSaved();
+      var btn = h('button', {
+        class:'star-btn',
+        title: saved ? 'Remove from favorites' : 'Save to favorites',
+        onclick: function(e){ e.stopPropagation(); toggleSaveCurrent(); }
+      }, saved ? '★' : '☆');
+      // Insert before suggest panel (if any) so star stays inside input area
+      var sug = sw.querySelector('.suggest');
+      if (sug) sw.insertBefore(btn, sug); else sw.appendChild(btn);
+    }
+  }
+  function refreshSavedBadge(){
+    var savedBtn = ${'$'}${'$'}('.icon-btn').filter(function(b){ return b.title === 'Saved Filters'; })[0];
+    if (!savedBtn) return;
+    var old = savedBtn.querySelector('.badge');
+    if (old) old.remove();
+    if (state.savedFilters.length > 0) {
+      savedBtn.appendChild(h('span', {class:'badge'}, String(state.savedFilters.length)));
+    }
+  }
+  function replaceSection(sel, builder){
+    var old = ${'$'}(sel);
+    if (old && old.parentNode) old.parentNode.replaceChild(builder(), old);
+  }
+  function updateSearchUI(){
+    refreshSuggestPanel();
+    refreshStarBtn();
+    refreshSavedBadge();
+    replaceSection('.metrics', buildMetrics);
+    replaceSection('.main', buildMain);
+    replaceSection('#status-bar', buildStatusBar);
+  }
+
+  // ---------- SAVED FILTERS ----------
+  function isCurrentSaved(){
+    var q = state.searchQuery.trim();
+    return q && state.savedFilters.some(function(f){ return f.query === q; });
+  }
+  function toggleSaveCurrent(){
+    var q = state.searchQuery.trim();
+    if (!q) return;
+    var existing = state.savedFilters.filter(function(f){ return f.query === q; });
+    if (existing.length > 0) {
+      state.savedFilters = state.savedFilters.filter(function(f){ return f.query !== q; });
+    } else {
+      state.savedFilters.push({ id: Date.now() + ':' + Math.random(), name: q, query: q, timestamp: new Date().toISOString() });
+    }
+    localStorage.setItem('logtap-saved-filters', JSON.stringify(state.savedFilters));
+    // Use targeted updates so the input keeps focus + cursor position
+    updateSearchUI();
+    // Also refresh saved-filters popover if open
+    if (state.showSavedFilters) render();
+  }
+  function loadSaved(f){
+    state.searchQuery = f.query;
+    state.showSavedFilters = false;
+    render();
+  }
+  function deleteSaved(id){
+    state.savedFilters = state.savedFilters.filter(function(f){ return f.id !== id; });
+    localStorage.setItem('logtap-saved-filters', JSON.stringify(state.savedFilters));
+    render();
+  }
+
+  // ---------- CONTEXT MENU ----------
+  function showContextMenu(x, y, items){
+    state.contextMenu = { x: x, y: y, items: items };
+    render();
+  }
+  function hideContextMenu(){
+    if (state.contextMenu) { state.contextMenu = null; render(); }
+  }
+  document.addEventListener('click', function(){ hideContextMenu(); });
+
+  // ---------- RENDER ----------
+  function h(tag, attrs, children){
+    var el = document.createElement(tag);
+    if (attrs) {
+      Object.keys(attrs).forEach(function(k){
+        var v = attrs[k];
+        if (v == null || v === false) return;
+        if (k === 'class') el.className = v;
+        else if (k === 'style' && typeof v === 'object') {
+          Object.keys(v).forEach(function(s){ el.style[s] = v[s]; });
+        } else if (k.indexOf('on') === 0 && typeof v === 'function') {
+          el.addEventListener(k.substring(2).toLowerCase(), v);
+        } else if (k === 'html') {
+          el.innerHTML = v;
+        } else {
+          el.setAttribute(k, v);
         }
-        function renderStats(){
-          const total = rows.length; const http = rows.filter(r=>kindOf(r)==='HTTP').length; const ws = rows.filter(r=>kindOf(r)==='WEBSOCKET').length; const log = rows.filter(r=>kindOf(r)==='LOG').length; const get = rows.filter(r=>(r.method||'').toUpperCase()==='GET').length; const post = rows.filter(r=>(r.method||'').toUpperCase()=='POST').length;
-          const set=(id,txt)=>{ const el=document.getElementById(id); if(el) el.textContent = txt; };
-          set('chipTotal','Total: '+total); set('chipHttp','HTTP: '+http); set('chipWs','WS: '+ws); set('chipLog','LOG: '+log); set('chipGet','GET: '+get); set('chipPost','POST: '+post);
+      });
+    }
+    if (children != null) {
+      if (!Array.isArray(children)) children = [children];
+      children.forEach(function(c){
+        if (c == null || c === false) return;
+        if (typeof c === 'string' || typeof c === 'number') el.appendChild(document.createTextNode(String(c)));
+        else el.appendChild(c);
+      });
+    }
+    return el;
+  }
+
+  function render(){
+    applyTheme();
+    root.innerHTML = '';
+    root.appendChild(buildToolbar());
+    root.appendChild(buildMetrics());
+    root.appendChild(buildMain());
+    root.appendChild(buildStatusBar());
+    if (state.contextMenu) root.appendChild(buildContextMenu());
+  }
+
+  function buildToolbar(){
+    var info = state.appInfo;
+    var iconHtml = info && info.appIconBase64
+      ? '<img src="data:image/png;base64,' + info.appIconBase64 + '"/>'
+      : 'LT';
+    var brand = h('div', {class:'brand'},[
+      h('div', {class:'brand-icon', html: iconHtml}),
+      h('div', {class:'brand-text'}, [
+        h('div', {class:'brand-name'}, info ? info.appName : 'LogTap'),
+        h('div', {class:'brand-meta'}, info ? ('v' + info.versionName + ' (build ' + info.versionCode + ')') : 'Connecting...')
+      ])
+    ]);
+
+    var saved = isCurrentSaved();
+    var starBtn = state.searchQuery.trim()
+      ? h('button', {class:'star-btn', title: saved ? 'Remove from favorites' : 'Save to favorites', onclick: function(e){ e.stopPropagation(); toggleSaveCurrent(); }}, saved ? '★' : '☆')
+      : null;
+
+    var inp = h('input', {
+      id: 'search-input', class: 'search-input', type: 'text',
+      placeholder: 'Search or use commands: exclude:tag:MainActivity, level:ERROR...',
+      value: state.searchQuery,
+      autocomplete: 'off', spellcheck: 'false',
+      oninput: function(e){ state.searchQuery = e.target.value; updateSuggestions(); updateSearchUI(); },
+      onkeydown: function(e){
+        if (state.showSuggestions && state.suggestions.length > 0) {
+          if (e.key === 'ArrowDown') { e.preventDefault(); state.suggestSel = (state.suggestSel + 1) % state.suggestions.length; refreshSuggestPanel(); return; }
+          if (e.key === 'ArrowUp') { e.preventDefault(); state.suggestSel = (state.suggestSel - 1 + state.suggestions.length) % state.suggestions.length; refreshSuggestPanel(); return; }
+          if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); applySuggestion(state.suggestions[state.suggestSel].cmd); return; }
+          if (e.key === 'Escape') { state.showSuggestions = false; refreshSuggestPanel(); return; }
         }
-        
-        // ---- cURL builder (HTTP only) ----
-        function curlFor(ev){
-          try{
-            if(ev.kind!=='HTTP') return '';
-            const parts = ['curl', '-i', '-X', (ev.method||'GET')];
-            const url = ev.url || '';
-            const hdrs = ev.headers || {};
-            for(const [k,v] of Object.entries(hdrs)){
-              const vv = Array.isArray(v)? v.join(', '): String(v);
-              parts.push('-H', JSON.stringify(k+': '+vv));
-            }
-            if(ev.bodyPreview!=null && ev.bodyPreview!=='' && ev.method && ev.method.toUpperCase()!=='GET'){
-              parts.push('--data-binary', JSON.stringify(String(ev.bodyPreview)));
-            }
-            parts.push(JSON.stringify(url));
-            return parts.join(' ');
-          }catch(e){ console.warn('[LogTap] curlFor failed', e); return ''; }
-        }
-        
-        // ---- Table ----
-        function renderAll(){
-          try{
-            filtered = rows.filter(matchesFilters);
-            tbody.innerHTML='';
-            const fr = document.createDocumentFragment();
-            for(const ev of filtered) fr.appendChild(renderRow(ev));
-            tbody.appendChild(fr);
-            if(autoScroll?.checked) tbody.lastElementChild?.scrollIntoView({block:'end'});
-            renderStats();
-          }catch(err){ console.error('[LogTap] renderAll error', err); }
-        }
-        function btn(label, on){
-          const b=document.createElement('button');
-          b.className='xs ghost';
-          b.textContent=label;
-          b.addEventListener('click', async (e)=>{
-            e.preventDefault();
-            e.stopPropagation();
-            try { await on(b); } catch(err){ console.warn('button action failed', err); }
+      },
+      onfocus: function(){ updateSuggestions(); refreshSuggestPanel(); },
+      onblur: function(){ setTimeout(function(){ state.showSuggestions = false; refreshSuggestPanel(); }, 150); }
+    });
+
+    var suggestPanel = (state.showSuggestions && state.suggestions.length > 0)
+      ? buildSuggestPanel()
+      : null;
+
+    var searchWrap = h('div', {class:'search-wrap'}, [inp, starBtn, suggestPanel]);
+
+    var btnFilters = h('button', {class:'icon-btn' + (state.showFilters?' active':''), title:'Filters', onclick: function(e){ e.stopPropagation(); state.showFilters = !state.showFilters; render(); }}, '☰');
+    var btnSavedBadge = state.savedFilters.length > 0 ? h('span', {class:'badge'}, String(state.savedFilters.length)) : null;
+    var btnSaved = h('button', {class:'icon-btn' + (state.showSavedFilters?' active':''), title:'Saved Filters', onclick: function(e){ e.stopPropagation(); state.showSavedFilters = !state.showSavedFilters; state.showSettings = false; render(); }}, ['★', btnSavedBadge]);
+
+    var btnTheme = h('button', {class:'icon-btn', title: state.darkMode ? 'Switch to Light' : 'Switch to Dark', onclick: function(){ state.darkMode = !state.darkMode; localStorage.setItem('logtap-dark-mode', JSON.stringify(state.darkMode)); render(); }}, state.darkMode ? '◐' : '◑');
+    var btnClear = h('button', {class:'icon-btn danger', title:'Clear logs', onclick: clearLogs}, '🗑');
+    var btnExport = h('button', {class:'icon-btn accent', title:'Export JSON', onclick: exportJson}, '💾');
+    var btnSettings = h('button', {class:'icon-btn' + (state.showSettings?' active':''), title:'Settings', onclick: function(e){ e.stopPropagation(); state.showSettings = !state.showSettings; state.showSavedFilters = false; render(); }}, '⚙');
+
+    var settingsPanel = state.showSettings ? buildSettingsPanel() : null;
+    var savedPanel = state.showSavedFilters ? buildSavedPanel() : null;
+
+    var right = h('div', {class:'toolbar-right'}, [btnTheme, btnClear, btnExport, h('div', {style:{position:'relative'}}, [btnSettings, settingsPanel])]);
+
+    var filterPanel = state.showFilters ? buildFilterPanel() : null;
+
+    return h('div', {class:'tb', onclick: function(e){ e.stopPropagation(); }}, [brand, searchWrap, btnFilters, btnSaved, right, savedPanel, filterPanel]);
+  }
+
+  function preserveFocus(id){
+    var el = document.getElementById(id);
+    if (el && document.activeElement !== el) {
+      var pos = el.selectionStart;
+      el.focus();
+      if (pos != null) try { el.setSelectionRange(pos, pos); } catch(e){}
+    }
+  }
+
+  function buildSuggestPanel(){
+    var hdr = h('div', {class:'suggest-hdr'}, '💡 Command Suggestions');
+    var items = state.suggestions.map(function(s, i){
+      var cmd = h('div', {class:'suggest-cmd'}, s.cmd);
+      if (s.cmd.charAt(s.cmd.length-1) === ':') cmd.appendChild(h('span', {class:'ph'}, '<value>'));
+      var children = [cmd, h('div', {class:'suggest-desc'}, s.desc)];
+      if (s.example) children.push(h('div', {class:'suggest-ex'}, 'Example: ' + s.example));
+      return h('div', {
+        class: 'suggest-item' + (i === state.suggestSel ? ' sel' : ''),
+        onmousedown: function(e){ e.preventDefault(); e.stopPropagation(); applySuggestion(s.cmd); },
+        onmouseenter: function(){ state.suggestSel = i; }
+      }, children);
+    });
+    return h('div', {class:'suggest'}, [hdr].concat(items));
+  }
+
+  function buildSettingsPanel(){
+    var themeSel = h('select', {value: state.theme, onchange: function(e){ state.theme = e.target.value; localStorage.setItem('logtap-theme', state.theme); render(); }}, [
+      h('option', {value:'android'}, 'Android Studio'),
+      h('option', {value:'xcode'}, 'Xcode'),
+      h('option', {value:'grafana'}, 'Grafana'),
+      h('option', {value:'modern'}, 'Modern')
+    ]);
+    themeSel.value = state.theme;
+    var viewSel = h('select', {value: state.viewMode, onchange: function(e){ state.viewMode = e.target.value; localStorage.setItem('logtap-view-mode', state.viewMode); render(); }}, [
+      h('option', {value:'logcat'}, 'Logcat View'),
+      h('option', {value:'table'}, 'Table View')
+    ]);
+    viewSel.value = state.viewMode;
+    var densSel = h('select', {value: state.density, onchange: function(e){ state.density = e.target.value; localStorage.setItem('logtap-density', state.density); render(); }}, [
+      h('option', {value:'compact'}, 'Compact'),
+      h('option', {value:'comfortable'}, 'Comfortable'),
+      h('option', {value:'spacious'}, 'Spacious')
+    ]);
+    densSel.value = state.density;
+    return h('div', {class:'popover', style:{top:'calc(100% + 8px)', right:'0', minWidth:'220px'}}, [
+      h('div', {class:'popover-section'}, 'Settings'),
+      h('div', {class:'popover-section', style:{fontSize:'12px', textTransform:'none'}}, 'Theme'),
+      themeSel,
+      h('div', {class:'popover-section', style:{fontSize:'12px', textTransform:'none', marginTop:'8px'}}, 'View Mode'),
+      viewSel,
+      h('div', {class:'popover-section', style:{fontSize:'12px', textTransform:'none', marginTop:'8px'}}, 'Density'),
+      densSel
+    ]);
+  }
+
+  function buildSavedPanel(){
+    var rows = state.savedFilters.length === 0
+      ? [h('div', {class:'saved-empty'}, 'No saved filters yet')]
+      : state.savedFilters.map(function(f){
+          return h('div', {class:'saved-row'}, [
+            h('div', {class:'body', onclick: function(){ loadSaved(f); }}, [
+              h('div', {style:{fontSize:'13px', fontWeight:'500'}}, f.name),
+              h('div', {class:'saved-q'}, f.query || '(no query)'),
+              h('div', {class:'saved-ts'}, new Date(f.timestamp).toLocaleString())
+            ]),
+            h('button', {class:'del-btn', onclick: function(e){ e.stopPropagation(); deleteSaved(f.id); }}, '🗑')
+          ]);
+        });
+    return h('div', {class:'popover', style:{top:'56px', right:'16px', minWidth:'380px', maxWidth:'500px'}}, [
+      h('div', {style:{fontSize:'14px', fontWeight:'600', marginBottom:'12px'}}, 'Saved Filters'),
+      h('div', {class:'saved-list'}, rows)
+    ]);
+  }
+
+  function buildFilterPanel(){
+    var f = state.filters;
+    function sel(label, val, options, onchange){
+      var s = h('select', {onchange: onchange}, options.map(function(o){
+        return h('option', {value: o.v}, o.l);
+      }));
+      s.value = val;
+      return h('div', {}, [h('label', {}, label), s]);
+    }
+    var typeBox = sel('Type', f.type, [
+      {v:'all', l:'All'}, {v:'http', l:'HTTP'}, {v:'log', l:'Logs'}, {v:'ws', l:'WebSocket'}
+    ], function(e){ f.type = e.target.value; render(); });
+    var methodBox = sel('Method', f.method, [
+      {v:'all', l:'All'}, {v:'GET', l:'GET'}, {v:'POST', l:'POST'}, {v:'PUT', l:'PUT'}, {v:'DELETE', l:'DELETE'}, {v:'PATCH', l:'PATCH'}
+    ], function(e){ f.method = e.target.value; render(); });
+    var statusBox = sel('Status', f.status, [
+      {v:'all', l:'All'}, {v:'2xx', l:'2xx'}, {v:'4xx', l:'4xx'}, {v:'5xx', l:'5xx'}
+    ], function(e){ f.status = e.target.value; render(); });
+    var levelBox = sel('Level', f.level, [
+      {v:'all', l:'All'}, {v:'VERBOSE', l:'VERBOSE'}, {v:'DEBUG', l:'DEBUG'}, {v:'INFO', l:'INFO'}, {v:'WARN', l:'WARN'}, {v:'ERROR', l:'ERROR'}, {v:'ASSERT', l:'ASSERT'}
+    ], function(e){ f.level = e.target.value; render(); });
+
+    var excTypeSel = h('select', {onchange: function(e){ state.excludeType = e.target.value; render(); }}, [
+      h('option', {value:'package'}, 'Package/Tag'),
+      h('option', {value:'message'}, 'Message')
+    ]);
+    excTypeSel.value = state.excludeType;
+
+    var excInput = h('input', {
+      id: 'exc-input', type:'text', placeholder: 'Exclude by ' + state.excludeType + '...',
+      value: state.excludeInput,
+      oninput: function(e){ state.excludeInput = e.target.value; },
+      onkeydown: function(e){ if (e.key === 'Enter') addExclusion(); }
+    });
+
+    var excBtn = h('button', {onclick: addExclusion}, 'Add');
+    var excRow = h('div', {class:'exclude-row'}, [excTypeSel, excInput, excBtn]);
+
+    var chips = [];
+    f.excludePackages.forEach(function(p){
+      chips.push(h('span', {class:'chip'}, [
+        '📦 ' + p,
+        h('button', {onclick: function(){ f.excludePackages = f.excludePackages.filter(function(x){ return x !== p; }); render(); }}, '×')
+      ]));
+    });
+    f.excludeMessages.forEach(function(m){
+      chips.push(h('span', {class:'chip'}, [
+        '💬 ' + m,
+        h('button', {onclick: function(){ f.excludeMessages = f.excludeMessages.filter(function(x){ return x !== m; }); render(); }}, '×')
+      ]));
+    });
+
+    var exclusionsBox = h('div', {style:{gridColumn:'span 2'}}, [
+      h('label', {}, 'Exclude Filters'),
+      excRow,
+      h('div', {class:'chips'}, chips)
+    ]);
+
+    return h('div', {class:'filter-panel'}, [typeBox, methodBox, statusBox, levelBox, exclusionsBox]);
+  }
+
+  function addExclusion(){
+    var v = state.excludeInput.trim();
+    if (!v) return;
+    if (state.excludeType === 'package') state.filters.excludePackages.push(v);
+    else state.filters.excludeMessages.push(v);
+    state.excludeInput = '';
+    render();
+  }
+
+  function buildMetrics(){
+    var m = computeMetrics();
+    function mk(label, val, color){
+      return h('div', {class:'metric'}, [
+        h('div', {class:'l'}, label),
+        h('div', {class:'v', style:{color: color}}, String(val))
+      ]);
+    }
+    return h('div', {class:'metrics'}, [
+      mk('Total', m.total, 'var(--text-primary)'),
+      mk('Network', m.network, 'var(--info)'),
+      mk('Logs', m.logs, 'var(--debug)'),
+      mk('Errors', m.errors, 'var(--error)'),
+      mk('Logs/min', m.perMin, 'var(--warn)'),
+      mk('Avg Response', m.avgResponseTime + 'ms', 'var(--accent)'),
+      mk('Filters', activeFilterCount(), 'var(--accent)')
+    ]);
+  }
+
+  function activeFilterCount(){
+    var f = state.filters; var c = 0;
+    ['type','method','status','level'].forEach(function(k){ if (f[k] !== 'all') c++; });
+    c += f.excludePackages.length + f.excludeMessages.length;
+    if (state.searchQuery.trim()) c++;
+    return c;
+  }
+
+  function buildMain(){
+    var filtered = getFiltered();
+    if (state.viewMode === 'logcat') {
+      return h('div', {class:'main'}, [buildLogcatView(filtered)]);
+    }
+    var children = [buildTableView(filtered)];
+    var sel = state.selectedId ? state.logs.filter(function(l){ return l.uid === state.selectedId; })[0] : null;
+    if (sel) children.push(buildDetail(sel));
+    return h('div', {class:'main'}, children);
+  }
+
+  // ---------- LOGCAT VIEW ----------
+  function buildLogcatView(filtered){
+    var container = h('div', {class:'logcat', id:'logcat-container', onscroll: handleScroll});
+    filtered.forEach(function(log){ container.appendChild(renderLogcatRow(log)); });
+    if (filtered.length === 0) container.appendChild(h('div', {style:{padding:'24px', textAlign:'center', color:'var(--text-secondary)'}}, 'No logs match current filters'));
+    setTimeout(function(){
+      if (state.autoScroll) container.scrollTop = container.scrollHeight;
+    }, 0);
+    return container;
+  }
+
+  function renderLogcatRow(log){
+    var time = fmtTime(log.ts);
+    var pidStr = pidTid(log);
+    var lvl = levelChar(log.level || 'I');
+    var clsLvl = 'lvl-' + lvl;
+    var tagPart = '';
+    var msgPart = '';
+    if (log.type === 'log') {
+      tagPart = log.tag || '';
+      msgPart = log.message || '';
+    } else if (log.type === 'http') {
+      tagPart = 'HTTP/' + (log.method || '');
+      var statusStr = log.status != null ? log.status : '...';
+      var dur = log.duration != null ? (log.duration + 'ms') : '';
+      msgPart = (log.method || '') + ' ' + statusStr + ' ' + (log.url || '') + (dur ? ' (' + dur + ')' : '');
+    } else if (log.type === 'ws') {
+      tagPart = 'WS';
+      msgPart = '[' + (log.direction || '') + '] ' + (log.message || '');
+    }
+
+    var row = h('div', {class:'logcat-row', oncontextmenu: function(e){ e.preventDefault(); e.stopPropagation(); openContextMenu(e, log); }},
+      [
+        h('span', {class:'logcat-time'}, time + '  '),
+        h('span', {class:'logcat-tid', title:'pid-tid'}, pidStr + '  '),
+        h('span', {class: clsLvl}, lvl + ' '),
+        h('span', {class:'logcat-tag ' + clsLvl}, tagPart + ': '),
+        h('span', {class: log.type === 'log' ? clsLvl : ''}, msgPart)
+      ]
+    );
+
+    // Inline net details for HTTP
+    if (log.type === 'http') {
+      if (log.requestHeaders) {
+        var keys = Object.keys(log.requestHeaders);
+        keys.forEach(function(k){
+          var vals = log.requestHeaders[k];
+          (vals || []).forEach(function(v){
+            row.appendChild(h('div', {class:'logcat-net-line'}, [h('span',{class:'k'}, k + ': '), h('span',{}, v)]));
           });
-          return b;
-        }
-        function renderRow(ev){
-          const tr = document.createElement('tr');
-          const kind = kindOf(ev); const dir = dirOf(ev);
-          // Add WS direction classes to row
-          const isSend = (dir === 'OUTBOUND' || dir === 'REQUEST');
-          const isRecv = (dir === 'INBOUND'  || dir === 'RESPONSE');
-          if (kind === 'WEBSOCKET'){
-            if (isSend) tr.classList.add('ws-send');
-            else if (isRecv) tr.classList.add('ws-recv');
-          }
-          // Build WS direction icon (send/receive)
-          let wsIconHtml = '';
-          const mU = (ev.method ? String(ev.method).toUpperCase() : (kind==='WEBSOCKET' ? 'WS' : ''));
-          if (kind === 'WEBSOCKET') {
-            wsIconHtml = isSend
-              ? '<span class="ws-ico ws-send" title="WebSocket send">⇧</span>'
-              : isRecv
-                ? '<span class="ws-ico ws-recv" title="WebSocket receive">⇩</span>'
-                : '<span class="ws-ico" title="WebSocket">∿</span>';
-          }
-          const lvl = (kind==='LOG') ? levelOf(ev) : '';
-          if(lvl) tr.classList.add('level-'+lvl);
-          const stCls = classForStatus(ev.status);
-          if (stCls) tr.classList.add(stCls);
-          const tagTxt = ev.tag ? String(ev.tag) : '';
-          tr.dataset.id = String(ev.id ?? '');
-          if (mU) tr.classList.add('method-'+mU);
-          const actions = document.createElement('div'); actions.className='action-row';
-          if(kind==='HTTP') {
-            const copyBtn = document.createElement('button');
-            copyBtn.className = 'icon';
-            copyBtn.title = 'Copy cURL';
-            copyBtn.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">content_copy</span>';
-            copyBtn.addEventListener('click', async (e)=>{
-              e.preventDefault(); e.stopPropagation();
-              const ok = await copyText(curlFor(ev));
-              if(ok){ copyBtn.classList.add('active'); setTimeout(()=> copyBtn.classList.remove('active'), 800); }
-            });
-            actions.appendChild(copyBtn);
-          }
-          const tdActions = document.createElement('td'); tdActions.className='col-actions'; tdActions.appendChild(actions);
+        });
+      }
+      if (log.requestBody) {
+        row.appendChild(h('div', {class:'logcat-net-line req'}, '> ' + log.requestBody));
+      }
+      if (log.responseBody) {
+        var cls = (log.status >= 400 ? 'res-err' : 'res-ok');
+        row.appendChild(h('div', {class:'logcat-net-line ' + cls}, '< ' + log.responseBody));
+      }
+      if (log.error) {
+        row.appendChild(h('div', {class:'logcat-net-line res-err'}, 'ERROR: ' + log.error));
+      }
+    } else if (log.type === 'ws' && log.responseBody) {
+      row.appendChild(h('div', {class:'logcat-net-line'}, '  ' + log.responseBody));
+    }
+    return row;
+  }
 
-          tr.innerHTML =
-            `<td class="col-id">${'$'}{ev.id ?? ''}</td>`+
-            `<td class="col-time">${'$'}{fmtTime(ev.ts)}</td>`+
-            `<td class="col-kind kind-${'$'}{kind}">${'$'}{
-        kind === 'LOG'
-        ? escapeHtml(ev.level || levelOf(ev) || 'LOG')
-        : (kind === 'WEBSOCKET' ? ('WS' + wsIconHtml) : kind)
-    }</td>`+
-            `<td class="col-tag">${'$'}{escapeHtml(tagTxt)}</td>`+
-            `<td class="col-method method-${'$'}{mU}">${'$'}{escapeHtml(ev.method || (kind === 'WEBSOCKET'?'WS':''))}</td>`+
-            `<td class="col-status ${'$'}{classForStatus(ev.status)}">${'$'}{ev.status ?? ''}</td>`+
-            (kind==='LOG'
-              ? (`<td class="col-url"><div class="url"><div class="lc">${'$'}{logcatLine(ev)}</div></div></td>`)
-              : (`<td class="col-url">`
-                   + `<div class="url method-${'$'}{mU} ${'$'}{kind === 'WEBSOCKET' ? (isSend?'ws ws-send': (isRecv?'ws ws-recv':'ws')) : ''}">${'$'}{
-        escapeHtml(
-            ev.url || ''
-        )
-    }</div>`
-                   + (ev.summary ? `<div class="muted">${'$'}{escapeHtml(ev.summary)}</div>` : '')
-                 + `</td>`)
-            )
-          // pretty body preview under URL cell (only for HTTP and WEBSOCKET, not LOG)
-          if (ev.bodyPreview && (kind === 'HTTP' || kind === 'WEBSOCKET')) {
-            const pre = document.createElement('pre');
-            pre.className = 'code mini body' + (jsonPretty?.checked ? ' json' : '');
-            if (kind === 'WEBSOCKET'){
-              pre.classList.add(isSend ? 'ws-send' : (isRecv ? 'ws-recv' : ''));
-            }
-            pre.innerHTML = jsonPretty?.checked ? hlJson(ev.bodyPreview) : escapeHtml(String(ev.bodyPreview));
-            const urlCell = tr.querySelector('.col-url');
-            if (urlCell) urlCell.appendChild(pre);
-          }
-          tr.appendChild(tdActions);
-          tr.addEventListener('click', ()=> openDrawer(ev));
-          return tr;
+  // ---------- TABLE VIEW ----------
+  function buildTableView(filtered){
+    var widths = state.columnWidths;
+    var gridTemplate = widths.map(function(w){ return w + 'px'; }).join(' ');
+    var headers = ['ID', 'Time', 'PID/TID', 'Type', 'Tag/Method', 'Level/Status', 'Size', 'Message/URL', 'Response'];
+    var headEl = h('div', {class:'tbl-head', style:{gridTemplateColumns: gridTemplate}},
+      headers.map(function(label, i){
+        var col = h('div', {class:'col'}, [h('span', {}, label)]);
+        if (i < widths.length - 1) {
+          var resize = h('div', {class:'col-resize', onmousedown: function(e){ startColResize(i, e); }});
+          col.appendChild(resize);
         }
-        // ---- Body helper ----
-        function bodyFor(ev, which){
-          // prefer full body fields if present
-          if(which==='request'){
-            return ev.requestBodyFull ?? ev.requestBody ?? ev.body ?? ev.bodyFull ?? ev.bodyPreview ?? '';
-          } else {
-            return ev.responseBodyFull ?? ev.responseBody ?? ev.body ?? ev.bodyFull ?? ev.bodyPreview ?? '';
-          }
-        }
-        
-        // ---- Drawer ----
-        function setText(id,v){ const el=document.getElementById(id); if(el) el.textContent = v==null?'':String(v); }
-        function setJson(id,raw){ const el=document.getElementById(id); if(!el) return; if(!raw){ el.textContent=''; return;} el.innerHTML = hlJson(raw); }
-        function headersToLines(map){
-          try{ return Object.entries(map||{}).map(([k,v])=> k+': '+(Array.isArray(v)?v.join(', '): String(v))).join('\n'); }catch{ return ''; }
-        }
-        function hlHeaders(text){
-          return String(text||'').split('\n').map(line=>{
-            const m = line.match(/^([^:]+):\s*(.*)${'$'}/);
-            if(m){
-              return '<span class="hk">'+escapeHtml(m[1])+'</span>: <span class="hv">'+escapeHtml(m[2])+'</span>';
-            }
-            return escapeHtml(line);
-          }).join('\n');
-        }
-        function setHeaders(id, map){
-          const el = document.getElementById(id); if(!el) return;
-          const txt = headersToLines(map);
-          el.innerHTML = hlHeaders(txt);
-        }
-        function activateTab(name){ tabs.forEach(b=>b.classList.toggle('active', b.dataset.tab===name)); document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('active', p.id==='tab-'+name)); }
-        function show(id, on){ const el=document.getElementById(id); if(!el) return; el.classList.toggle('hidden', !on); }
-        function setActiveTabIfHidden(){
-          // ensure the active tab button/pane are visible; if not, switch to overview
-          const active = document.querySelector('.tab.active');
-          if(active && active.classList.contains('hidden')) activateTab('overview');
-        }
-        function configureDrawerForKind(kind, ev){
-          const isLog = (kind === 'LOG');
-          // Toggle overview rows
-          show('row-method', !isLog);
-          show('row-status', !isLog);
-          show('row-url', !isLog);
-          show('row-took', !isLog);
-          show('row-curl', !isLog && ev && kind==='HTTP');
-          show('row-level', isLog);
-          show('row-tag', isLog);
-          // Tabs: hide request/response/headers for LOG
-          const showNetTabs = !isLog;
-          document.getElementById('tabBtn-request')?.classList.toggle('hidden', !showNetTabs);
-          document.getElementById('tabBtn-response')?.classList.toggle('hidden', !showNetTabs);
-          document.getElementById('tabBtn-headers')?.classList.toggle('hidden', !showNetTabs);
-          document.getElementById('tab-request')?.classList.toggle('hidden', !showNetTabs);
-          document.getElementById('tab-response')?.classList.toggle('hidden', !showNetTabs);
-          document.getElementById('tab-headers')?.classList.toggle('hidden', !showNetTabs);
-          if(!showNetTabs) activateTab('overview');
-        }
-        function openDrawer(ev){
-          if(!drawer) return;
-          currentEv = ev;
-          const kind = kindOf(ev); const dir = dirOf(ev);
-          bodyEl.classList.add('drawer-open');
-          let title = '';
-          if (kind === 'LOG') {
-            // For logger entries: show the tag (fallback to summary or 'LOG')
-            title = ev.tag || ev.summary || 'LOG';
-          } else {
-            // For interceptor entries (HTTP / WebSocket): show the URL only
-            title = ev.url || ev.summary || '';
-          }
-          const tEl = document.getElementById('drawerTitle'); tEl && tEl.replaceChildren(document.createTextNode(title));
-          let sub = `<span class="badge">id ${'$'}{ev.id}</span> ` + (ev.status? `<span class="badge">status ${'$'}{ev.status}</span> ` : '') + (ev.tookMs? `<span class="badge">${'$'}{ev.tookMs} ms</span>` : '');
-          if (kind === 'WEBSOCKET') {
-            const d = dir;
-            const label = (d === 'OUTBOUND' || d === 'REQUEST') ? 'send' : (d === 'INBOUND' || d === 'RESPONSE') ? 'recv' : String(d||'').toLowerCase();
-            sub += ` <span class="badge">WS ${'$'}{label}</span>`;
-          }
-          const sEl = document.getElementById('drawerSub'); if(sEl) sEl.innerHTML = sub;
-          setText('ov-id', ev.id); setText('ov-time', fmtDateTime(ev.ts));
-          // Set ov-kind: for LOG, use level or fallback; else kind.
-          if(kind==='LOG'){
-            setText('ov-kind', ev.level || levelOf(ev) || 'LOG');
-          } else {
-            setText('ov-kind', kind);
-          }
-          setText('ov-dir', dir);
-          setText('ov-method', ev.method || (kind==='WEBSOCKET'?'WS':'')); setText('ov-status', ev.status ?? ''); setText('ov-url', ev.url ?? '');
-          setText('ov-level', (ev.level || levelOf(ev) || ''));
-          setText('ov-tag', (ev.tag || ''));
-          // ---- Contextual summary block with classes ----
-          const mU = (ev.method ? String(ev.method).toUpperCase() : (kind==='WEBSOCKET' ? 'WS' : ''));
-          const lvl = (kind==='LOG') ? levelOf(ev) : '';
-          const sumEl = document.getElementById('ov-summary');
-          if (sumEl){
-            sumEl.classList.remove('json','method-GET','method-POST','method-PUT','method-PATCH','method-DELETE','method-WS','ws-send','ws-recv','ws-ping','ws-pong','ws-close','level-VERBOSE','level-DEBUG','level-INFO','level-WARN','level-ERROR','level-ASSERT');
-            // content
-            let content;
-            if (kind === 'LOG') {
-              content = logMessage(ev); // make sure logs show their message
-              sumEl.classList.remove('json');
-              sumEl.textContent = content || '';
-            } else {
-              content = ev.summary ?? '';
-              if (jsonPretty?.checked){
-                sumEl.classList.add('json');
-                sumEl.innerHTML = hlJson(content);
-              } else {
-                sumEl.classList.remove('json');
-                sumEl.textContent = content;
-              }
-            }
-            // method/WS tint
-            if (kind==='HTTP'){
-              if (mU) sumEl.classList.add('method-'+mU);
-            } else if (kind==='WEBSOCKET'){
-              const isSend = (dir === 'OUTBOUND' || dir === 'REQUEST');
-              const isRecv = (dir === 'INBOUND'  || dir === 'RESPONSE');
-              const op = (ev.op || ev.opcode || '').toString().toLowerCase();
-              const wsClass = op==='ping'?'ws-ping': op==='pong'?'ws-pong': op==='close'?'ws-close': (isSend?'ws-send': isRecv?'ws-recv':'');
-              if (wsClass) sumEl.classList.add(wsClass);
-              sumEl.classList.add('method-WS');
-            } else if (kind==='LOG'){
-              if (lvl) sumEl.classList.add('level-'+lvl);
-            }
-          }
-          setText('ov-took', ev.tookMs? ev.tookMs+' ms' : '');
-          // Show tag in thread field if present
-          if(ev.tag) setText('ov-thread', (ev.thread ?? '') + (ev.thread? ' • ' : '') + ev.tag);
-          else setText('ov-thread', ev.thread ?? '');
-          setJson('req-body', bodyFor(ev,'request'));
-          setJson('resp-body', bodyFor(ev,'response'));
-          // Colorize drawer content by method
-          const reqPre = document.getElementById('req-body');
-          const respPre = document.getElementById('resp-body');
-          [reqPre, respPre].forEach(p=>{ if(!p) return; p.classList.remove('method-GET','method-POST','method-PUT','method-PATCH','method-DELETE','method-WS'); if(mU) p.classList.add('method-'+mU); });
-          const reqH = document.getElementById('req-headers');
-          const respH = document.getElementById('resp-headers');
-          [reqH, respH].forEach(h=>{ if(!h) return; h.classList.add('headers'); h.classList.remove('method-GET','method-POST','method-PUT','method-PATCH','method-DELETE','method-WS'); if(mU) h.classList.add('method-'+mU); });
-          setHeaders('req-headers', ev.headers || {});
-          setHeaders('resp-headers', ev.responseHeaders || {});
-          // --- WebSocket direction & opcode classes for drawer code/headers ---
-          const isSend = (dir === 'OUTBOUND' || dir === 'REQUEST');
-          const isRecv = (dir === 'INBOUND'  || dir === 'RESPONSE');
-          const op = (ev.op || ev.opcode || '').toString().toLowerCase(); // 'text','binary','ping','pong','close'
-          const wsClass = (kind==='WEBSOCKET') ? (op==='ping'?'ws-ping': op==='pong'?'ws-pong': op==='close'?'ws-close': (isSend?'ws-send': isRecv?'ws-recv':'')) : '';
-          [reqPre, respPre].forEach(p=>{
-            if(!p) return;
-            p.classList.remove('ws-send','ws-recv','ws-ping','ws-pong','ws-close');
-            if(wsClass) p.classList.add(wsClass);
-          });
-          [reqH, respH].forEach(h=>{
-            if(!h) return;
-            h.classList.remove('ws-send','ws-recv','ws-ping','ws-pong','ws-close');
-            if(wsClass) h.classList.add(wsClass);
-          });
-          const oc = document.getElementById('ov-curl'); if(oc) oc.textContent = curlFor(ev);
-          if(curlCopyBtn){ curlCopyBtn.onclick = async (e)=>{ e.preventDefault(); e.stopPropagation(); const ocEl = document.getElementById('ov-curl'); const ok = await copyText(ocEl?.textContent || ''); if(ok){ const old = curlCopyBtn.textContent; curlCopyBtn.textContent = 'Copied!'; setTimeout(()=> curlCopyBtn.textContent = old, 1200); } }; }
-          const os = document.getElementById('ov-summary');
-          if(summaryCopyBtn){ summaryCopyBtn.onclick = async (e)=>{ e.preventDefault(); e.stopPropagation(); const osEl = document.getElementById('ov-summary'); const ok = await copyText(osEl?.textContent || ''); if(ok){ const old = summaryCopyBtn.textContent; summaryCopyBtn.textContent = 'Copied!'; setTimeout(()=> summaryCopyBtn.textContent = old, 1200); } }; }
-          configureDrawerForKind(kind, ev);
-          activateTab('overview');
-        }
-        
-        // ---- Exports ----
-        function currentFiltered(){ return rows.filter(matchesFilters); }
-        exportJsonBtn?.addEventListener('click', ()=>{
-          try{ const data = JSON.stringify(currentFiltered(), null, 2); const name = 'logtap-'+new Date().toISOString().replace(/[:.]/g,'-')+'.json'; toFile(name, 'application/json', data);}catch(e){ console.error('export json failed', e); }
-        });
-        exportHtmlBtn?.addEventListener('click', ()=>{
-          try{ const data = currentFiltered(); const pre = escapeHtml(JSON.stringify(data, null, 2));
-            const html = `<!doctype html><html><head><meta charset=\"utf-8\"><title>LogTap Report</title><style>body{font-family:ui-monospace,Menlo,monospace;background:#0b0d10;color:#e6edf3}pre{white-space:pre-wrap}</style></head><body><h1>LogTap Report</h1><p>Generated ${'$'}{new Date().toLocaleString()}</p><h2>Filtered events (${'$'}{data.length})</h2><pre>${'$'}{pre}</pre></body></html>`;
-            const name = 'logtap-report-'+new Date().toISOString().replace(/[:.]/g,'-')+'.html'; toFile(name, 'text/html', html);
-          }catch(e){ console.error('export html failed', e); }
-        });
-        
-        // ---- Events ----
-        function onColChange(){
-          colCfg = {
-            id: !!(colId?.checked), time: !!(colTime?.checked), kind: !!(colKind?.checked), tag: !!(colTag?.checked),
-            method: !!(colMethod?.checked), status: !!(colStatus?.checked), url: !!(colUrl?.checked), actions: !!(colActions?.checked)
-          };
-          saveCols(colCfg); applyCols(colCfg);
-        }
-        [colId,colTime,colKind,colTag,colMethod,colStatus,colUrl,colActions].forEach(el=> el?.addEventListener('change', onColChange));
-        // Apply saved column visibility on startup
-        applyCols(colCfg);
-        search?.addEventListener('input', ()=>{ filterText = search.value.trim().toLowerCase(); renderAll(); });
-        // Make stat chips clickable (toggle selection on re-click)
-        allChips.push(chipTotal, chipHttp, chipWs, chipLog, chipGet, chipPost);
-        // Set default selection to "Total" chip on boot
-        highlightChip(chipTotal);
-        chipTotal.setAttribute('aria-pressed','true');
-        chipTotal.classList.add('active');
-        allChips.forEach(c=>{
-          if(!c) return;
-          c.classList.add('clickable');
-          c.setAttribute('role','button');
-          c.setAttribute('tabindex','0');
-          // Set all chips aria-pressed to false except chipTotal
-          if (c !== chipTotal) c.setAttribute('aria-pressed','false');
-          c.addEventListener('click', ()=>{
-            const isSame = (activeChip === c);
-            // update aria and visual state
-            if(isSame){
-              c.setAttribute('aria-pressed','false');
-              highlightChip(null);
-            } else {
-              allChips.forEach(ch=>{ ch?.setAttribute('aria-pressed','false'); ch?.classList.remove('active'); });
-              c.setAttribute('aria-pressed','true');
-              c.classList.add('active');
-              activeChip = c;
-            }
-            const kind = (c===chipTotal)?'TOTAL':(c===chipHttp)?'HTTP':(c===chipWs)?'WS':(c===chipLog)?'LOG':(c===chipGet)?'GET':'POST';
-            applyStatFilter(kind, isSame);
-          });
-          c.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); c.click(); } });
-        });
-        methodFilter?.addEventListener('change', renderAll);
-        viewMode?.addEventListener('change', ()=>{ applyMode(); renderAll(); });
-        statusFilter?.addEventListener('change', renderAll);
-        statusCodeFilter?.addEventListener('input', renderAll);
-        levelFilter?.addEventListener('change', renderAll);
-        jsonPretty?.addEventListener('change', ()=>{
-          try{ localStorage.setItem('logtap:jsonPretty', jsonPretty.checked ? '1' : '0'); }catch{}
-          renderAll();
-          if (currentEv) openDrawer(currentEv);
-        });
-        autoScroll?.addEventListener('change', ()=>{
-          try{ localStorage.setItem('logtap:autoScroll', autoScroll.checked ? '1' : '0'); }catch{}
-        });
-        colorScheme?.addEventListener('change', ()=> applyScheme(colorScheme.value));
-        clearBtn?.addEventListener('click', async ()=>{ try{ await fetch('/api/clear', {method:'POST'}); }catch{} rows=[]; renderAll(); });
-        drawerClose?.addEventListener('click', ()=> bodyEl.classList.remove('drawer-open'));
-        // Filters & Export popovers (don't close when clicking inside)
-        function isInside(el, target){ return !!(el && target && el instanceof Node && el.contains(target)); }
-        function closePopovers(e){
-          if (e) {
-            const t = e.target;
-            // If click is inside either popover or on their trigger buttons, don't close
-            if (isInside(filtersPanel, t) || isInside(exportMenu, t) || isInside(filtersBtn, t) || isInside(exportBtn, t)) return;
-          }
-          filtersPanel?.classList.add('hidden');
-          exportMenu?.classList.add('hidden');
-        }
-        filtersBtn?.addEventListener('click', (e)=>{
-          e.preventDefault(); e.stopPropagation();
-          const wasOpen = !filtersPanel?.classList.contains('hidden');
-          closePopovers();
-          if(!wasOpen) filtersPanel?.classList.remove('hidden');
-        });
-        exportBtn?.addEventListener('click', (e)=>{
-          e.preventDefault(); e.stopPropagation();
-          const wasOpen = !exportMenu?.classList.contains('hidden');
-          closePopovers();
-          if(!wasOpen) exportMenu?.classList.remove('hidden');
-        });
-        // Filters actions (Reset / Apply)
-        const filtersReset = document.querySelector('#filtersReset');
-        const filtersClose = document.querySelector('#filtersClose');
-        filtersReset?.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); resetFilters(); renderAll(); });
-        filtersClose?.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); filtersPanel?.classList.add('hidden'); });
+        return col;
+      })
+    );
+    var bodyEl = h('div', {class:'tbl-body'});
+    filtered.forEach(function(log){ bodyEl.appendChild(renderTableRow(log, gridTemplate)); });
+    if (filtered.length === 0) bodyEl.appendChild(h('div', {style:{padding:'24px', textAlign:'center', color:'var(--text-secondary)'}}, 'No logs match current filters'));
+    var wrap = h('div', {class:'tbl-wrap', id:'tbl-wrap', onscroll: handleScroll}, [headEl, bodyEl]);
+    setTimeout(function(){
+      if (state.autoScroll) wrap.scrollTop = wrap.scrollHeight;
+    }, 0);
+    return wrap;
+  }
 
-        // Prevent clicks inside popovers from bubbling to document
-        filtersPanel?.addEventListener('click', (e)=> e.stopPropagation());
-        exportMenu?.addEventListener('click', (e)=> e.stopPropagation());
-        document.addEventListener('click', (e)=> closePopovers(e));
-        document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closePopovers(); });
-        themeToggle?.addEventListener('click', ()=>{ const cur = document.documentElement.getAttribute('data-theme') || 'dark'; const next = cur==='dark'?'light':'dark'; applyTheme(next); localStorage.setItem('logtap:theme', next); });
-        
-        // ---- Bootstrap + WS status ----
-        async function loadDeviceInfo(){
-          try{
-            const res = await fetch('/api/info');
-            if(!res.ok) return;
-            const info = await res.json();
-            const appNameEl = document.getElementById('appName');
-            const appMetaEl = document.getElementById('appMeta');
-            const appIconEl = document.getElementById('appIcon');
-        
-            if(appNameEl) appNameEl.textContent = info.appName || 'Unknown App';
-        
-            if(appMetaEl){
-              const ver = [info.versionName ? 'v'+info.versionName : null,
-                           (info.versionCode!=null) ? '('+info.versionCode+')' : null]
-                          .filter(Boolean).join(' ');
-              const device = [info.deviceManufacturer, info.deviceModel].filter(Boolean).join(' ');
-              const os = [info.osType, info.osVersion, info.apiLevel!=null?('API '+info.apiLevel):null]
-                         .filter(Boolean).join(' ');
-              // Compose meta: bundle • version • device • os
-              appMetaEl.textContent = [info.appBundle, ver, device, os].filter(Boolean).join(' • ');
-            }
-            if(appIconEl && info.appIconBase64){
-              appIconEl.style.backgroundImage = 'url(data:image/png;base64,'+info.appIconBase64+')';
-            }
-          }catch(e){
-            console.warn('[LogTap] Device info load failed', e);
-          }
-        }
+  function renderTableRow(log, gridTemplate){
+    var densityCls = state.density === 'compact' ? ' compact' : (state.density === 'spacious' ? ' spacious' : '');
+    var selectedCls = log.uid === state.selectedId ? ' selected' : '';
+    var typeCls = 'type-' + log.type;
+    var typeLabel = log.type === 'http' ? 'HTTP' : log.type === 'ws' ? 'WS' : 'LOG';
+    var size = log.responseBody ? log.responseBody.length : (log.requestBody ? log.requestBody.length : '');
+    var tagOrMethod = log.type === 'http' ? log.method : log.tag;
+    var levelOrStatus;
+    if (log.type === 'http' && log.status != null) {
+      levelOrStatus = h('span', {class:'status-pill ' + statusClass(log.status)}, String(log.status));
+    } else {
+      levelOrStatus = h('span', {class: 'lvl-' + levelChar(log.level || '')}, log.level || (log.type === 'http' ? '...' : ''));
+    }
 
-        async function bootstrap(){
-          initTheme();
-          initPrefs();
-          initScheme();
-          // Load DeviceAppInfo into header
-          loadDeviceInfo();
-          try{ const res = await fetch('/api/logs?limit=1000'); if(!res.ok) throw new Error('HTTP '+res.status); rows = await res.json(); }
-          catch(err){ console.error('[LogTap] failed to fetch /api/logs', err); rows=[]; }
-          applyMode();
-          renderAll();
-          try{
-            const setWs = (text, cls)=>{ if(wsStatus){ wsStatus.textContent = text; wsStatus.classList.remove('status-on','status-off','status-connecting'); if(cls) wsStatus.classList.add(cls); } };
-            setWs('● Connecting…', 'status-connecting');
-            const ws = new WebSocket((location.protocol==='https:'?'wss':'ws')+'://'+location.host+'/ws');
-            const on = ()=> setWs('● Connected', 'status-on');
-            const off = ()=> setWs('● Disconnected', 'status-off');
-            ws.addEventListener('open', on);
-            ws.addEventListener('close', off);
-            ws.addEventListener('error', off);
-            ws.onmessage = (e)=>{ try{ const ev = JSON.parse(e.data); rows.push(ev); if(matchesFilters(ev)){ tbody.appendChild(renderRow(ev)); if(autoScroll?.checked) tbody.lastElementChild?.scrollIntoView({block:'end'}); renderStats(); } }catch(parseErr){ console.warn('[LogTap] bad WS payload', parseErr); } };
-          }catch(wsErr){ console.warn('[LogTap] WS setup failed', wsErr); if(wsStatus){ wsStatus.textContent='● Disconnected'; wsStatus.classList.remove('status-on','status-connecting'); wsStatus.classList.add('status-off'); } }
-        }
-        // === Settings popover wiring ===
-        const settingsBtn   = document.getElementById('settingsBtn');
-        const settingsPanel = document.getElementById('settingsPanel');
-        const settingsClose = document.getElementById('settingsClose');
-        const settingsReset = document.getElementById('settingsReset');
+    var msgUrl;
+    if (log.type === 'http') {
+      var children = [h('div', {class:'url-cell'}, log.url || '')];
+      if (log.requestBody) children.push(h('div', {class:'url-body'}, '↑ ' + log.requestBody));
+      msgUrl = h('div', {}, children);
+    } else if (log.type === 'ws') {
+      msgUrl = h('div', {class:'url-cell'}, '[' + (log.direction || '') + '] ' + (log.message || ''));
+    } else {
+      msgUrl = h('div', {}, log.message || '');
+    }
 
-        function toggleSettings(open) {
-          if (!settingsPanel || !settingsBtn) return;
-          const willOpen = open ?? settingsPanel.classList.contains('hidden');
-          if (willOpen) {
-            // Position the panel just under the button, keeping it in-viewport
-            const br = settingsBtn.getBoundingClientRect();
-            const vw = window.innerWidth, vh = window.innerHeight;
-            const panelW = Math.min(520, vw - 24);
-            let left = Math.max(12, Math.min(br.left, vw - panelW - 12));
-            let top  = Math.min(br.bottom + 8, vh - 100); // leave a little room at bottom
-            settingsPanel.style.left = left + 'px';
-            settingsPanel.style.right = 'auto';
-            settingsPanel.style.top = top + 'px';
-          }
-          settingsPanel.classList.toggle('hidden', !willOpen);
-          settingsBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
-        }
+    var resp;
+    if (log.type === 'http' && log.responseBody) {
+      var cls = (log.status >= 400 ? 'resp-err' : 'resp-ok');
+      resp = h('div', {class:'resp-cell ' + cls}, log.responseBody);
+    } else if (log.type === 'ws' && log.responseBody) {
+      resp = h('div', {class:'resp-cell'}, log.responseBody);
+    } else {
+      resp = h('div', {class:'muted'}, '');
+    }
 
-        settingsBtn?.addEventListener('click', (e) => {
-          e.stopPropagation();
-          toggleSettings();
-        });
+    var row = h('div', {
+      class: 'tbl-row' + densityCls + selectedCls,
+      style: {gridTemplateColumns: gridTemplate},
+      onclick: function(){ state.selectedId = log.uid; render(); },
+      ondblclick: function(){
+        state.expandedIds[log.uid] = !state.expandedIds[log.uid];
+        render();
+      },
+      oncontextmenu: function(e){ e.preventDefault(); e.stopPropagation(); openContextMenu(e, log); }
+    }, [
+      h('div', {class:'tbl-cell'}, h('span', {class:'tt-id'}, '#' + (log.serverId || ''))),
+      h('div', {class:'tbl-cell'}, h('span', {class:'tt-time'}, fmtTime(log.ts))),
+      h('div', {class:'tbl-cell'}, h('span', {class:'tt-time', title:'pid-tid'}, pidTid(log) || '—')),
+      h('div', {class:'tbl-cell'}, h('span', {class:'type-pill ' + typeCls}, typeLabel)),
+      h('div', {class:'tbl-cell'}, h('span', {class: log.type === 'http' ? 'method-tag' : ('lvl-' + levelChar(log.level||''))}, tagOrMethod || '')),
+      h('div', {class:'tbl-cell'}, levelOrStatus),
+      h('div', {class:'tbl-cell muted'}, String(size)),
+      h('div', {class:'tbl-cell'}, msgUrl),
+      h('div', {class:'tbl-cell'}, resp)
+    ]);
 
-        settingsClose?.addEventListener('click', () => toggleSettings(false));
-        // Optional hook for your reset logic:
-        settingsReset?.addEventListener('click', () => {
-           // Pretty JSON defaults to ON
-          if(jsonPretty){
-            jsonPretty.checked = true;
-            try{ localStorage.setItem('logtap:jsonPretty','1'); }catch{}
-          }
-          if (autoScroll){
-            autoScroll.checked = true;
-            try{ localStorage.setItem('logtap:autoScroll','1'); }catch{}
-          }
+    if (state.expandedIds[log.uid]) {
+      row.appendChild(buildExpandArea(log));
+    }
+    return row;
+  }
 
-          // Columns: show all
-          const allTrue = {id:true,time:true,kind:true,tag:true,method:true,status:true,url:true,actions:false};
-          try{ localStorage.setItem('logtap:cols', JSON.stringify(allTrue)); }catch{}
-          applyCols(allTrue);
+  function buildExpandArea(log){
+    var sections = [];
+    if (log.requestHeaders) {
+      sections.push(h('div', {class:'exp-section'}, [
+        h('div', {class:'exp-label'}, 'Request Headers'),
+        renderHeaders(log.requestHeaders)
+      ]));
+    }
+    if (log.requestBody) {
+      sections.push(h('div', {class:'exp-section'}, [
+        h('div', {class:'exp-label'}, 'Request Body'),
+        h('div', {class:'exp-content'}, log.requestBody)
+      ]));
+    }
+    if (log.responseHeaders) {
+      sections.push(h('div', {class:'exp-section'}, [
+        h('div', {class:'exp-label'}, 'Response Headers'),
+        renderHeaders(log.responseHeaders)
+      ]));
+    }
+    if (log.responseBody) {
+      sections.push(h('div', {class:'exp-section'}, [
+        h('div', {class:'exp-label'}, 'Response Body'),
+        h('div', {class:'exp-content'}, log.responseBody)
+      ]));
+    }
+    if (log.error) {
+      sections.push(h('div', {class:'exp-section'}, [
+        h('div', {class:'exp-label'}, 'Error'),
+        h('div', {class:'exp-content'}, log.error)
+      ]));
+    }
+    if (sections.length === 0) {
+      sections.push(h('div', {class:'muted'}, 'No additional details'));
+    }
+    return h('div', {class:'expand-area'}, sections);
+  }
 
-          // Clear active stat chip highlight
-          highlightChip(null);
-          // Reset column widths to defaults
-          resetColWidths();
-        });
-        
-        // Close when clicking outside
-        window.addEventListener('click', (e) => {
-          if (!settingsPanel || settingsPanel.classList.contains('hidden')) return;
-          if (!settingsPanel.contains(e.target) && e.target !== settingsBtn && !settingsBtn.contains(e.target)) {
-            toggleSettings(false);
-          }
-        });
-        
-        // Close on Escape
-        window.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') toggleSettings(false);
-        });
+  function renderHeaders(headers){
+    var grid = h('div', {class:'headers-grid'});
+    Object.keys(headers).forEach(function(k){
+      var vals = headers[k] || [];
+      vals.forEach(function(v){
+        grid.appendChild(h('div', {class:'hk'}, k));
+        grid.appendChild(h('div', {class:'hv'}, v));
+      });
+    });
+    return grid;
+  }
 
-        // Make the Columns section a grid without touching HTML
-        (function(){
-          try{
-            const secs = document.querySelectorAll('#settingsPanel .sp-section');
-            secs.forEach(sec => {
-              const h = sec.querySelector('h4');
-              if (h && /columns/i.test(h.textContent || '')) {
-                sec.classList.add('cols-grid');
-              }
-            });
-          }catch(e){ console.warn('Columns grid setup failed', e); }
-        })();
+  // ---------- DETAIL PANEL ----------
+  function buildDetail(log){
+    var tabs = ['overview'];
+    if (log.type === 'http') { tabs.push('request'); tabs.push('response'); }
+    if (!log._detailTab) log._detailTab = 'overview';
 
-        // Load saved drawer width and enable drag to resize
-        loadDrawerWidth();
-        drawerResizer?.addEventListener('mousedown', (e)=>{ e.preventDefault(); startResize(e); });
-        bootstrap();
-        document.addEventListener('DOMContentLoaded', () => {
-          try{ installColumnResizers(); }catch(e){ console.warn('column resizer init failed', e); }
-        });
-    """.trimIndent()
+    var tabBtns = tabs.map(function(t){
+      return h('button', {class:'detail-tab' + (log._detailTab === t ? ' active' : ''), onclick: function(){ log._detailTab = t; render(); }}, t.charAt(0).toUpperCase() + t.substring(1));
+    });
+
+    var bodyEl;
+    if (log._detailTab === 'overview') {
+      var rows = [];
+      rows.push(['Time', new Date(log.ts).toLocaleString()]);
+      rows.push(['Type', log.type.toUpperCase()]);
+      if (log.type === 'http') {
+        rows.push(['Method', log.method || '']);
+        rows.push(['URL', log.url || '']);
+        if (log.status != null) rows.push(['Status', String(log.status)]);
+        if (log.duration != null) rows.push(['Duration', log.duration + 'ms']);
+      } else {
+        rows.push(['Tag', log.tag || '']);
+        rows.push(['Level', log.level || '']);
+      }
+      rows.push(['Thread', log.thread || '']);
+      bodyEl = h('div', {}, rows.map(function(r){
+        return h('div', {style:{marginBottom:'12px'}}, [
+          h('div', {style:{fontSize:'11px', color:'var(--text-secondary)', textTransform:'uppercase', marginBottom:'4px'}}, r[0]),
+          h('div', {style:{fontSize:'13px', wordBreak:'break-all'}}, r[1])
+        ]);
+      }).concat([
+        h('div', {style:{marginTop:'12px'}}, [
+          h('div', {style:{fontSize:'11px', color:'var(--text-secondary)', textTransform:'uppercase', marginBottom:'4px'}}, 'Message'),
+          h('div', {class:'exp-content'}, log.message || '')
+        ])
+      ]));
+    } else if (log._detailTab === 'request') {
+      bodyEl = h('div', {}, [
+        log.requestHeaders ? h('div', {class:'exp-section'}, [h('div', {class:'exp-label'}, 'Headers'), renderHeaders(log.requestHeaders)]) : h('div', {class:'muted'}, 'No request headers'),
+        log.requestBody ? h('div', {class:'exp-section'}, [h('div', {class:'exp-label'}, 'Body'), h('div', {class:'exp-content'}, log.requestBody)]) : h('div', {class:'muted'}, 'No request body')
+      ]);
+    } else if (log._detailTab === 'response') {
+      bodyEl = h('div', {}, [
+        log.responseHeaders ? h('div', {class:'exp-section'}, [h('div', {class:'exp-label'}, 'Headers'), renderHeaders(log.responseHeaders)]) : h('div', {class:'muted'}, 'No response headers'),
+        log.responseBody ? h('div', {class:'exp-section'}, [h('div', {class:'exp-label'}, 'Body'), h('div', {class:'exp-content'}, log.responseBody)]) : h('div', {class:'muted'}, 'No response body')
+      ]);
+    }
+
+    return h('div', {class:'detail'}, [
+      h('div', {class:'detail-hdr'}, [
+        h('div', {class:'detail-title'}, log.type === 'http' ? ((log.method||'') + ' ' + (log.url||'')) : (log.tag || log.message || '')),
+        h('button', {class:'icon-btn', title:'Close', onclick: function(){ state.selectedId = null; render(); }}, '✕')
+      ]),
+      h('div', {class:'detail-tabs'}, tabBtns),
+      h('div', {class:'detail-body'}, bodyEl)
+    ]);
+  }
+
+  // ---------- COLUMN RESIZE ----------
+  var resizing = null;
+  function startColResize(i, e){
+    e.preventDefault(); e.stopPropagation();
+    resizing = { i: i, startX: e.clientX, startW: state.columnWidths[i] };
+    document.addEventListener('mousemove', onColResize);
+    document.addEventListener('mouseup', stopColResize);
+  }
+  function onColResize(e){
+    if (!resizing) return;
+    var diff = e.clientX - resizing.startX;
+    var nw = Math.max(50, resizing.startW + diff);
+    state.columnWidths[resizing.i] = nw;
+    // Update grid template directly without full render
+    var head = ${'$'}('.tbl-head');
+    var rows = ${'$'}${'$'}('.tbl-row');
+    var template = state.columnWidths.map(function(w){ return w + 'px'; }).join(' ');
+    if (head) head.style.gridTemplateColumns = template;
+    rows.forEach(function(r){ r.style.gridTemplateColumns = template; });
+  }
+  function stopColResize(){
+    if (!resizing) return;
+    localStorage.setItem('logtap-cols', JSON.stringify(state.columnWidths));
+    resizing = null;
+    document.removeEventListener('mousemove', onColResize);
+    document.removeEventListener('mouseup', stopColResize);
+  }
+
+  // ---------- AUTO SCROLL ----------
+  function handleScroll(e){
+    var t = e.target;
+    var atBottom = t.scrollHeight - t.scrollTop - t.clientHeight < 50;
+    if (!atBottom && state.autoScroll) state.autoScroll = false;
+    else if (atBottom && !state.autoScroll) state.autoScroll = true;
+    renderStatusBar();
+  }
+
+  function renderStatusBar(){
+    var sb = ${'$'}('#status-bar');
+    if (sb && sb.parentNode) {
+      sb.parentNode.replaceChild(buildStatusBar(), sb);
+    }
+  }
+
+  // ---------- CONTEXT MENU OPEN ----------
+  function openContextMenu(e, log){
+    var items = [];
+    if (log.type === 'http') {
+      items.push({label:'Copy URL', action: function(){ copyText(log.url || ''); }});
+      items.push({label:'Copy as cURL', action: function(){ copyText(asCurl(log)); }});
+      items.push({sep: true});
+    }
+    items.push({label:'Copy Message', action: function(){ copyText(log.message || ''); }});
+    items.push({label:'Copy as JSON', action: function(){ copyText(JSON.stringify(log, null, 2)); }});
+    items.push({sep: true});
+    if (log.tag) items.push({label:'Exclude tag: ' + log.tag, action: function(){ state.filters.excludePackages.push(log.tag); render(); }});
+    if (log.message) items.push({label:'Exclude message text', action: function(){ state.filters.excludeMessages.push(log.message.substring(0, 40)); render(); }});
+    showContextMenu(e.clientX, e.clientY, items);
+  }
+  function buildContextMenu(){
+    var cm = state.contextMenu;
+    var children = cm.items.map(function(it){
+      if (it.sep) return h('div', {class:'ctx-sep'});
+      return h('div', {class:'ctx-item', onclick: function(e){ e.stopPropagation(); it.action(); hideContextMenu(); }}, it.label);
+    });
+    return h('div', {class:'ctx-menu', style:{left: cm.x + 'px', top: cm.y + 'px'}}, children);
+  }
+
+  // ---------- STATUS BAR ----------
+  function buildStatusBar(){
+    var filtered = getFiltered();
+    var connDot = h('span', {class: 'conn-dot conn-' + state.connectionStatus});
+    var connText;
+    if (state.connectionStatus === 'connecting') connText = 'Connecting...';
+    else if (state.connectionStatus === 'connected') connText = 'Connected';
+    else connText = 'Disconnected';
+    var asLabel = state.autoScroll ? 'Auto-scroll: ON' : 'Auto-scroll: OFF (scroll to bottom to resume)';
+    return h('div', {class:'status-bar', id:'status-bar'}, [
+      h('span', {}, 'Theme: ' + state.theme),
+      h('span', {}, 'View: ' + state.viewMode),
+      h('span', {}, 'Showing ' + filtered.length + ' of ' + state.logs.length + ' logs'),
+      h('div', {class:'right'}, [
+        h('span', {}, asLabel),
+        h('span', {style:{display:'flex', alignItems:'center', gap:'6px'}}, [connDot, connText])
+      ])
+    ]);
+  }
+
+  // ---------- ACTIONS ----------
+  function clearLogs(){
+    if (!confirm('Clear all logs?')) return;
+    fetch('/api/clear', {method: 'POST'}).catch(function(){});
+    state.logs = [];
+    state.httpPending = {};
+    state.selectedId = null;
+    state.expandedIds = {};
+    render();
+  }
+  function exportJson(){
+    var data = JSON.stringify(getFiltered(), null, 2);
+    var blob = new Blob([data], {type:'application/json'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'logtap-export-' + new Date().toISOString().slice(0,19).replace(/:/g,'-') + '.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  }
+
+  // ---------- DATA LOADING ----------
+  function loadAppInfo(){
+    fetch('/api/info').then(function(r){ return r.json(); }).then(function(d){
+      state.appInfo = d;
+      refreshLiveAreas();
+    }).catch(function(){});
+  }
+  function loadBacklog(){
+    fetch('/api/logs?limit=500').then(function(r){ return r.json(); }).then(function(arr){
+      arr.forEach(ingest);
+      refreshLiveAreas();
+    }).catch(function(){});
+  }
+  var ws = null;
+  function connectWs(){
+    state.connectionStatus = 'connecting';
+    refreshLiveAreas();
+    try {
+      var loc = window.location;
+      var proto = loc.protocol === 'https:' ? 'wss:' : 'ws:';
+      ws = new WebSocket(proto + '//' + loc.host + '/ws');
+      ws.onopen = function(){ state.connectionStatus = 'connected'; refreshLiveAreas(); };
+      ws.onclose = function(){
+        state.connectionStatus = 'disconnected';
+        refreshLiveAreas();
+        setTimeout(connectWs, 2000);
+      };
+      ws.onerror = function(){ /* onclose will fire */ };
+      ws.onmessage = function(e){
+        try {
+          var ev = JSON.parse(e.data);
+          ingest(ev);
+          renderThrottled();
+        } catch(err) { console.error('Bad message', err); }
+      };
+    } catch(e) {
+      state.connectionStatus = 'disconnected';
+      refreshLiveAreas();
+      setTimeout(connectWs, 3000);
+    }
+  }
+
+  // Throttle re-renders during high-frequency log streams.
+  // IMPORTANT: never call full render() here — it would re-create the search input
+  // and steal focus from the user mid-typing. Update only data-driven sections.
+  var rerenderPending = false;
+  function renderThrottled(){
+    if (rerenderPending) return;
+    rerenderPending = true;
+    requestAnimationFrame(function(){
+      rerenderPending = false;
+      refreshLiveAreas();
+    });
+  }
+  function refreshLiveAreas(){
+    refreshSavedBadge();
+    replaceSection('.metrics', buildMetrics);
+    replaceSection('.main', buildMain);
+    replaceSection('#status-bar', buildStatusBar);
+    // App info banner — only update brand text/icon if it changed
+    var bn = ${'$'}('.brand-name');
+    var bm = ${'$'}('.brand-meta');
+    var bi = ${'$'}('.brand-icon');
+    if (state.appInfo && bn && bm && bi) {
+      bn.textContent = state.appInfo.appName || 'LogTap';
+      bm.textContent = 'v' + state.appInfo.versionName + ' (build ' + state.appInfo.versionCode + ')';
+      if (state.appInfo.appIconBase64 && !bi.querySelector('img')) {
+        bi.innerHTML = '<img src="data:image/png;base64,' + state.appInfo.appIconBase64 + '"/>';
+      }
+    }
+  }
+
+  // ---------- KEYBOARD SHORTCUTS ----------
+  document.addEventListener('keydown', function(e){
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      var inp = ${'$'}('#search-input');
+      if (inp) inp.focus();
+    }
+    if (e.key === 'Escape') {
+      if (state.contextMenu) { hideContextMenu(); return; }
+      if (state.showSettings) { state.showSettings = false; render(); return; }
+      if (state.showSavedFilters) { state.showSavedFilters = false; render(); return; }
+      if (state.showFilters) { state.showFilters = false; render(); return; }
+      if (state.selectedId) { state.selectedId = null; render(); return; }
+    }
+  });
+
+  // ---------- BOOT ----------
+  applyTheme();
+  render();
+  loadAppInfo();
+  loadBacklog();
+  connectWs();
+  // Periodic light refresh for time-sensitive metrics (logs/min) — never touches the input.
+  setInterval(function(){
+    replaceSection('.metrics', buildMetrics);
+    replaceSection('#status-bar', buildStatusBar);
+  }, 5000);
+})();
+""".trimIndent()
 
     val aboutHtml = """
           <!doctype html>

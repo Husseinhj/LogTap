@@ -50,6 +50,7 @@ object LogTap {
     @Volatile private var processLock: FileLock? = null
 
     internal var store: LogStore? = null
+    @Volatile internal var activeConfig: Config = Config()
 
     internal val json = kotlinx.serialization.json.Json {
         ignoreUnknownKeys = true
@@ -102,6 +103,7 @@ object LogTap {
             return
         }
 
+        activeConfig = config
         store = LogStore(config.capacity)
 
         // Start engine off the main thread and catch startup errors

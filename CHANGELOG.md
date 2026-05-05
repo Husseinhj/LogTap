@@ -3,6 +3,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### v0.14.0
+Modern viewer redesign + correctness fixes
+
+UI
+- Rewrite web viewer (`Resources.kt`) with a modern, theme-aware UX based on the LogTap Viewer design.
+- Smart command-search with autocomplete: `level:`, `method:`, `status:` (incl. `2xx`/`4xx`/`5xx` shorthand), `exclude:tag:`, `exclude:message:`, `exclude:method:`, `exclude:status:`. Keyboard navigation (↑/↓/Enter/Tab/Esc).
+- One-click favorites (☆/★) save the current query; saved-filters popover with badge count, click to apply, delete to remove. Persisted to localStorage.
+- Four themes (Android Studio, Xcode, Grafana, Modern) × dark/light mode. Persisted to localStorage.
+- Always-visible metrics (Total / Network / Logs / Errors / Logs/min / Avg Response / Active Filters).
+- Two view modes: **Logcat** (Android Studio-style stream with inline request/response/headers) and **Table** (resizable columns, expandable rows, request body under URL, response preview column).
+- Right-click context menu on any row: Copy URL / Copy as cURL / Copy Message / Copy as JSON / Exclude tag / Exclude message.
+- Smart auto-scroll (off when scrolled up, resumes at bottom). Connection status indicator in status bar with auto-reconnect.
+- App icon, name, version, and build number from `/api/info` shown in the toolbar brand.
+- PID/TID column in Table view and `pid-tid` prefix in Logcat view (matches `adb logcat -v threadtime`).
+- Cmd/Ctrl+K focuses search; Esc closes popovers. High-contrast text selection across themes.
+
+Filtering logic
+- `level:` matches both logs and HTTP rows. HTTP rows now derive `level` from status (5xx→ERROR, 4xx→WARN, else INFO), so `level:ERROR` returns server errors as well as ERROR logs.
+- `exclude:message:` searches across visible fields (url, body, status, etc.), not just `message`.
+- All command/panel filters are case-insensitive.
+
+Backend
+- `LogEvent` gains `pid` and `tid` fields. `LogStore.add` stamps `Process.myPid()` automatically.
+- HTTP request/response events are paired client-side into a single row with both bodies and headers.
+
+Bug fixes
+- `LogTapInterceptor` now reads the active `LogTap.Config` instead of constructing fresh defaults; user-supplied `redactHeaders` and `maxBodyBytes` are honored.
+- `LogStore.snapshot(sinceId, limit)` now returns events newer than `sinceId` (was equality match).
+- `LogStore.stream` configured with `BufferOverflow.DROP_OLDEST`; live events no longer silently dropped under load.
+- WebSocket handler in `server.kt` now collects on the session's coroutine scope; no leaked collectors on session abort.
+- Removed the legacy `LogTapEvents` queue; logger output and HTTP/WS events flow through a single `LogStore`. `/logs` (deprecated) removed; use `/api/logs`.
+- `LogTapSinkAdapter` writes to the active `LogStore` so `/api/logs` and `/ws` agree on contents.
+
 ### v0.12.0
 
 - Add DeviceAppInfo support and update UI with dynamic app details

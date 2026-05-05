@@ -110,9 +110,10 @@ class LogTapInterceptor : Interceptor {
     }
 
     private fun redact(headers: Headers): Headers {
+        val redactSet = LogTap.activeConfig.redactHeaders
         val b = headers.newBuilder()
         headers.names().forEach { name ->
-            if (LogTap.Config().redactHeaders.any { it.equals(name, ignoreCase = true) }) {
+            if (redactSet.any { it.equals(name, ignoreCase = true) }) {
                 b.set(name, "(redacted)")
             }
         }
@@ -144,9 +145,10 @@ class LogTapInterceptor : Interceptor {
             val contentType = body.contentType()
             val charset: Charset = contentType?.charset(Charsets.UTF_8) ?: Charsets.UTF_8
             val size = buffer.size
-            val capped = buffer.clone().readByteString(minOf(size, LogTap.Config().maxBodyBytes)).toByteArray()
+            val maxBytes = LogTap.activeConfig.maxBodyBytes
+            val capped = buffer.clone().readByteString(minOf(size, maxBytes)).toByteArray()
             val display = if (isPlainText(Buffer().write(capped))) String(capped, charset) else "(${capped.size} bytes binary)"
-            val truncated = size > LogTap.Config().maxBodyBytes
+            val truncated = size > maxBytes
             display to truncated
         } catch (_: Exception) {
             "(unable to read request body)" to true
@@ -192,7 +194,7 @@ class LogTapInterceptor : Interceptor {
         }
 
         return try {
-            val max = LogTap.Config().maxBodyBytes
+            val max = LogTap.activeConfig.maxBodyBytes
 
             // Use a PEAK at the source to avoid consuming downstream
             val source = body.source()

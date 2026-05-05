@@ -1,11 +1,7 @@
 package com.github.husseinhj.logtap.log
 
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.EncodeDefault
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.serialization.ExperimentalSerializationApi
 
 @Serializable
@@ -36,30 +32,6 @@ internal data class LogEvent(
     @EncodeDefault val thread: String = Thread.currentThread().name,
     val level: String? = null,   // "DEBUG", "INFO", "WARN", ...
     val tag: String? = null,     // Android log tag (caller class)
+    val pid: Int? = null,        // Process ID (own PID for in-app logs; logcat bridge passes app PID)
+    val tid: Int? = null,        // Thread ID (when known, e.g. from logcat threadtime)
 )
-
-internal object LogTapEvents {
-    private val seq = java.util.concurrent.atomic.AtomicLong(1L)
-    private val queue = java.util.concurrent.ConcurrentLinkedQueue<LogEvent>()
-
-    private val _updates = MutableSharedFlow<LogEvent>(
-        replay = 0,
-        extraBufferCapacity = 1024,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
-    fun updates(): SharedFlow<LogEvent> = _updates.asSharedFlow()
-
-    fun push(ev: LogEvent) {
-        queue.add(ev)
-        _updates.tryEmit(ev) // <-- broadcast to WS listeners
-    }
-
-    fun nextId(): Long = seq.getAndIncrement()
-
-    /** Oldest -> newest, limited. */
-    fun snapshot(limit: Int): List<LogEvent> {
-        if (limit <= 0) return emptyList()
-        val all = queue.toList()
-        return if (all.size <= limit) all else all.takeLast(limit)
-    }
-}
